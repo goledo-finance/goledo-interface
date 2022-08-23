@@ -1,0 +1,7 @@
+.header {
+  @apply h-304px bg-#F7F8FD;
+}
+
+.header::after {
+  @apply content-none w-;
+}
