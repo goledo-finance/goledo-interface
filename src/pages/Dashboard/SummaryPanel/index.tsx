@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useTokens, useCurUserSupplyPrice, useCurUserSupplyAPY, useCurUserBorrowPrice, useCurUserBorrowAPY } from '@store/index';
-import { useCurUserSupplyTokens } from '@hooks/index';
 
 const Zero = Unit.fromMinUnit(0);
 const Hundred = Unit.fromMinUnit(100);
@@ -9,7 +8,7 @@ const TenThousand = Unit.fromMinUnit(10000);
 
 const SummaryPanel: React.FC = () => {
   const tokens = useTokens();
-  const supplyTokens = useCurUserSupplyTokens(tokens);
+  const curUserSupplyTokens = useMemo(() => tokens?.filter((token) => token.supplyBalance?.greaterThan(Zero)), [tokens]);
   const curUserSupplyPrice = useCurUserSupplyPrice();
   const curUserSupplyAPY = useCurUserSupplyAPY();
   const curUserBorrowPrice = useCurUserBorrowPrice();
@@ -28,7 +27,7 @@ const SummaryPanel: React.FC = () => {
     [curUserSupplyPrice, curUserSupplyAPY, curUserBorrowPrice, curUserBorrowAPY]
   );
 
-  const collateralTokens = useMemo(() => supplyTokens?.filter(token => token.collateral), [supplyTokens]);
+  const collateralTokens = useMemo(() => curUserSupplyTokens?.filter(token => token.collateral), [curUserSupplyTokens]);
   const sumReserveLiquidationThreshold = useMemo(
     () => collateralTokens?.reduce((pre, cur) => pre.add(cur.borrowPrice ? (cur.supplyPrice ?? Zero).mul(cur.reserveLiquidationThreshold ?? Zero).div(TenThousand) : Zero), Zero),
     [collateralTokens]

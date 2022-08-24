@@ -32,6 +32,7 @@ interface ImportMetaEnv {
   readonly VITE_MulticallContract: string;
   readonly VITE_MultiFeeDistributionAddress: string;
   readonly VITE_GoledoTokenAddress: string;
+  readonly VITE_ChefIncentivesControllerContractAddress: string;
 }
 
 interface ImportMeta {

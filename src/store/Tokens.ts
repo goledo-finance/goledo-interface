@@ -265,7 +265,7 @@ tokensStore.subscribe((state) => state.tokensData, calcSupplyTokenPrice, { fireI
 const aggregateData = debounce(() => {
   const { tokensInPool, tokensData, userTokensData, tokensBalance, tokensPrice } = tokensStore.getState();
   if (!tokensInPool) {
-    tokensStore.setState({ tokens: [] });
+    tokensStore.setState({ tokens: undefined });
     return;
   }
   const tokens = tokensInPool?.map(({ address, symbol, name, decimals }) => ({ address, symbol, name, decimals })) as Array<TokenInfo>;

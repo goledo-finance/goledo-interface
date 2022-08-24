@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useTokens, useCurUserBorrowPrice, useCurUserBorrowAPY, useBorrowPowerUsed } from '@store/index';
-import { useCurUserBorrowTokens } from '@hooks/index';
 
+const Zero = Unit.fromMinUnit(0);
 const PointZeroOne = Unit.fromMinUnit(0.01);
 const Hundred = Unit.fromMinUnit(100);
 
 const YourBorrows: React.FC = () => {
   const tokens = useTokens();
-  const borrowTokens = useCurUserBorrowTokens(tokens);
+  const curUserBorrowTokens = useMemo(() => tokens?.filter((token) => token.borrowBalance?.greaterThan(Zero)), [tokens]);
   const curUserBorrowPrice = useCurUserBorrowPrice();
   const curUserBorrowAPY = useCurUserBorrowAPY();
   const borrowPowerUsed = useBorrowPowerUsed();
@@ -23,7 +23,7 @@ const YourBorrows: React.FC = () => {
       </div>
 
       <div>
-        {borrowTokens?.map((token) => (
+        {curUserBorrowTokens?.map((token) => (
           <div className="flex gap-12px" key={token.address}>
             <span>{token.symbol}</span>
             <span>DEBT: {token.borrowBalance?.toDecimalStandardUnit(2, token.decimals)}</span>

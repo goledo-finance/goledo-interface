@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CustomScrollbar from 'custom-react-scrollbar';
 import ErrorBoundary from '@modules/ErrorBoundary';
 import Navbar from '@modules/Navbar';
