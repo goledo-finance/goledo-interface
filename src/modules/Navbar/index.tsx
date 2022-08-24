@@ -10,6 +10,7 @@ const Navbar: React.FC = () => {
         <button onClick={connect}>Connect Wallet</button>
         <Link to="dashboard">Dashboard</Link>
         <Link to="markets">Markets</Link>
+        <Link to="stake">Stake</Link>
       </nav>
 
       <div></div>

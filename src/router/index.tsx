@@ -6,6 +6,7 @@ import Navbar from '@modules/Navbar';
 import DashBoardPage from '@pages/Dashboard';
 import MarketsPage from '@pages/Markets';
 import DetailPage from '@pages/Detail';
+import StakePage from '@pages/Stake';
 
 const AppRouter: React.FC = () => {
   return (
@@ -17,7 +18,8 @@ const AppRouter: React.FC = () => {
             <Route index element={<DashBoardPage />} />
             <Route key="dashboard" path="dashboard" element={<DashBoardPage />} />
             <Route key="markets" path="markets" element={<MarketsPage />} />
-            <Route path="detail/:tokenAddress" element={<DetailPage />} />
+            <Route key="detail" path="detail/:tokenAddress" element={<DetailPage />} />
+            <Route key="stake" path="stake" element={<StakePage />} />
           </Routes>
         </ErrorBoundary>
       </CustomScrollbar>

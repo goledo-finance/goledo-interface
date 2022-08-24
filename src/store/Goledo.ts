@@ -7,14 +7,22 @@ import { isEqual, debounce } from 'lodash-es';
 import { tokensStore } from './Tokens';
 
 interface GoledoStore {
+  usdPrice?: Unit;
   balance?: Unit;
+  stakedBalance?: Unit;
+  lockedBalance?: Unit;
+  earnedBalance?: Unit;
 }
 
 export const goledoStore = create(
   subscribeWithSelector(
     () =>
       ({
+        usdPrice: undefined,
         balance: undefined,
+        stakedBalance: undefined,
+        lockedBalance: undefined,
+        earnedBalance: undefined,
       } as GoledoStore)
   )
 );
