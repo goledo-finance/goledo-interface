@@ -8,17 +8,17 @@ const Hundred = Unit.fromMinUnit(100);
 const SummaryPanel: React.FC<Token> = ({
   symbol,
   usdPrice,
-  totalSupplyBalance,
-  totalSupplyPrice,
-  totalBorrowBalance,
+  totalMarketSupplyBalance,
+  totalMarketSupplyPrice,
+  totalMarketBorrowBalance,
   availableBalance,
   availablePrice
 }) => {
   const navigate = useNavigate();
 
   const utilizationRate = useMemo(
-    () => (totalSupplyBalance && totalBorrowBalance ? totalBorrowBalance.div(totalSupplyBalance) : undefined),
-    [totalSupplyBalance, totalBorrowBalance]
+    () => (totalMarketSupplyBalance && totalMarketBorrowBalance ? totalMarketBorrowBalance.div(totalMarketSupplyBalance) : undefined),
+    [totalMarketSupplyBalance, totalMarketBorrowBalance]
   );
 
   return (
@@ -29,8 +29,8 @@ const SummaryPanel: React.FC<Token> = ({
         <span>{symbol}</span>
         <div>
           <p>Total Amount</p>
-          <p>{totalSupplyBalance?.toDecimalStandardUnit(2) ?? '--'}</p>
-          <p>${totalSupplyPrice?.toDecimalStandardUnit(2) ?? '--'}</p>
+          <p>{totalMarketSupplyBalance?.toDecimalStandardUnit(2) ?? '--'}</p>
+          <p>${totalMarketSupplyPrice?.toDecimalStandardUnit(2) ?? '--'}</p>
         </div>
 
         <div>

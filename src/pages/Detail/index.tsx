@@ -10,15 +10,15 @@ const Detail: React.FC = () => {
   const { tokenAddress } = useParams() ?? {};
   const tokens = useTokens();
   const token = useMemo(() => tokens?.find(token => token.address === tokenAddress), [tokenAddress, tokens]);
-  const { totalSupplyBalance, totalSupplyPrice, totalBorrowBalance, totalBorrowPrice } = token ?? {};
+  const { totalMarketSupplyBalance, totalMarketSupplyPrice, totalMarketBorrowBalance, totalMarketBorrowPrice } = token ?? {};
 
   const availableBalance = useMemo(
-    () => (totalSupplyBalance && totalBorrowBalance ? totalSupplyBalance.sub(totalBorrowBalance) : undefined),
-    [totalSupplyBalance, totalBorrowBalance]
+    () => (totalMarketSupplyBalance && totalMarketBorrowBalance ? totalMarketSupplyBalance.sub(totalMarketBorrowBalance) : undefined),
+    [totalMarketSupplyBalance, totalMarketBorrowBalance]
   );
   const availablePrice = useMemo(
-    () => (totalSupplyPrice && totalBorrowPrice ? totalSupplyPrice.sub(totalBorrowPrice) : undefined),
-    [totalSupplyPrice, totalBorrowPrice]
+    () => (totalMarketSupplyPrice && totalMarketBorrowPrice ? totalMarketSupplyPrice.sub(totalMarketBorrowPrice) : undefined),
+    [totalMarketSupplyPrice, totalMarketBorrowPrice]
   );
   
   if (!token) return null;

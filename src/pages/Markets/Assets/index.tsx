@@ -17,11 +17,11 @@ const Assets: React.FC = () => {
         {tokens?.map((token) => (
           <div className="flex gap-20px" key={token.address}>
             <span>{token.symbol}</span>
-            <span>Total Supply Balance: {token.totalSupplyBalance?.toDecimalStandardUnit(2, token.decimals)}</span>
-            <span>Total Supply Price: {token.totalSupplyPrice?.toDecimalStandardUnit(2)}$</span>
+            <span>Total Supply Balance: {token.totalMarketSupplyBalance?.toDecimalStandardUnit(2, token.decimals)}</span>
+            <span>Total Supply Price: {token.totalMarketSupplyPrice?.toDecimalStandardUnit(2)}$</span>
             <span>Total Supply APY: {token.supplyAPY?.greaterThan(PointZeroOne) ? `${token.supplyAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}</span>
-            <span>Total Borrow Balance: {token.totalBorrowBalance?.toDecimalStandardUnit(2, token.decimals)}</span>
-            <span>Total Borrow Price: {token.totalBorrowPrice?.toDecimalStandardUnit(2)}$</span>
+            <span>Total Borrow Balance: {token.totalMarketBorrowBalance?.toDecimalStandardUnit(2, token.decimals)}</span>
+            <span>Total Borrow Price: {token.totalMarketBorrowPrice?.toDecimalStandardUnit(2)}$</span>
             <span>Total Borrow APY: {token.borrowAPY?.greaterThan(PointZeroOne) ? `${token.borrowAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}</span>
             <Link to={`/detail/${token.address}`}>
               <button>Detail</button>

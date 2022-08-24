@@ -6,18 +6,18 @@ const Zero = Unit.fromMinUnit(0);
 
 const SummaryPanel: React.FC = () => {
   const tokens = useTokens();
-  const totalMarketSupplyPrice = useMemo(() => tokens?.reduce((pre, cur) => pre.add(cur.totalSupplyPrice ?? Zero), Zero), [tokens]);
-  const totalMarketBorrowPrice = useMemo(() => tokens?.reduce((pre, cur) => pre.add(cur.totalBorrowPrice ?? Zero), Zero), [tokens]);
-  const totalMarketAvailable = useMemo(
-    () => (totalMarketSupplyPrice && totalMarketBorrowPrice ? totalMarketSupplyPrice?.sub(totalMarketBorrowPrice) : undefined),
-    [totalMarketSupplyPrice, totalMarketBorrowPrice]
+  const allTokensTotalMarketSupplyPrice = useMemo(() => tokens?.reduce((pre, cur) => pre.add(cur.totalMarketSupplyPrice ?? Zero), Zero), [tokens]);
+  const allTokensTotalMarketBorrowPrice = useMemo(() => tokens?.reduce((pre, cur) => pre.add(cur.totalMarketBorrowPrice ?? Zero), Zero), [tokens]);
+  const allTokensTotalMarketAvailable = useMemo(
+    () => (allTokensTotalMarketSupplyPrice && allTokensTotalMarketBorrowPrice ? allTokensTotalMarketSupplyPrice?.sub(allTokensTotalMarketBorrowPrice) : undefined),
+    [allTokensTotalMarketSupplyPrice, allTokensTotalMarketBorrowPrice]
   );
 
   return (
     <div className="mb-12px flex gap-12px">
-      <b>Total Market Size$: {totalMarketSupplyPrice?.toDecimalStandardUnit(2)}</b>
-      <b>Total Available$: {totalMarketAvailable?.toDecimalStandardUnit(2)}</b>
-      <b>Total Borrows$: {totalMarketBorrowPrice?.toDecimalStandardUnit(2)}</b>
+      <b>Total Market Size$: {allTokensTotalMarketSupplyPrice?.toDecimalStandardUnit(2)}</b>
+      <b>Total Available$: {allTokensTotalMarketAvailable?.toDecimalStandardUnit(2)}</b>
+      <b>Total Borrows$: {allTokensTotalMarketBorrowPrice?.toDecimalStandardUnit(2)}</b>
     </div>
   );
 };

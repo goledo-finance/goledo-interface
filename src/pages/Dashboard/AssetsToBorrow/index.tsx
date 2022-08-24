@@ -17,7 +17,7 @@ const AssetsToBorrow: React.FC = () => {
         {tokens?.map((token) => (
           <div className="flex gap-12px" key={token.address}>
             <span>{token.symbol}</span>
-            <span>Available: {token.balance?.toDecimalStandardUnit(2, token.decimals)}</span>
+            <span>Available: {token.availableBorrowBalance?.toDecimalStandardUnit(2, token.decimals)}</span>
             <span>APY: {token.borrowAPY?.greaterThan(PointZeroOne) ? `${token.borrowAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}</span>
             <button>Borrow</button>
             <Link to={`/detail/${token.address}`}>

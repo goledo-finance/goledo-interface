@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { useTokens } from '@store/index';
-import { useUserSupplyTokens, useUserTotalSupplyPrice, useUserTotalSupplyAPY } from '@hooks/index';
+import { useTokens, useCurUserBorrowPrice, useCurUserSupplyAPY } from '@store/index';
+import { useCurUserSupplyTokens } from '@hooks/index';
 
 const Zero = Unit.fromMinUnit(0);
 const PointZeroOne = Unit.fromMinUnit(0.01);
@@ -9,9 +9,9 @@ const Hundred = Unit.fromMinUnit(100);
 
 const YourSupplies: React.FC = () => {
   const tokens = useTokens();
-  const supplyTokens = useUserSupplyTokens(tokens);
-  const totalSupplyPrice = useUserTotalSupplyPrice(supplyTokens);
-  const totalSupplyAPY = useUserTotalSupplyAPY(supplyTokens, totalSupplyPrice);
+  const supplyTokens = useCurUserSupplyTokens(tokens);
+  const curUserSupplyPrice = useCurUserBorrowPrice();
+  const curUserSupplyAPY = useCurUserSupplyAPY();
   const totalCollateralPrice = useMemo(
     () => (!supplyTokens?.length ? undefined : supplyTokens.filter((token) => token.collateral).reduce((pre, cur) => pre.add(cur.supplyPrice ?? Zero), Zero)),
     [supplyTokens]
@@ -21,8 +21,8 @@ const YourSupplies: React.FC = () => {
     <div>
       <h3>Your Supplies</h3>
       <div className="mb-12px flex gap-12px">
-        <span>totalPrice: {totalSupplyPrice?.toDecimalStandardUnit(2)}$</span>
-        <span>totalAPY: {totalSupplyAPY?.mul(Hundred).toDecimalMinUnit(2)}%</span>
+        <span>totalPrice: {curUserSupplyPrice?.toDecimalStandardUnit(2)}$</span>
+        <span>totalAPY: {curUserSupplyAPY?.mul(Hundred).toDecimalMinUnit(2)}%</span>
         <span>totalCollateralPrice: {totalCollateralPrice?.toDecimalStandardUnit(2)}$</span>
       </div>
 

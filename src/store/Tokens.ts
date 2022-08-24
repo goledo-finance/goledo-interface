@@ -60,13 +60,14 @@ interface TokenInfo {
   supplyBalance?: Unit;
   supplyPrice?: Unit;
   supplyAPY?: Unit;
-  totalSupplyBalance?: Unit;
-  totalSupplyPrice?: Unit;
+  totalMarketSupplyBalance?: Unit;
+  totalMarketSupplyPrice?: Unit;
   borrowBalance?: Unit;
   borrowPrice?: Unit;
   borrowAPY?: Unit;
-  totalBorrowBalance?: Unit;
-  totalBorrowPrice?: Unit;
+  totalMarketBorrowBalance?: Unit;
+  totalMarketBorrowPrice?: Unit;
+  availableBorrowBalance?: Unit;
 }
 
 interface TokensStore {
@@ -80,8 +81,8 @@ interface TokensStore {
       balance?: Unit;
       supplyBalance?: Unit;
       borrowBalance?: Unit;
-      totalSupplyBalance?: Unit;
-      totalBorrowBalance?: Unit;
+      totalMarketSupplyBalance?: Unit;
+      totalMarketBorrowBalance?: Unit;
     }
   >;
 
@@ -90,13 +91,18 @@ interface TokensStore {
     | {
         supplyPrice?: Unit;
         borrowPrice?: Unit;
-        totalSupplyPrice?: Unit;
-        totalBorrowPrice?: Unit;
+        totalMarketSupplyPrice?: Unit;
+        totalMarketBorrowPrice?: Unit;
       }
     | undefined
   >;
 
   tokens?: Array<TokenInfo>;
+  borrowPowerUsed: string;
+  curUserSupplyPrice?: Unit;
+  curUserSupplyAPY?: Unit;
+  curUserBorrowPrice?: Unit;
+  curUserBorrowAPY?: Unit;
 }
 
 export const tokensStore = create(
@@ -214,8 +220,8 @@ const calcUserBalance = debounce(() => {
 
         tokensBalance[token.address].supplyBalance = Unit.fromMinUnit(result?.['returnData']?.[index + tokens.length] ?? 0);
         tokensBalance[token.address].borrowBalance = Unit.fromMinUnit(result?.['returnData']?.[index + tokens.length * 2] ?? 0);
-        tokensBalance[token.address].totalSupplyBalance = Unit.fromMinUnit(result?.['returnData']?.[index + tokens.length * 3] ?? 0);
-        tokensBalance[token.address].totalBorrowBalance = Unit.fromMinUnit(result?.['returnData']?.[index + tokens.length * 4] ?? 0);
+        tokensBalance[token.address].totalMarketSupplyBalance = Unit.fromMinUnit(result?.['returnData']?.[index + tokens.length * 3] ?? 0);
+        tokensBalance[token.address].totalMarketBorrowBalance = Unit.fromMinUnit(result?.['returnData']?.[index + tokens.length * 4] ?? 0);
       });
       tokensStore.setState({ tokensBalance });
     },
@@ -243,9 +249,9 @@ const calcSupplyTokenPrice = debounce(() => {
         address,
         {
           supplyPrice: token.usdPrice.mul(balances.supplyBalance ?? Zero),
-          totalSupplyPrice: token.usdPrice.mul(balances.totalSupplyBalance ?? Zero),
+          totalMarketSupplyPrice: token.usdPrice.mul(balances.totalMarketSupplyBalance ?? Zero),
           borrowPrice: token.usdPrice.mul(balances.borrowBalance ?? Zero),
-          totalBorrowPrice: token.usdPrice.mul(balances.totalBorrowBalance ?? Zero),
+          totalMarketBorrowPrice: token.usdPrice.mul(balances.totalMarketBorrowBalance ?? Zero),
         },
       ];
     })
@@ -280,15 +286,42 @@ const aggregateData = debounce(() => {
     token.canBecollateral = tokensData?.[token.address]?.canBecollateral;
 
     if (tokensData?.[token.address]?.reserveLiquidationThreshold) {
-      token.liquidationThreshold = tokensData[token.address].reserveLiquidationThreshold.div(HUNDRED).toDecimalMinUnit(2);
+      token.liquidationThreshold = tokensData[token.address].reserveLiquidationThreshold.div(Hundred).toDecimalMinUnit(2);
     }
     if (tokensData?.[token.address]?.reserveLiquidationBonus) {
-      token.liquidationPenalty = tokensData[token.address].reserveLiquidationBonus.div(HUNDRED).sub(HUNDRED).toDecimalMinUnit();
+      token.liquidationPenalty = tokensData[token.address].reserveLiquidationBonus.div(Hundred).sub(Hundred).toDecimalMinUnit();
     }
-    // if (token.borrowPrice && token.reserveLiquidationThreshold) {
-    //   token.max_borrow_balance = borrowPrice
-    // }
   });
+
+  const supplyTokens = tokens.filter(token => token.supplyPrice);
+  if (supplyTokens.length) {
+    const curUserSupplyPrice = supplyTokens.reduce((pre, cur) => pre.add(cur.supplyPrice ?? Zero), Zero);
+    tokensStore.setState({ curUserSupplyPrice });
+    if (supplyTokens.every(token => token.supplyAPY)) {
+      tokensStore.setState({ curUserSupplyAPY: supplyTokens.reduce((pre, cur) => pre.add((cur.supplyPrice ?? Zero).mul(cur.supplyAPY ?? Zero).div(curUserSupplyPrice)), Zero) });
+    }
+  }
+
+  const borrowTokens = tokens.filter(token => token.borrowPrice);
+  if (borrowTokens.length) {
+    const curUserBorrowPrice = borrowTokens.reduce((pre, cur) => pre.add(cur.borrowPrice ?? Zero), Zero);
+    tokensStore.setState({ curUserBorrowPrice });
+    if (borrowTokens.every(token => token.borrowAPY)) {
+      tokensStore.setState({ curUserBorrowAPY: borrowTokens.reduce((pre, cur) => pre.add((cur.borrowPrice ?? Zero).mul(cur.borrowAPY ?? Zero).div(curUserBorrowPrice)), Zero) });
+    }
+  }
+
+  if (tokens.every(token => token.reserveLiquidationThreshold && token.borrowPrice && token.usdPrice)) {
+    const collateralTokens = tokens.filter(token => token.collateral);
+    const sumReserveLiquidationThreshold = collateralTokens?.reduce((pre, cur) => pre.add(cur.borrowPrice ? (cur.supplyPrice ?? Zero).mul(cur.reserveLiquidationThreshold ?? Zero).div(TenThousand) : Zero), Zero);
+    const maxAvailableBorrowPrice = sumReserveLiquidationThreshold.div(Unit.fromMinUnit(1.3));
+    const totalCurUserBorrowPrice = tokens.reduce((pre, cur) => pre.add(cur.borrowPrice ?? Zero), Zero);
+    tokens.forEach((token) => {
+      token.availableBorrowBalance = maxAvailableBorrowPrice.sub(totalCurUserBorrowPrice).div(token.usdPrice!);
+    });
+    tokensStore.setState({ borrowPowerUsed: totalCurUserBorrowPrice.div(maxAvailableBorrowPrice).mul(Hundred).toDecimalMinUnit(2) })
+  }
+
   tokensStore.setState({ tokens });
 }, 10);
 
@@ -300,19 +333,29 @@ tokensStore.subscribe((state) => state.tokensPrice, aggregateData, { fireImmedia
 
 const selectors = {
   tokens: (state: TokensStore) => state.tokens,
+  curUserSupplyPrice: (state: TokensStore) => state.curUserSupplyPrice,
+  curUserSupplyAPY: (state: TokensStore) => state.curUserSupplyAPY,
+  curUserBorrowPrice: (state: TokensStore) => state.curUserBorrowPrice,
+  curUserBorrowAPY: (state: TokensStore) => state.curUserBorrowAPY,
+  borrowPowerUsed: (state: TokensStore) => state.borrowPowerUsed,
 };
 
 export const useTokens = () => tokensStore(selectors.tokens);
+export const useCurUserSupplyPrice = () => tokensStore(selectors.curUserSupplyPrice);
+export const useCurUserSupplyAPY = () => tokensStore(selectors.curUserSupplyAPY);
+export const useCurUserBorrowPrice = () => tokensStore(selectors.curUserBorrowPrice);
+export const useCurUserBorrowAPY = () => tokensStore(selectors.curUserBorrowAPY);
+export const useBorrowPowerUsed = () => tokensStore(selectors.borrowPowerUsed);
 
 
 
 
-
-const DECIMAL = Unit.fromMinUnit(10 ** 18);
-const RAY = Unit.fromMinUnit(10 ** 27);
-const SECONDS_PER_YEAR = Unit.fromMinUnit(31536000);
-const ONE = Unit.fromMinUnit(1);
-const HUNDRED = Unit.fromMinUnit(100);
+const Decimal = Unit.fromMinUnit(10 ** 18);
+const Ray = Unit.fromMinUnit(10 ** 27);
+const SecondsPerYear = Unit.fromMinUnit(31536000);
+const One = Unit.fromMinUnit(1);
+const Hundred = Unit.fromMinUnit(100);
+const TenThousand = Unit.fromMinUnit(10000);
 
 const convertOriginTokenData = (originData: any) => {
   const res = {
@@ -322,7 +365,7 @@ const convertOriginTokenData = (originData: any) => {
     decimals: Number(originData.decimals._hex),
     supplyTokenAddress: originData.aTokenAddress,
     borrowTokenAddress: originData.variableDebtTokenAddress,
-    usdPrice: Unit.fromMinUnit(originData.priceInEth._hex).div(DECIMAL),
+    usdPrice: Unit.fromMinUnit(originData.priceInEth._hex).div(Decimal),
     availableLiquidity: Unit.fromMinUnit(originData.availableLiquidity._hex),
     canBecollateral: originData.borrowingEnabled,
     reserveLiquidationThreshold: Unit.fromMinUnit(originData.reserveLiquidationThreshold._hex),
@@ -330,12 +373,12 @@ const convertOriginTokenData = (originData: any) => {
     maxLTV: Number(originData.baseLTVasCollateral._hex) / 100
   } as TokenData;
   const liquidityRate = Unit.fromMinUnit(originData.liquidityRate._hex);
-  const supplyAPR = liquidityRate.div(RAY);
-  const supplyAPY = ONE.add(supplyAPR.div(SECONDS_PER_YEAR)).pow(SECONDS_PER_YEAR).sub(ONE);
+  const supplyAPR = liquidityRate.div(Ray);
+  const supplyAPY = One.add(supplyAPR.div(SecondsPerYear)).pow(SecondsPerYear).sub(One);
   res.supplyAPY = supplyAPY;
   const variableBorrowRate = Unit.fromMinUnit(originData.variableBorrowRate._hex);
-  const borrowARR = variableBorrowRate.div(RAY);
-  const borrowAPY = ONE.add(borrowARR.div(SECONDS_PER_YEAR)).pow(SECONDS_PER_YEAR).sub(ONE);
+  const borrowARR = variableBorrowRate.div(Ray);
+  const borrowAPY = One.add(borrowARR.div(SecondsPerYear)).pow(SecondsPerYear).sub(One);
   res.borrowAPY = borrowAPY;
   return res;
 };

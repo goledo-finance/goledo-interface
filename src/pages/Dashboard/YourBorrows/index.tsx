@@ -1,23 +1,25 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { useTokens } from '@store/index';
-import { useUserBorrowTokens, useUserTotalBorrowPrice, useUserTotalBorrowAPY } from '@hooks/index';
+import { useTokens, useCurUserBorrowPrice, useCurUserBorrowAPY, useBorrowPowerUsed } from '@store/index';
+import { useCurUserBorrowTokens } from '@hooks/index';
 
 const PointZeroOne = Unit.fromMinUnit(0.01);
 const Hundred = Unit.fromMinUnit(100);
 
 const YourBorrows: React.FC = () => {
   const tokens = useTokens();
-  const borrowTokens = useUserBorrowTokens(tokens);
-  const totalBorrowPrice = useUserTotalBorrowPrice(borrowTokens);
-  const totalBorrowAPY = useUserTotalBorrowAPY(borrowTokens, totalBorrowPrice);
+  const borrowTokens = useCurUserBorrowTokens(tokens);
+  const curUserBorrowPrice = useCurUserBorrowPrice();
+  const curUserBorrowAPY = useCurUserBorrowAPY();
+  const borrowPowerUsed = useBorrowPowerUsed();
 
   return (
     <div>
       <h3>YourBorrows</h3>
       <div className="mb-12px flex gap-12px">
-        <span>totalPrice: {totalBorrowPrice?.toDecimalStandardUnit(2)}$</span>
-        <span>totalAPY: {totalBorrowAPY?.mul(Hundred).toDecimalMinUnit(2)}%</span>
+        <span>totalPrice: {curUserBorrowPrice?.toDecimalStandardUnit(2)}$</span>
+        <span>totalAPY: {curUserBorrowAPY?.mul(Hundred).toDecimalMinUnit(2)}%</span>
+        <span>Borrow power used: {borrowPowerUsed ? `${borrowPowerUsed}%` : '--'}</span>
       </div>
 
       <div>

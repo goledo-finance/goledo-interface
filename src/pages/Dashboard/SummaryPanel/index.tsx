@@ -1,48 +1,48 @@
 import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { useTokens } from '@store/index';
-import { useUserSupplyTokens, useUserTotalSupplyPrice, useUserTotalSupplyAPY, useUserBorrowTokens, useUserTotalBorrowPrice, useUserTotalBorrowAPY } from '@hooks/index';
+import { useTokens, useCurUserSupplyPrice, useCurUserSupplyAPY, useCurUserBorrowPrice, useCurUserBorrowAPY } from '@store/index';
+import { useCurUserSupplyTokens } from '@hooks/index';
 
 const Zero = Unit.fromMinUnit(0);
 const Hundred = Unit.fromMinUnit(100);
+const TenThousand = Unit.fromMinUnit(10000);
 
 const SummaryPanel: React.FC = () => {
   const tokens = useTokens();
-  const supplyTokens = useUserSupplyTokens(tokens);
-  const totalSupplyPrice = useUserTotalSupplyPrice(supplyTokens);
-  const totalSupplyAPY = useUserTotalSupplyAPY(supplyTokens, totalSupplyPrice);
-  const borrowTokens = useUserBorrowTokens(tokens);
-  const totalBorrowPrice = useUserTotalBorrowPrice(borrowTokens);
-  const totalBorrowAPY = useUserTotalBorrowAPY(borrowTokens, totalBorrowPrice);
+  const supplyTokens = useCurUserSupplyTokens(tokens);
+  const curUserSupplyPrice = useCurUserSupplyPrice();
+  const curUserSupplyAPY = useCurUserSupplyAPY();
+  const curUserBorrowPrice = useCurUserBorrowPrice();
+  const curUserBorrowAPY = useCurUserBorrowAPY();
 
   const NetWorth = useMemo(
-    () => (totalSupplyPrice && totalBorrowPrice ? totalSupplyPrice.sub(totalBorrowPrice) : undefined),
-    [totalSupplyPrice, totalBorrowPrice]
+    () => (curUserSupplyPrice && curUserBorrowPrice ? curUserSupplyPrice.sub(curUserBorrowPrice) : undefined),
+    [curUserSupplyPrice, curUserBorrowPrice]
   );
 
   const NetAPY = useMemo(
     () =>
-      totalSupplyPrice && totalSupplyAPY && totalBorrowPrice && totalBorrowAPY
-        ? totalSupplyPrice.mul(totalSupplyAPY).sub(totalBorrowPrice.mul(totalBorrowAPY)).div(totalSupplyPrice.sub(totalBorrowPrice))
+      curUserSupplyPrice && curUserSupplyAPY && curUserBorrowPrice && curUserBorrowAPY
+        ? curUserSupplyPrice.mul(curUserSupplyAPY).sub(curUserBorrowPrice.mul(curUserBorrowAPY)).div(curUserSupplyPrice.sub(curUserBorrowPrice))
         : undefined,
-    [totalSupplyPrice, totalSupplyAPY, totalBorrowPrice, totalBorrowAPY]
+    [curUserSupplyPrice, curUserSupplyAPY, curUserBorrowPrice, curUserBorrowAPY]
   );
 
   const collateralTokens = useMemo(() => supplyTokens?.filter(token => token.collateral), [supplyTokens]);
-  const cp = useMemo(
-    () => collateralTokens?.reduce((pre, cur) => pre.add(cur.borrowPrice ? (cur.supplyPrice ?? Zero).mul(cur.reserveLiquidationThreshold ?? Zero).div(cur.borrowPrice) : Zero), Zero),
+  const sumReserveLiquidationThreshold = useMemo(
+    () => collateralTokens?.reduce((pre, cur) => pre.add(cur.borrowPrice ? (cur.supplyPrice ?? Zero).mul(cur.reserveLiquidationThreshold ?? Zero).div(TenThousand) : Zero), Zero),
     [collateralTokens]
   );
   const healthFactor = useMemo(
-    () => totalBorrowPrice && cp ? cp?.div(totalBorrowPrice) : undefined,
-    [cp, totalBorrowPrice]
+    () => curUserBorrowPrice && sumReserveLiquidationThreshold ? sumReserveLiquidationThreshold?.div(curUserBorrowPrice) : undefined,
+    [sumReserveLiquidationThreshold, curUserBorrowPrice]
   );
 
   return (
     <div className="mb-12px flex gap-12px">
       <b>Net worth$: {NetWorth?.toDecimalStandardUnit(2)}</b>
-      <b>totalAPY: {NetAPY?.mul(Hundred).toDecimalMinUnit(2)}%</b>
-      <b>Health Factor: {cp?.toDecimalMinUnit()}</b>
+      <b>Net APY: {NetAPY?.mul(Hundred).toDecimalMinUnit(2)}%</b>
+      <b>Health Factor: {healthFactor?.toDecimalMinUnit(2)}</b>
     </div>
   );
 };

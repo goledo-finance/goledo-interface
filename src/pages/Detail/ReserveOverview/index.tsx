@@ -10,10 +10,10 @@ const ReserveOverview: React.FC<Token> = ({
     usdPrice,
     supplyAPY,
     borrowAPY,
-    totalSupplyBalance,
-    totalSupplyPrice,
-    totalBorrowBalance,
-    totalBorrowPrice,
+    totalMarketSupplyBalance,
+    totalMarketSupplyPrice,
+    totalMarketBorrowBalance,
+    totalMarketBorrowPrice,
     availableBalance,
     availablePrice,
     maxLTV,
@@ -28,8 +28,8 @@ const ReserveOverview: React.FC<Token> = ({
       <div className='flex gap-20px'>
         <span>Total Borrowed</span>
         <span>
-          {totalBorrowBalance?.toDecimalStandardUnit(2) ?? '--'}
-          (${totalBorrowPrice?.toDecimalStandardUnit(2) ?? '--'})
+          {totalMarketBorrowBalance?.toDecimalStandardUnit(2) ?? '--'}
+          (${totalMarketBorrowPrice?.toDecimalStandardUnit(2) ?? '--'})
         </span>
       </div>
 
