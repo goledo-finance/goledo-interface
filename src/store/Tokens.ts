@@ -133,7 +133,7 @@ ethereumStore.subscribe(
     }
 
     unsub = intervalFetchChain(() => UiPoolDataContract.getReservesData(import.meta.env.VITE_LendingPoolAddressesProviderAddress, account), {
-      intervalTime: 1000,
+      intervalTime: 5000,
       equalKey: 'UiPoolData',
       callback: (result: any) => {
         const tokensPoolDataArr: Array<TokenData> = result[0]?.map(convertOriginTokenData);
@@ -206,7 +206,7 @@ const calcUserBalance = debounce(() => {
     .concat(getTotalBrrowBalancePromises);
 
   unsubBalance = intervalFetchChain(() => MulticallContract.callStatic.aggregate(promises), {
-    intervalTime: 1000,
+    intervalTime: 5000,
     equalKey: 'tokensBalance',
     callback: (result: { returnData: Array<string> }) => {
       const tokensBalance: TokensStore['tokensBalance'] = Object.fromEntries(tokens.map((token) => [token.address, {}]));
