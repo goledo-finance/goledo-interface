@@ -8,7 +8,7 @@ import AssetsToBorrow from './AssetsToBorrow';
 
 const DashBoard: React.FC = () => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col px-96px">
       <SummaryPanel />
       <Rewards />
       <YourSupplies />

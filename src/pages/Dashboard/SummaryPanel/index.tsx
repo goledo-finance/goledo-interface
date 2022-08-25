@@ -13,7 +13,7 @@ const SummaryPanelItem: React.FC<{ iconName: string; title: string; children: Re
   return (
     <div className="flex items-center">
       <div className="h-42px w-42px bg-#393D4F border border-#787A82 rounded-12px mr-3 flex items-center justify-center">
-        <span className={cx('text-32px text-#A6A8B5', iconName)} />
+        <span className={cx('text-24px text-#A6A8B5', iconName)} />
       </div>
       <span className="flex flex-col text-#160042">
         <span>{title}</span>
@@ -59,7 +59,7 @@ const SummaryPanel: React.FC = () => {
   );
 
   return (
-    <div className="px-100px py-16px flex items-center justify-between">
+    <div className="pt-40px pb-30px flex items-center justify-between">
       <PageHeader />
       <div className="flex gap-64px">
         <SummaryPanelItem iconName="i-iconoir:wallet" title="Net worth">
@@ -68,7 +68,7 @@ const SummaryPanel: React.FC = () => {
         <SummaryPanelItem iconName="i-tabler:chart-bar" title="Net APY">
           <span className={styles.text}>{NetAPY?.mul(Hundred).toDecimalMinUnit(2)}%</span>
         </SummaryPanelItem>
-        <SummaryPanelItem iconName="i-cil:heart" title="Health Factor">
+        <SummaryPanelItem iconName="i-codicon:heart" title="Health Factor">
           <div className="mt-2px flex items-center">
             <span className="text-#67AD5B">${NetWorth?.toDecimalStandardUnit(2)}</span>
             <button className="text-#67AD5B border border-#67AD5B/50 hover:border-#67AD5B flex items-center h-20px box-content px-2 ml-2 rounded bg-transparent text-12px leading-16px">
