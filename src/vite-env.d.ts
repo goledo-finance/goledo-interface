@@ -33,6 +33,8 @@ interface ImportMetaEnv {
   readonly VITE_MultiFeeDistributionAddress: string;
   readonly VITE_GoledoTokenAddress: string;
   readonly VITE_ChefIncentivesControllerContractAddress: string;
+  readonly VITE_MasterChefAddress: string;
+  readonly VITE_SwappiPairAddress: string;
 }
 
 interface ImportMeta {

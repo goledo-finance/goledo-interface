@@ -10,7 +10,16 @@ export default defineConfig({
   plugins: [
     Unocss({
       transformers: [transformerDirective()],
-      presets: [presetIcons({}), presetWind()],
+      presets: [
+        presetWind(),
+        presetIcons({
+          prefix: 'i-',
+          extraProperties: {
+            display: 'inline-block',
+            'vertical-align': 'middle',
+          },
+        }),
+      ],
     }),
     react(),
   ],

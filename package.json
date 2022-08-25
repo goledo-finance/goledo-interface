@@ -23,6 +23,7 @@
     "zustand": "^4.1.0"
   },
   "devDependencies": {
+    "@iconify/json": "^2.1.97",
     "@types/lodash-es": "^4.17.6",
     "@types/node": "^18.7.6",
     "@types/react": "^18.0.17",
