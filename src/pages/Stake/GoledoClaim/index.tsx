@@ -5,7 +5,7 @@ const GoledoClaim: React.FC = () => {
   const stakedBalance = useGoledoStakedBalance();
   const vestingBalance = useGoledoVestingBalance();
   const withdrawableBalance = useGoledoWithdrawableBalance();
-  const goledoUnlockedableBalance = useGoledoUnlockedableBalance();
+  const unlockedableBalance = useGoledoUnlockedableBalance();
 
   return (
     <div>
@@ -58,7 +58,7 @@ const GoledoClaim: React.FC = () => {
             </p>
           </div>
 
-          <span>{goledoUnlockedableBalance?.toDecimalStandardUnit(2)} Goledo</span>
+          <span>{unlockedableBalance?.toDecimalStandardUnit(2)} Goledo</span>
           <button>Withdraw</button>
         </div>
       </div>
