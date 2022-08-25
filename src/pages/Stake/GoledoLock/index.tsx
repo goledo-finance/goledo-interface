@@ -6,7 +6,7 @@ const GoledoLocks: React.FC = () => {
   
   return (
     <div>
-      <p>Goledo Vest</p>
+      <p>Goledo Lock</p>
       {lockeds?.map(({ unlockTime, balance }) =>
         <div className='flex gap-40px' key={unlockTime}>
           <span>{balance.toDecimalStandardUnit(2)} Goledo</span>
