@@ -6,7 +6,7 @@ import cx from 'clsx';
 
 const NaveItem: React.FC<{ to: string; children: React.ReactElement<any> | string }> = ({ to, children }) => {
   const location = useLocation();
-  console.log(location?.pathname, to);
+
   return (
     <li className="flex items-center relative">
       <Link
