@@ -1,0 +1,3 @@
+.text {
+  @apply font-bold inline-block mt-1 text-20px leading-24px;
+}

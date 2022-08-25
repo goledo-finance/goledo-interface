@@ -14,13 +14,15 @@ const AppRouter: React.FC = () => {
       <CustomScrollbar>
         <ErrorBoundary>
           <Navbar />
-          <Routes>
-            <Route index element={<DashBoardPage />} />
-            <Route key="dashboard" path="dashboard" element={<DashBoardPage />} />
-            <Route key="markets" path="markets" element={<MarketsPage />} />
-            <Route key="detail" path="detail/:tokenAddress" element={<DetailPage />} />
-            <Route key="stake" path="stake" element={<StakePage />} />
-          </Routes>
+          <div className="absolute top-60px w-full">
+            <Routes>
+              <Route index element={<DashBoardPage />} />
+              <Route key="dashboard" path="dashboard" element={<DashBoardPage />} />
+              <Route key="markets" path="markets" element={<MarketsPage />} />
+              <Route key="detail" path="detail/:tokenAddress" element={<DetailPage />} />
+              <Route key="stake" path="stake" element={<StakePage />} />
+            </Routes>
+          </div>
         </ErrorBoundary>
       </CustomScrollbar>
     </Router>

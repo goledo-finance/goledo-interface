@@ -2,6 +2,8 @@ html {
     font-family: 'Inter';
     font-display: swap;
     scroll-behavior: smooth;
+    font-size: 14px;
+    line-height: 18px;
 }
 
 @font-face {
@@ -18,6 +20,20 @@ html {
     font-style: normal;
     font-weight: 700;
     font-display: auto;
+}
+
+@font-face {
+  font-family: 'MuseoModerno';
+  src: url('./assets/fonts/MuseoModerno-SemiBold.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: 'MuseoModerno';
+  src: url('./assets/fonts/MuseoModerno-ExtraBold.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 800;
 }
 
 :root {
