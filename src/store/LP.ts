@@ -5,9 +5,11 @@ import { intervalFetchChain } from '@utils/fetchChain';
 import { MasterChefContract, SwappiPaiContract, MulticallContract } from '@utils/contracts';
 import { debounce } from 'lodash-es';
 import { tokensStore } from './Tokens';
+import { goledoStore } from './Goledo';
 
 const OneDaySeconds = Unit.fromMinUnit(86400);
 const OneWeekSeconds = Unit.fromMinUnit(604800);
+const OneYearSeconds = Unit.fromMinUnit(31536000);
 
 interface LPStore {
   stakeAPR?: Unit;
@@ -103,12 +105,36 @@ const calcLPUsdPrice = debounce(() => {
     return;
   }
 
-  lpStore.setState({ usdPrice: reserve0.mul(Unit.fromMinUnit(2)).mul(cfxUsdPrice).div(totalSupply) });
+  const usdPrice = reserve0.mul(Unit.fromMinUnit(2)).mul(cfxUsdPrice).div(totalSupply);
+  const { stakedBalance, totalMarketStakedBalance, pendingRewardsBalance, totalRewardsPerDayBalance, totalRewardsPerWeekBalance } = lpStore.getState();
+  lpStore.setState({
+    usdPrice,
+    stakedPrice: usdPrice.mul(stakedBalance!),
+    totalMarketStakedPrice: usdPrice.mul(totalMarketStakedBalance!),
+    pendingRewardsPrice: usdPrice.mul(pendingRewardsBalance!),
+    totalRewardsPerDayPrice: usdPrice.mul(totalRewardsPerDayBalance!),
+    totalRewardsPerWeekPrice: usdPrice.mul(totalRewardsPerWeekBalance!),
+  });
 }, 50);
 lpStore.subscribe((state) => state.reserve0, calcLPUsdPrice, { fireImmediately: true });
 tokensStore.subscribe((state) => state.cfxUsdPrice, calcLPUsdPrice, { fireImmediately: true });
 
 
+
+const calcStakeAPR = debounce(() => {
+  const { rewardsPerSecond, totalMarketStakedBalance, usdPrice } = lpStore.getState();
+  const { usdPrice: goledoUsdPrice } = goledoStore.getState();
+
+  if (!rewardsPerSecond || !totalMarketStakedBalance || !usdPrice || !goledoUsdPrice) {
+    lpStore.setState({ stakeAPR: undefined });
+    return;
+  }
+
+  const stakeAPR = rewardsPerSecond.mul(OneYearSeconds).mul(goledoUsdPrice).div(totalMarketStakedBalance.mul(usdPrice));
+  lpStore.setState({ stakeAPR });
+}, 50);
+lpStore.subscribe((state) => state.usdPrice, calcStakeAPR, { fireImmediately: true });
+goledoStore.subscribe((state) => state.usdPrice, calcStakeAPR, { fireImmediately: true });
 
 
 

@@ -1,5 +1,6 @@
 import { Contract, providers } from 'ethers';
 import UiPoolDataProvider from './abis/UiPoolDataProvider.json';
+import LendingPool from './abis/LendingPool.json';
 import LendingPoolAddressesProvider from './abis/LendingPoolAddressesProvider.json';
 import ERC20ABI from './abis/ERC20.json';
 import Multicall from './abis/Multicall.json';
@@ -12,6 +13,7 @@ import GoledoToken from './abis/GoledoToken.json';
 const HttpProvider = new providers.JsonRpcProvider(import.meta.env.VITE_ESpaceRpcUrl);
 
 export const UiPoolDataContract = new Contract(import.meta.env.VITE_UiPoolDataProviderAddress, UiPoolDataProvider.abi, HttpProvider);
+export const LendingPoolContract = new Contract(import.meta.env.VITE_LendingPoolAddress, LendingPool.abi, HttpProvider);
 export const LendingPoolAddressesContract = new Contract(import.meta.env.VITE_LendingPoolAddressesProviderAddress, LendingPoolAddressesProvider.abi, HttpProvider);
 export const MulticallContract = new Contract(import.meta.env.VITE_MulticallContract, Multicall.abi, HttpProvider);
 export const MultiFeeDistributionContract = new Contract(import.meta.env.VITE_MultiFeeDistributionAddress, MultiFeeDistribution.abi, HttpProvider);

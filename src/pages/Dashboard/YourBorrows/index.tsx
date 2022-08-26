@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import styles from '../index.module.css';
-import { useTokens, useCurUserBorrowPrice, useCurUserBorrowAPY, useBorrowPowerUsed } from '@store/index';
+import { useTokens, useCurUserBorrowPrice, useCurUserBorrowAPY, useUserData } from '@store/index';
 
 const Zero = Unit.fromMinUnit(0);
 const PointZeroOne = Unit.fromMinUnit(0.01);
@@ -12,7 +12,7 @@ const YourBorrows: React.FC = () => {
   const curUserBorrowTokens = useMemo(() => tokens?.filter((token) => token.borrowBalance?.greaterThan(Zero)), [tokens]);
   const curUserBorrowPrice = useCurUserBorrowPrice();
   const curUserBorrowAPY = useCurUserBorrowAPY();
-  const borrowPowerUsed = useBorrowPowerUsed();
+  const userData = useUserData();
 
   return (
     <div className={styles.table}>
@@ -24,7 +24,7 @@ const YourBorrows: React.FC = () => {
         <div className={styles.gap}>
           <span className={styles.data}>{`balance $${curUserBorrowPrice?.toDecimalStandardUnit(2)}`}</span>
           <span className={styles.data}>{`APY ${curUserBorrowAPY?.mul(Hundred).toDecimalMinUnit(2)}%`}</span>
-          <span className={styles.data}>{`Borrow power used ${borrowPowerUsed ? `${borrowPowerUsed}%` : '--'}`}</span>
+          <span className={styles.data}>{`Borrow power used ${userData?.borrowPowerUsed ? `${userData?.borrowPowerUsed}%` : '--'}`}</span>
         </div>
       </div>
       <div>

@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@cfxjs/use-wallet-enhance-react": "0.0.1-13",
     "@cfxjs/use-wallet-react": "0.0.1-27",
     "clsx": "^1.2.1",
     "custom-react-scrollbar": "^0.0.2",

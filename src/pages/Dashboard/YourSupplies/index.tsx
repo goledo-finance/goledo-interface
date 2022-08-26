@@ -19,7 +19,7 @@ const YourSupplies: React.FC = () => {
         : curUserSupplyTokens.filter((token) => token.collateral).reduce((pre, cur) => pre.add(cur.supplyPrice ?? Zero), Zero),
     [curUserSupplyTokens]
   );
-
+  
   return (
     <div className={styles.table}>
       <div className={styles.title}>
