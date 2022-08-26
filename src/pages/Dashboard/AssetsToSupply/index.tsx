@@ -4,7 +4,7 @@ import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useMedia } from 'react-use';
 import { useTokens, TokenInfo } from '@store/index';
 import tokensIcon from '@assets/tokens';
-import styles from '../index.module.css';
+import styles from '../../index.module.css';
 
 const PointZeroOne = Unit.fromMinUnit(0.01);
 const Hundred = Unit.fromMinUnit(100);

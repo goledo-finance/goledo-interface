@@ -1,6 +1,5 @@
 import React from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import styles from '../../index.module.css';
 import {
   useGoledoEarnedBalance,
   useGoledoStakedBalance,
@@ -12,6 +11,7 @@ import {
   useGoledoLockAPR,
 } from '@store/index';
 import tokensIcon from '@assets/tokens';
+import styles from '../../index.module.css';
 
 const Hundred = Unit.fromMinUnit(100);
 

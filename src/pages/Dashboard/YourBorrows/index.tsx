@@ -3,7 +3,7 @@ import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useMedia } from 'react-use';
 import { useTokens, TokenInfo, useCurUserBorrowPrice, useCurUserBorrowAPY, useUserData } from '@store/index';
 import tokensIcon from '@assets/tokens';
-import styles from '../index.module.css';
+import styles from '../../index.module.css';
 
 const Zero = Unit.fromMinUnit(0);
 const PointZeroOne = Unit.fromMinUnit(0.01);
