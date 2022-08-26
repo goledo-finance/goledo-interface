@@ -3,23 +3,22 @@ import { provider as metaMaskProvider, completeDetect as completeDetectEthereum 
 
 export let isMetaMaskHostedByFluent = false;
 completeDetectEthereum().then(() => {
-    if (metaMaskProvider?.isFluent) {
-        isMetaMaskHostedByFluent = true;
-    }
+  if (metaMaskProvider?.isFluent) {
+    isMetaMaskHostedByFluent = true;
+  }
 });
 
 export const useIsMetaMaskHostedByFluent = () => {
-    const [_isMetaMaskHostedByFluent, setIsMetaMaskHostedByFluent] = useState(isMetaMaskHostedByFluent);
+  const [_isMetaMaskHostedByFluent, setIsMetaMaskHostedByFluent] = useState(isMetaMaskHostedByFluent);
 
-    useEffect(() => {
-        if (isMetaMaskHostedByFluent) return;
-        completeDetectEthereum().then(() => {
-            if (metaMaskProvider?.isFluent) {
-                setIsMetaMaskHostedByFluent(true);
-            }
-        });
-    }, []);
+  useEffect(() => {
+    if (isMetaMaskHostedByFluent) return;
+    completeDetectEthereum().then(() => {
+      if (metaMaskProvider?.isFluent) {
+        setIsMetaMaskHostedByFluent(true);
+      }
+    });
+  }, []);
 
-    return _isMetaMaskHostedByFluent;
-}
-
+  return _isMetaMaskHostedByFluent;
+};

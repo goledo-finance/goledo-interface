@@ -241,7 +241,6 @@ button.fui-button--text.is-disabled {
   @apply border-[1px] bg-white text-[#A9ABB2] border-transparent hover:bg-white hover:text-[#808BE7] hover:border-[#808BE7];
 }
 
-
 /** loading **/
 .is-loading > .fui-button__content,
 .is-loading > .fui-button__icon {
@@ -251,7 +250,6 @@ button.fui-button--text.is-disabled {
 .fui-button__loading {
   @apply absolute left-[50%] top-[50%] -translate-x-[50%] -translate-y-[50%] text-[1.6em];
 }
-
 
 /** start end icon **/
 .fui-button__icon + .fui-button__content {
@@ -269,7 +267,6 @@ button.fui-button--text.is-disabled {
 .fui-button__icon > svg {
   @apply w-[1.6em] h-[1.6em];
 }
-
 
 /** click effect **/
 .fui-button::after {
@@ -297,5 +294,5 @@ button.fui-button--text.is-disabled {
 }
 
 .fui-button--contained.fui-button--green::after {
-  box-shadow: 0 0 0 6px #44D7B6;
+  box-shadow: 0 0 0 6px #44d7b6;
 }
