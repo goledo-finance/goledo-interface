@@ -24,13 +24,13 @@ const YourSupplies: React.FC = () => {
     <div className={styles.table}>
       <div className={styles.title}>
         <span>Your Supplies</span>
-        <div className={styles.hider}>Hide</div>
+        <div>Hide</div>
       </div>
       <div className={styles.subheader}>
         <div className={styles.gap}>
           <span className={styles.data}>{`balance $${curUserSupplyPrice?.toDecimalStandardUnit(2)}`}</span>
-          <span className={styles.data}>{`totalAPY ${curUserSupplyAPY?.mul(Hundred).toDecimalMinUnit(2)}%`}</span>
-          <span className={styles.data}>{`totalCollateralPrice $${totalCollateralPrice?.toDecimalStandardUnit(2)}`}</span>
+          <span className={styles.data}>{`APY ${curUserSupplyAPY?.mul(Hundred).toDecimalMinUnit(2)}%`}</span>
+          <span className={styles.data}>{`Collateral $${totalCollateralPrice?.toDecimalStandardUnit(2)}`}</span>
         </div>
       </div>
       <div className={styles.container}>

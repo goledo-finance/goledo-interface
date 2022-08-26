@@ -7,16 +7,17 @@ import { useTokens } from '@store/index';
 
 const PointZeroOne = Unit.fromMinUnit(0.01);
 const Hundred = Unit.fromMinUnit(100);
-const isWide = useMedia('(min-width: 640px)');
+
 
 const AssetsToSupply: React.FC = () => {
   const tokens = useTokens();
+  const isWide = useMedia('(min-width: 640px)');
 
   return (
     <div className={styles.table}>
       <div className={styles.title}>
         <span>Assets to Supply</span>
-        <div className={styles.hider}>Hide</div>
+        <div>Hide</div>
       </div>
       <div className={styles.subheader}>
         Show assets with 0 balance
