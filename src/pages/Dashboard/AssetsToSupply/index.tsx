@@ -61,7 +61,7 @@ const AssetsToSupply: React.FC = () => {
       ) : (
         <>
           {tokens?.map((token) => (
-            <div className={styles.container}>
+            <div className={styles.container} key={token.address}>
               <div className={styles.header}>
                 <div className={styles.item}>Assets</div>
                 <div className={styles.item}>Balance</div>
@@ -69,7 +69,7 @@ const AssetsToSupply: React.FC = () => {
                 <div className={styles.item}>Can be collateral</div>
                 <div className={styles.item}></div>
               </div>
-              <div className={styles.content} key={token.address}>
+              <div className={styles.content}>
                 <div className={styles.item}>
                   <div className={styles.icon}>
                     <img src={`src/assets/icons/tokens/${token.symbol.toLowerCase()}.svg`} alt="goledo" className="w-8 h-8 mr-3" />
