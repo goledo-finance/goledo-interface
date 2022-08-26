@@ -5,6 +5,7 @@ import Unocss from 'unocss/vite';
 import presetIcons from '@unocss/preset-icons';
 import presetWind from '@unocss/preset-wind';
 import transformerDirective from '@unocss/transformer-directives';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
   plugins: [
@@ -35,4 +36,9 @@ export default defineConfig({
       '@components': path.resolve(__dirname, 'src/components'),
     },
   },
+  build: {
+    rollupOptions: {
+      plugins: [visualizer()],
+    },
+},
 });

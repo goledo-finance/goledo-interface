@@ -3,7 +3,7 @@
 }
 
 .header::after {
-  @apply content-none w-;
+  @apply content-none;
 }
 
 .nav {

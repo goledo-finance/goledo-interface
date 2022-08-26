@@ -41,3 +41,6 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+type OverWrite<T, U> = Omit<T, keyof U> & U;
+type PartialOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;

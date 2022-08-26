@@ -3,6 +3,7 @@ import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import cx from 'clsx';
 import PageHeader from '@modules/PageHeader';
 import { useCurUserSupplyPrice, useCurUserSupplyAPY, useCurUserBorrowPrice, useCurUserBorrowAPY, useUserData } from '@store/index';
+import styles from './index.module.css';
 
 const Hundred = Unit.fromMinUnit(100);
 
