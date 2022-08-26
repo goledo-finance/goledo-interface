@@ -70,7 +70,7 @@ const SummaryPanel: React.FC = () => {
         </SummaryPanelItem>
         <SummaryPanelItem iconName="i-codicon:heart" title="Health Factor">
           <div className="mt-2px flex items-center">
-            <span className="text-#67AD5B">${NetWorth?.toDecimalStandardUnit(2)}</span>
+            <span className="text-#67AD5B">{healthFactor?.toDecimalMinUnit(2)}</span>
             <button className="text-#67AD5B border border-#67AD5B/50 hover:border-#67AD5B flex items-center h-20px box-content px-2 ml-2 rounded bg-transparent text-12px leading-16px">
               RISK DETAILS
             </button>

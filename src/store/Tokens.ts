@@ -71,6 +71,7 @@ interface TokenInfo {
 }
 
 interface TokensStore {
+  cfxUsdPrice?: Unit;
   tokensInPool?: Array<Token>;
 
   tokensData?: Record<string, TokenData>;
@@ -134,7 +135,6 @@ ethereumStore.subscribe(
 
     unsub = intervalFetchChain(() => UiPoolDataContract.getReservesData(import.meta.env.VITE_LendingPoolAddressesProviderAddress, account), {
       intervalTime: 5000,
-      equalKey: 'UiPoolData',
       callback: (result: any) => {
         const tokensPoolDataArr: Array<TokenData> = result[0]?.map(convertOriginTokenData);
         const tokensData: Record<string, TokenData> = Object.fromEntries(tokensPoolDataArr.map((tokenData: TokenData) => [tokenData.address, tokenData]));
@@ -330,6 +330,17 @@ tokensStore.subscribe((state) => state.tokensData, aggregateData, { fireImmediat
 tokensStore.subscribe((state) => state.tokensBalance, aggregateData, { fireImmediately: true });
 tokensStore.subscribe((state) => state.userTokensData, aggregateData, { fireImmediately: true });
 tokensStore.subscribe((state) => state.tokensPrice, aggregateData, { fireImmediately: true });
+
+
+
+tokensStore.subscribe((state) => state.tokens, (tokens) => {
+  const cfxUsdPrice = tokens?.find(token => token.symbol === 'CFX')?.usdPrice;
+  const prePrice = tokensStore.getState().cfxUsdPrice;
+  if (cfxUsdPrice && prePrice && cfxUsdPrice.equalsWith(prePrice)) return;
+  tokensStore.setState({ cfxUsdPrice });
+}, { fireImmediately: true });
+
+
 
 const selectors = {
   tokens: (state: TokensStore) => state.tokens,
