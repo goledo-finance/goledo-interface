@@ -28,7 +28,7 @@ const Rewards: React.FC = () => {
     <div className={styles.table}>
       <div className={styles.title}>
         <span>Rewards</span>
-        <div>Hide</div>
+        <div className={styles.hide}>Hide</div>
       </div>
       <div className={styles.container}>
         <div className={styles.header}>

@@ -76,7 +76,7 @@
 }
 
 button {
-  @apply flex-1 h-32px min-h-32px  border-0 bg-#160042 text-white rounded sm:w-auto sm:px-2;
+  @apply flex-1 h-32px min-h-32px  border-0 bg-#160042 text-white rounded sm:w-auto sm:px-2 cursor-pointer;
 }
 
 @media (min-width: 640px) {

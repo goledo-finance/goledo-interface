@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import styles from './index.module.css';
 import cx from 'clsx';
 import PageHeader from '@modules/PageHeader';
 import { useCurUserSupplyPrice, useCurUserSupplyAPY, useCurUserBorrowPrice, useCurUserBorrowAPY, useUserData } from '@store/index';
@@ -14,7 +13,7 @@ const SummaryPanelItem: React.FC<{ iconName: string; title: string; children: Re
         <span className={cx('text-24px text-#A6A8B5', iconName)} />
       </div>
       <span className="flex flex-col text-#160042">
-        <span>{title}</span>
+        <span className="inline-block mb-1 text-14px leading-18px">{title}</span>
         {children}
       </span>
     </div>
@@ -44,12 +43,12 @@ const SummaryPanel: React.FC = () => {
   return (
     <div className="pt-20px pb-10px xl:pt-36px xl:pb-24px flex flex-col xl:flex-row !items-start sm:items-center justify-between">
       <PageHeader />
-      <div className="flex gap-64px mt-2 xl:mt-0">
+      <div className="flex gap-64px mt-2 xl:mt-0 text-20px leading-24px">
         <SummaryPanelItem iconName="i-iconoir:wallet" title="Net worth">
-          <span className={styles.text}>${NetWorth?.toDecimalStandardUnit(2)}</span>
+          <span>${NetWorth?.toDecimalStandardUnit(2)}</span>
         </SummaryPanelItem>
         <SummaryPanelItem iconName="i-tabler:chart-bar" title="Net APY">
-          <span className={styles.text}>{NetAPY?.mul(Hundred).toDecimalMinUnit(2)}%</span>
+          <span>{NetAPY?.mul(Hundred).toDecimalMinUnit(2)}%</span>
         </SummaryPanelItem>
         <SummaryPanelItem iconName="i-codicon:heart" title="Health Factor">
           <div className="mt-2px flex items-center">
