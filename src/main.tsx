@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import Router from './router';
 import 'uno.css';
 import 'modern-css-reset/dist/reset.css';
+import 'custom-react-scrollbar/dist/style.css';
 import './index.css';
 import '@store/index';
 

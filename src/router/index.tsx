@@ -11,7 +11,7 @@ import StakePage from '@pages/Stake';
 const AppRouter: React.FC = () => {
   return (
     <Router>
-      <CustomScrollbar>
+      <CustomScrollbar className='main-scroller'>
         <ErrorBoundary>
           <Navbar />
           <div className="-mt-240px w-full pb-39px">

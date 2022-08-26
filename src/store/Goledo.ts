@@ -5,7 +5,6 @@ import { intervalFetchChain } from '@utils/fetchChain';
 import { MultiFeeDistributionContract, GoledoTokenContract, MulticallContract, ChefIncentivesControllerContract, SwappiPaiContract } from '@utils/contracts';
 import { debounce } from 'lodash-es';
 import { tokensStore } from './Tokens';
-console.log(MultiFeeDistributionContract);
 const OneYearSeconds = Unit.fromMinUnit(31536000);
 
 interface GoledoStore {
