@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useMedia } from 'react-use';
-import styles from '../index.module.css';
+import styles from '../../index.module.css';
 import { useTokens, TokenInfo } from '@store/index';
 
 const PointZeroOne = Unit.fromMinUnit(0.01);
@@ -52,7 +52,7 @@ const AssetsToSupply: React.FC = () => {
     <div className={styles.table}>
       <div className={styles.title}>
         <span>Assets to Supply</span>
-        <div>Hide</div>
+        <div className={styles.hide}>Hide</div>
       </div>
       <div className={styles.subheader}>
         Show assets with 0 balance

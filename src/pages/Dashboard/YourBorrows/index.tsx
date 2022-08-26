@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useMedia } from 'react-use';
-import styles from '../index.module.css';
+import styles from '../../index.module.css';
 import { useTokens, TokenInfo, useCurUserBorrowPrice, useCurUserBorrowAPY, useUserData } from '@store/index';
 
 const Zero = Unit.fromMinUnit(0);
@@ -53,7 +53,7 @@ const YourBorrows: React.FC = () => {
     <div className={styles.table}>
       <div className={styles.title}>
         <span>Your Borrows</span>
-        <div>Hide</div>
+        <div className={styles.hide}>Hide</div>
       </div>
       <div className={styles.subheader}>
         <div className={styles.gap}>
