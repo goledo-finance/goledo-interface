@@ -42,9 +42,9 @@ const SummaryPanel: React.FC = () => {
   );
 
   return (
-    <div className="pt-40px pb-30px flex items-center justify-between">
+    <div className="pt-20px pb-10px xl:pt-40px xl:pb-30px flex flex-col xl:flex-row !items-start sm:items-center justify-between">
       <PageHeader />
-      <div className="flex gap-64px">
+      <div className="flex gap-64px mt-2 xl:mt-0">
         <SummaryPanelItem iconName="i-iconoir:wallet" title="Net worth">
           <span className={styles.text}>${NetWorth?.toDecimalStandardUnit(2)}</span>
         </SummaryPanelItem>

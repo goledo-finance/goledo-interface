@@ -1,5 +1,5 @@
 .table {
-  @apply bg-#fff text-#160042 rounded-12px text-14px leading-18px relative sm:static;
+  @apply bg-#fff text-#160042 rounded-12px text-14px leading-18px relative sm:static flex-1;
   box-shadow: var(--card-shadow);
 }
 
@@ -32,7 +32,7 @@
 }
 
 .item {
-  @apply flex flex-col items-end sm:items-center justify-center flex-1 min-w-0 sm:min-w-70px overflow-hidden p-1 mb-2 sm:mb-0;
+  @apply flex flex-col items-end sm:items-center justify-center flex-1 min-w-0 sm:min-w-70px overflow-hidden p-1 mb-2 sm:mb-0 shrink-0;
 }
 
 .item > span {
@@ -57,31 +57,30 @@
 
 .header > div:first-child,
 .content > div:first-child {
-  @apply !justify-start max-w-160px inline;
+  @apply !justify-start max-w-160px inline min-h-40px sm:min-h-auto;
 }
 
 .header > div:last-child,
 .content > div:last-child {
-  @apply min-w-170px max-w-170px max-h-30px min-h-30px sm:max-h-auto sm:min-h-auto mb-0;
+  @apply min-w-170px max-w-170px max-h-30px min-h-30px mb-0;
 }
 
-.header >div, .content >div {
+.header > div,
+.content > div {
   @apply sm:min-h-auto;
 }
 
 .button {
-  @apply absolute inset-x-16px sm:static flex gap-12px;
+  @apply absolute inset-x-16px sm:static flex gap-8px lg:gap-12px;
   width: calc(100% - 32px);
 }
 
 button {
-  @apply flex-1 h-32px min-h-32px  border-0 bg-#160042 text-white rounded;
+  @apply flex-1 h-32px min-h-32px  border-0 bg-#160042 text-white rounded sm:w-auto sm:px-2;
 }
-
-
 
 @media (min-width: 640px) {
   .button {
-    @apply w-full
+    @apply w-full;
   }
 }

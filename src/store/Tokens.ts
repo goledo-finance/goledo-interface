@@ -42,7 +42,7 @@ interface UserTokenData {
   vTokenincentivesUserIndex: Unit;
 }
 
-interface TokenInfo {
+export interface TokenInfo {
   address: string;
   name: string;
   symbol: string;

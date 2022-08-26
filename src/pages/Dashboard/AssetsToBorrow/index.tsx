@@ -1,31 +1,74 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { useTokens } from '@store/index';
+import { useMedia } from 'react-use';
+import styles from '../index.module.css';
+import { useTokens, TokenInfo } from '@store/index';
 
 const PointZeroOne = Unit.fromMinUnit(0.01);
 const Hundred = Unit.fromMinUnit(100);
 
+const Content: React.FC<{ token: TokenInfo }> = ({ token }) => {
+  return (
+    <div className={styles.content}>
+      <div className={styles.item}>
+        <div className={styles.icon}>
+          <img src={`src/assets/icons/tokens/${token.symbol.toLowerCase()}.svg`} alt="goledo" className="w-8 h-8 mr-3" />
+          {token.symbol}
+        </div>
+      </div>
+      <div className={styles.item}>{token.availableBorrowBalance?.toDecimalStandardUnit(2, token.decimals)}</div>
+      <div className={styles.item}>{token.borrowAPY?.greaterThan(PointZeroOne) ? `${token.borrowAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}</div>
+      <div className={styles.item}>
+        <div className={styles.button}>
+          <button>Borrow</button>
+          <button>
+            <Link to={`/detail/${token.address}`} className="text-white no-underline">
+              Detail
+            </Link>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AssetsToBorrow: React.FC = () => {
   const tokens = useTokens();
+  const isWide = useMedia('(min-width: 640px)');
+
+  const Header = (
+    <div className={styles.header}>
+      <div className={styles.item}>Assets</div>
+      <div className={styles.item}>Available</div>
+      <div className={styles.item}>APY</div>
+      <div className={styles.item}></div>
+    </div>
+  );
 
   return (
-    <div>
-      <h3>AssetsToBorrow</h3>
-
-      <div>
-        {tokens?.map((token) => (
-          <div className="flex gap-12px" key={token.address}>
-            <span>{token.symbol}</span>
-            <span>Available: {token.availableBorrowBalance?.toDecimalStandardUnit(2, token.decimals)}</span>
-            <span>APY: {token.borrowAPY?.greaterThan(PointZeroOne) ? `${token.borrowAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}</span>
-            <button>Borrow</button>
-            <Link to={`/detail/${token.address}`}>
-              <button>Detail</button>
-            </Link>
-          </div>
-        ))}
+    <div className={styles.table}>
+      <div className={styles.title}>
+        <span>Assets to Borrow</span>
+        <div>Hide</div>
       </div>
+      {isWide ? (
+        <div className={styles.container}>
+          {Header}
+          {tokens?.map((token) => (
+            <Content token={token} key={token.address} />
+          ))}
+        </div>
+      ) : (
+        <>
+          {tokens?.map((token) => (
+            <div className={styles.container} key={token.address}>
+              {Header}
+              <Content token={token} />
+            </div>
+          ))}
+        </>
+      )}
     </div>
   );
 };
