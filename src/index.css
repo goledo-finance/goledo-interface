@@ -2,8 +2,6 @@ html {
     font-family: 'Inter';
     font-display: swap;
     scroll-behavior: smooth;
-    font-size: 14px;
-    line-height: 18px;
 }
 
 @font-face {

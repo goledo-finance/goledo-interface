@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
+import styles from '../index.module.css';
+import cx from 'clsx';
 import { useTokens, useCurUserBorrowPrice, useCurUserSupplyAPY } from '@store/index';
 
 const Zero = Unit.fromMinUnit(0);
@@ -17,8 +19,11 @@ const YourSupplies: React.FC = () => {
   );
 
   return (
-    <div>
-      <h3>Your Supplies</h3>
+    <div className={styles.table}>
+      <div className={styles.title}>
+        <span>Rewards</span>
+        <div className={styles.hider}>Hide</div>
+      </div>
       <div className="mb-12px flex gap-12px">
         <span>totalPrice: {curUserSupplyPrice?.toDecimalStandardUnit(2)}$</span>
         <span>totalAPY: {curUserSupplyAPY?.mul(Hundred).toDecimalMinUnit(2)}%</span>

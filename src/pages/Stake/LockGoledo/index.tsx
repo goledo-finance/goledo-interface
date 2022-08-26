@@ -1,11 +1,17 @@
 import React from 'react';
+import { Unit } from '@cfxjs/use-wallet-react/ethereum';
+import { useGoledoLockAPR } from '@store/index';
+
+const Hundred = Unit.fromMinUnit(100);
 
 const LockGoledo: React.FC = () => {
+  const lockAPR = useGoledoLockAPR();
+
   return (
     <div>
       <p className='flex'>
         <span className='mr-auto'>Lock Goledo</span>
-        <span>APR %</span>
+        <span>APR {lockAPR?.mul(Hundred).toDecimalStandardUnit(4)}%</span>
       </p>
 
       <p>Lock Goledo and earn platform fees and penalty fees in unlocked Goledo.</p>
