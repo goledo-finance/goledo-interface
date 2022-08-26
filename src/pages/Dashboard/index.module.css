@@ -1,36 +1,87 @@
 .table {
-  @apply bg-#fff text-#160042 rounded-12px text-14px leading-18px;
+  @apply bg-#fff text-#160042 rounded-12px text-14px leading-18px relative sm:static;
   box-shadow: var(--card-shadow);
 }
 
+.table > div > div:last-child {
+  @apply !border-0;
+}
+
 .title {
-  @apply py-14px px-16px sm:py-16px sm:px-24px flex items-center justify-between border-b-1px border-#EAEBEF sm:border-0;
+  @apply py-14px px-16px sm:py-16px sm:px-24px flex items-center justify-between;
 }
 
 .title > span {
-  @apply text-18px leading-22px font-bold;
+  @apply text-18px leading-22px font-semibold;
 }
 
 .hide {
   @apply text-#62677B cursor-pointer;
 }
 
+.container {
+  @apply flex flex-row justify-between px-4 pt-4 pb-6 sm:flex-col sm:px-4 sm:py-0 border-t-1px border-#EAEBEF sm:border-0;
+}
+
 .header {
-  @apply flex flex-col sm:flex-row items-start md:items-end p-1 sm:p-4 pb-1 sticky top-0px border-0 sm:border-b-1px sm:border-#EAEBEF;
+  @apply flex flex-col sm:flex-row items-start md:items-end p-0 sm:px-4 sm:pt-4 sm:pb-1 sticky top-0px opacity-60 text-12px leading-16px border-0 sm:border-b-1px sm:border-#EAEBEF;
+}
+
+.icon {
+  @apply flex items-center;
 }
 
 .item {
-  @apply flex flex-col items-center justify-center flex-1 min-w-0 sm:min-w-70px overflow-hidden p-1 mb-1 sm:m-0;
+  @apply flex flex-col items-end sm:items-center justify-center flex-1 min-w-0 sm:min-w-70px overflow-hidden p-1 mb-2 sm:mb-0;
 }
 
-.item >span {
-  @apply inline-block mt-2px;
+.item > span {
+  @apply inline-block mt-0.5;
 }
 
-.apr {
-  @apply px-1 rounded border border-#EAEBEF;
+.data {
+  @apply px-1 rounded border border-#EAEBEF h-24px flex items-center;
+}
+
+.gap {
+  @apply flex items-center gap-0 xl:gap-2;
+}
+
+.subheader {
+  @apply flex items-center justify-between px-4 pb-2 sm:px-6 sm:pb-0;
 }
 
 .content {
-  @apply flex flex-col sm:flex-row px-4 min-h-71px items-end sm:items-center;
+  @apply flex flex-col sm:flex-row min-h-71px items-end sm:items-center border-0 sm:border-b-1px sm:border-#EAEBEF;
+}
+
+.header > div:first-child,
+.content > div:first-child {
+  @apply !justify-start max-w-160px inline;
+}
+
+.header > div:last-child,
+.content > div:last-child {
+  @apply min-w-170px max-w-170px max-h-30px min-h-30px sm:max-h-auto sm:min-h-auto mb-0;
+}
+
+.header >div, .content >div {
+  @apply sm:min-h-auto;
+}
+
+.button {
+  @apply absolute inset-x-16px sm:static flex gap-12px;
+  width: calc(100% - 32px);
+}
+
+button {
+  @apply flex-1 h-32px min-h-32px  border-0 bg-#160042 text-white rounded;
+}
+
+
+
+@media (min-width: 640px) {
+  .button {
+    @apply w-full
+  }
 }
