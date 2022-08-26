@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { useTokens, useCurUserBorrowPrice, useCurUserBorrowAPY, useBorrowPowerUsed } from '@store/index';
+import { useTokens, useCurUserBorrowPrice, useCurUserBorrowAPY, useUserData } from '@store/index';
 
 const Zero = Unit.fromMinUnit(0);
 const PointZeroOne = Unit.fromMinUnit(0.01);
@@ -11,7 +11,7 @@ const YourBorrows: React.FC = () => {
   const curUserBorrowTokens = useMemo(() => tokens?.filter((token) => token.borrowBalance?.greaterThan(Zero)), [tokens]);
   const curUserBorrowPrice = useCurUserBorrowPrice();
   const curUserBorrowAPY = useCurUserBorrowAPY();
-  const borrowPowerUsed = useBorrowPowerUsed();
+  const userData = useUserData();
 
   return (
     <div>
@@ -19,7 +19,7 @@ const YourBorrows: React.FC = () => {
       <div className="mb-12px flex gap-12px">
         <span>totalPrice: {curUserBorrowPrice?.toDecimalStandardUnit(2)}$</span>
         <span>totalAPY: {curUserBorrowAPY?.mul(Hundred).toDecimalMinUnit(2)}%</span>
-        <span>Borrow power used: {borrowPowerUsed ? `${borrowPowerUsed}%` : '--'}</span>
+        <span>Borrow power used: {userData?.borrowPowerUsed ? `${userData?.borrowPowerUsed}%` : '--'}</span>
       </div>
 
       <div>

@@ -11,7 +11,7 @@ const LockGoledo: React.FC = () => {
     <div>
       <p className='flex'>
         <span className='mr-auto'>Lock Goledo</span>
-        <span>APR {lockAPR?.mul(Hundred).toDecimalStandardUnit(4)}%</span>
+        <span>APR {lockAPR?.mul(Hundred).toDecimalMinUnit(2)}%</span>
       </p>
 
       <p>Lock Goledo and earn platform fees and penalty fees in unlocked Goledo.</p>

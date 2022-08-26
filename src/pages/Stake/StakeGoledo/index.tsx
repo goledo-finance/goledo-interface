@@ -11,7 +11,7 @@ const StakeGoledo: React.FC = () => {
     <div>
       <p className='flex'>
         <span className='mr-auto'>Stake Goledo</span>
-        <span>APR {stakeAPR?.mul(Hundred).toDecimalStandardUnit(2)}%</span>
+        <span>APR {stakeAPR?.mul(Hundred).toDecimalMinUnit(2)}%</span>
       </p>
 
       <p>Stake Goledo and earn platform fees with no lockup period.</p>

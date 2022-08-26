@@ -3,11 +3,9 @@ import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import styles from './index.module.css';
 import cx from 'clsx';
 import PageHeader from '@modules/PageHeader';
-import { useTokens, useCurUserSupplyPrice, useCurUserSupplyAPY, useCurUserBorrowPrice, useCurUserBorrowAPY } from '@store/index';
+import { useCurUserSupplyPrice, useCurUserSupplyAPY, useCurUserBorrowPrice, useCurUserBorrowAPY, useUserData } from '@store/index';
 
-const Zero = Unit.fromMinUnit(0);
 const Hundred = Unit.fromMinUnit(100);
-const TenThousand = Unit.fromMinUnit(10000);
 
 const SummaryPanelItem: React.FC<{ iconName: string; title: string; children: React.ReactElement<any> }> = ({ iconName, title, children }) => {
   return (
@@ -24,12 +22,11 @@ const SummaryPanelItem: React.FC<{ iconName: string; title: string; children: Re
 };
 
 const SummaryPanel: React.FC = () => {
-  const tokens = useTokens();
-  const curUserSupplyTokens = useMemo(() => tokens?.filter((token) => token.supplyBalance?.greaterThan(Zero)), [tokens]);
   const curUserSupplyPrice = useCurUserSupplyPrice();
   const curUserSupplyAPY = useCurUserSupplyAPY();
   const curUserBorrowPrice = useCurUserBorrowPrice();
   const curUserBorrowAPY = useCurUserBorrowAPY();
+  const userData = useUserData();
 
   const NetWorth = useMemo(
     () => (curUserSupplyPrice && curUserBorrowPrice ? curUserSupplyPrice.sub(curUserBorrowPrice) : undefined),
@@ -44,20 +41,6 @@ const SummaryPanel: React.FC = () => {
     [curUserSupplyPrice, curUserSupplyAPY, curUserBorrowPrice, curUserBorrowAPY]
   );
 
-  const collateralTokens = useMemo(() => curUserSupplyTokens?.filter((token) => token.collateral), [curUserSupplyTokens]);
-  const sumReserveLiquidationThreshold = useMemo(
-    () =>
-      collateralTokens?.reduce(
-        (pre, cur) => pre.add(cur.borrowPrice ? (cur.supplyPrice ?? Zero).mul(cur.reserveLiquidationThreshold ?? Zero).div(TenThousand) : Zero),
-        Zero
-      ),
-    [collateralTokens]
-  );
-  const healthFactor = useMemo(
-    () => (curUserBorrowPrice && sumReserveLiquidationThreshold ? sumReserveLiquidationThreshold?.div(curUserBorrowPrice) : undefined),
-    [sumReserveLiquidationThreshold, curUserBorrowPrice]
-  );
-
   return (
     <div className="pt-40px pb-30px flex items-center justify-between">
       <PageHeader />
@@ -70,7 +53,7 @@ const SummaryPanel: React.FC = () => {
         </SummaryPanelItem>
         <SummaryPanelItem iconName="i-codicon:heart" title="Health Factor">
           <div className="mt-2px flex items-center">
-            <span className="text-#67AD5B">{healthFactor?.toDecimalMinUnit(2)}</span>
+            <span className="text-#67AD5B">{userData?.healthFactor ?? '--'}</span>
             <button className="text-#67AD5B border border-#67AD5B/50 hover:border-#67AD5B flex items-center h-20px box-content px-2 ml-2 rounded bg-transparent text-12px leading-16px">
               RISK DETAILS
             </button>
