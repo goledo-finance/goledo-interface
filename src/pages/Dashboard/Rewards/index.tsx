@@ -11,6 +11,7 @@ import {
   useGoledoStakeAPR,
   useGoledoLockAPR,
 } from '@store/index';
+import tokensIcon from '@assets/tokens';
 
 const Hundred = Unit.fromMinUnit(100);
 
@@ -42,7 +43,7 @@ const Rewards: React.FC = () => {
         <div className={styles.content}>
           <div className={styles.item}>
             <div className={styles.icon}>
-              <img src="src/assets/icons/tokens/gol.svg" alt="goledo" className="w-8 h-8 mr-3" />
+              <img src={tokensIcon.GOL} alt="goledo" className="w-8 h-8 mr-3" />
               GOL
             </div>
           </div>

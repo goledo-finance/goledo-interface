@@ -38,7 +38,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-        plugins: [visualizer()],
+      plugins: [visualizer()],
     },
 },
 });

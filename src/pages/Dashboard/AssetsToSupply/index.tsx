@@ -2,8 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useMedia } from 'react-use';
-import styles from '../../index.module.css';
 import { useTokens, TokenInfo } from '@store/index';
+import tokensIcon from '@assets/tokens';
+import styles from '../index.module.css';
 
 const PointZeroOne = Unit.fromMinUnit(0.01);
 const Hundred = Unit.fromMinUnit(100);
@@ -13,7 +14,7 @@ const Content: React.FC<{ token: TokenInfo }> = ({ token }) => {
     <div className={styles.content}>
       <div className={styles.item}>
         <div className={styles.icon}>
-          <img src={`src/assets/icons/tokens/${token.symbol.toLowerCase()}.svg`} alt="goledo" className="w-8 h-8 mr-3" />
+          <img src={tokensIcon[token.symbol]} alt="goledo" className="w-8 h-8 mr-3" />
           {token.symbol}
         </div>
       </div>
