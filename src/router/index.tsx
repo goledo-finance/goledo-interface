@@ -14,7 +14,7 @@ const AppRouter: React.FC = () => {
       <CustomScrollbar>
         <ErrorBoundary>
           <Navbar />
-          <div className="-mt-240px w-full">
+          <div className="-mt-240px w-full pb-39px">
             <Routes>
               <Route index element={<DashBoardPage />} />
               <Route key="dashboard" path="dashboard" element={<DashBoardPage />} />
