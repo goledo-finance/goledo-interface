@@ -1,76 +1,72 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { useMedia } from 'react-use';
-import { useTokens, TokenInfo } from '@store/index';
+import { useTokens, TokenInfo, useCurUserBorrowPrice, useCurUserBorrowAPY, useUserData } from '@store/index';
 import tokensIcon from '@assets/tokens';
-import styles from '../../index.module.css';
+import Card from '@components/Card';
+import Table, { type Columns } from '@components/Table';
+import TokenAssets, { type Configs } from '@modules/TokenAssets';
+import Button from '@components/Button';
 
+const Zero = Unit.fromMinUnit(0);
 const PointZeroOne = Unit.fromMinUnit(0.01);
 const Hundred = Unit.fromMinUnit(100);
 
-const Content: React.FC<{ token: TokenInfo }> = ({ token }) => {
-  return (
-    <div className={styles.content}>
-      <div className={styles.item}>
-        <div className={styles.icon}>
-          <img src={tokensIcon[token.symbol]} alt="goledo" className="w-8 h-8 mr-3" />
-          {token.symbol}
-        </div>
-      </div>
-      <div className={styles.item}>{token.availableBorrowBalance?.toDecimalStandardUnit(2, token.decimals)}</div>
-      <div className={styles.item}>{token.borrowAPY?.greaterThan(PointZeroOne) ? `${token.borrowAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}</div>
-      <div className={styles.item}>
-        <div className={styles.button}>
-          <button>Borrow</button>
-          <button>
-            <Link to={`/detail/${token.address}`} className="text-white no-underline">
-              Detail
-            </Link>
-          </button>
-        </div>
-      </div>
+const columns: Columns<TokenInfo> = [{
+  name: 'Assets',
+  width: '16%',
+  renderHeader: () => <div className='w-full h-full flex justify-start items-center pl-4px'>Assets</div>,
+  render: ({ symbol }) => (
+    <div className='w-full h-full flex justify-start items-center pl-4px font-semibold'>
+      <img className="w-24px h-24px mr-8px" src={tokensIcon[symbol]} alt={symbol} />
+      {symbol}
     </div>
-  );
-};
+  )
+}, {
+  name: 'Available',
+  width: '29%',
+  render: ({ availableBorrowBalance }) => <div className='font-semibold'>{availableBorrowBalance?.toDecimalStandardUnit(2)}</div>
+
+}, {
+  name: 'APY',
+  width: '25%',
+  render: ({ borrowAPY }) => <div className='font-semibold'>{`${borrowAPY?.greaterThan(PointZeroOne) ? `${borrowAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}`}</div>
+}, {
+  name: '',
+  width: '30%',
+  render: () => (
+    <div className='w-full h-full flex justify-end items-center gap-12px'>
+      <Button size='small' className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none'>Borrow</Button>
+      <Button size='small' variant='outlined' className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none'>Detail</Button>
+    </div>
+  )
+}];
+
+const configs: Configs<TokenInfo> = [{
+  name: 'Available to Borrow',
+  renderContent: columns[1].render,
+}, {
+  name: 'Borrow APY',
+  renderContent: columns[2].render,
+}, {
+  render: columns[3].render,
+}];
 
 const AssetsToBorrow: React.FC = () => {
   const tokens = useTokens();
-  const isWide = useMedia('(min-width: 640px)');
-
-  const Header = (
-    <div className={styles.header}>
-      <div className={styles.item}>Assets</div>
-      <div className={styles.item}>Available</div>
-      <div className={styles.item}>APY</div>
-      <div className={styles.item}></div>
-    </div>
-  );
 
   return (
-    <div className={styles.table}>
-      <div className={styles.title}>
-        <span>Assets to Borrow</span>
-        <div className={styles.hide}>Hide</div>
-      </div>
-      {isWide ? (
-        <div className={styles.container}>
-          {Header}
-          {tokens?.map((token) => (
-            <Content token={token} key={token.address} />
-          ))}
-        </div>
-      ) : (
-        <>
-          {tokens?.map((token) => (
-            <div className={styles.container} key={token.address}>
-              {Header}
-              <Content token={token} />
-            </div>
-          ))}
-        </>
-      )}
-    </div>
+    <Card title='Assets to Borrow' showHideButton='no-pb' className='w-50% lt-2xl:w-full'>
+      <Table
+        className='mt-16px'
+        columns={columns}
+        data={tokens}
+      />
+      <TokenAssets
+        className='mt-16px'
+        configs={configs}
+        data={tokens}
+      />
+    </Card>
   );
 };
 

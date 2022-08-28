@@ -1,11 +1,11 @@
 import React, { memo } from 'react';
 import { useSpring, a } from '@react-spring/web';
-import { PopupClass, PopupProps } from 'common/components/Popup';
-import Button from 'common/components/Button';
-import Close from 'common/assets/icons/close.svg';
-import Success from 'common/assets/icons/success-blue.svg';
-import Warning from 'common/assets/icons/warning.svg';
-import Error from 'common/assets/icons/error.svg';
+import { PopupClass, PopupProps } from '@components/Popup';
+import Button from '@components/Button';
+import Close from '@assets/icons/close.svg';
+import Success from '@assets/icons/success.svg';
+import Warning from '@assets/icons/warning.svg';
+import Error from '@assets/icons/error.svg';
 import './index.css';
 
 const Toast = new PopupClass();

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useLp } from '@store/index';
+import Card from '@components/Card';
+import Button from '@components/Button';
 
 const Hundred = Unit.fromMinUnit(100);
 
@@ -17,63 +19,67 @@ const LP: React.FC = () => {
     totalRewardsPerDayBalance,
     totalRewardsPerDayPrice,
     totalRewardsPerWeekBalance,
-    totalRewardsPerWeekPrice
+    totalRewardsPerWeekPrice,
   } = useLp();
 
   return (
-    <div className="flex flex-col gap-20px">
-      <p>GOL/CFX LP</p>
-
-      <div className="flex justify-between">
+    <Card title="GOL/CFX LP" titleIcon="i-ri:copper-coin-line" className="flex flex-col gap-0px">
+      <div className="flex justify-between items-center h-56px border-b-1px border-#eaebef">
         <span>Staking APR</span>
-        <span>{stakeAPR?.mul(Hundred).toDecimalMinUnit(2)}%</span>
+        <span className='text-#111'>{stakeAPR?.mul(Hundred).toDecimalMinUnit(2)}%</span>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center h-56px border-b-1px border-#eaebef">
         <span>LP Token Price</span>
-        <span>${usdPrice?.toDecimalMinUnit()}</span>
+        <span className='text-#111'>${usdPrice?.toDecimalMinUnit()}</span>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center h-56px border-b-1px border-#eaebef">
         <span>Total LP Tokens Staked</span>
         <div className="text-right">
-          <p>{totalMarketStakedBalance?.toDecimalStandardUnit()}GOLCFX</p>
-          <p>${totalMarketStakedPrice?.toDecimalStandardUnit()}</p>
+          <p className='text-#111'>{totalMarketStakedBalance?.toDecimalStandardUnit(2)}GOLCFX</p>
+          <p>${totalMarketStakedPrice?.toDecimalStandardUnit(2)}</p>
         </div>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center h-56px border-b-1px border-#eaebef">
         <span>Your Staked</span>
         <div className="text-right">
-          <p>{stakedBalance?.toDecimalStandardUnit()} GOLCFX</p>
-          <p>${stakedPrice?.toDecimalStandardUnit()}</p>
+          <p className='text-#111'>{stakedBalance?.toDecimalStandardUnit(2)} GOLCFX</p>
+          <p>${stakedPrice?.toDecimalStandardUnit(2)}</p>
         </div>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center h-56px border-b-1px border-#eaebef">
         <span>Pending Rewards</span>
         <div className="text-right">
-          <p>{pendingRewardsBalance?.toDecimalStandardUnit()} Goledo</p>
-          <p>${pendingRewardsPrice?.toDecimalStandardUnit()}</p>
+          <p className='text-#111'>{pendingRewardsBalance?.toDecimalStandardUnit(2)} Goledo</p>
+          <p>${pendingRewardsPrice?.toDecimalStandardUnit(2)}</p>
         </div>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center h-56px border-b-1px border-#eaebef">
         <span>Total Rewards per day</span>
         <div className="text-right">
-          <p>{totalRewardsPerDayBalance?.toDecimalStandardUnit()} Goledo</p>
-          <p>${totalRewardsPerDayPrice?.toDecimalStandardUnit()}</p>
+          <p className='text-#111'>{totalRewardsPerDayBalance?.toDecimalStandardUnit(2)} Goledo</p>
+          <p>${totalRewardsPerDayPrice?.toDecimalStandardUnit(2)}</p>
         </div>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center h-56px">
         <span>Total Rewards per week</span>
         <div className="text-right">
-          <p>{totalRewardsPerWeekBalance?.toDecimalStandardUnit()} Goledo</p>
-          <p>${totalRewardsPerWeekPrice?.toDecimalStandardUnit()}</p>
+          <p className='text-#111'>{totalRewardsPerWeekBalance?.toDecimalStandardUnit(2)} Goledo</p>
+          <p>${totalRewardsPerWeekPrice?.toDecimalStandardUnit(2)}</p>
         </div>
       </div>
-    </div>
+
+      <div className='mt-12px flex gap-12px'>
+        <Button size='large' className='w-33% !flex-auto'>Stake</Button>
+        <Button size='large' className='w-33% !flex-auto'>Unstake</Button>
+        <Button size='large' className='w-33% !flex-auto'>Vest</Button>
+      </div>
+    </Card>
   );
 };
 

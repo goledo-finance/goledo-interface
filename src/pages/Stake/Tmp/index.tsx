@@ -1,10 +1,10 @@
 import React from 'react';
+import Card from '@components/Card';
 
 const Tmp: React.FC = () => {
   return (
-    <div>
-      Tmp
-    </div>
+    <Card title="Tmp">
+    </Card>
   );
 };
 

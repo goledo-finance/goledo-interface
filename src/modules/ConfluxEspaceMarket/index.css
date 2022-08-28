@@ -1,9 +1,9 @@
-.title {
+.epsaceMarket-title {
   font-family: 'MuseoModerno';
   line-height: 67px;
   letter-spacing: -0.02em;
 }
-.testnet {
-  background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 100%);
+
+.epsaceMarket-testnet {
   font-family: 'Inter';
 }

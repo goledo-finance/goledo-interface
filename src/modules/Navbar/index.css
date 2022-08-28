@@ -1,0 +1,54 @@
+.navbar-link::before {
+  @apply absolute content-none h-full w-0% top-0px left-100% border-b-2px border-#FEFEFE transition-all transition-linear duration-200 pointer-events-none;
+}
+
+.navbar-link:hover::before, .navbar-linkArea:not(:hover) > .navbar-link--active::before {
+  @apply w-100% left-0px delay-100;
+}
+
+.navbar-link:hover ~ li::before, .navbar-linkArea:not(:hover) > .navbar-link--active ~ li::before {
+  @apply left-0px;
+}
+
+.burger-container {
+  @apply flex justify-center items-center h-full text-#F1F1F3 cursor-pointer;
+}
+
+.burger-check {
+  display: none;
+}
+
+.burger {
+  @apply relative inline-block w-24px h-2px bg-current appearance-none;
+  transition: background-color 350ms ease-in-out 0s;
+}
+
+.burger::before {
+  @apply content-none absolute block w-full h-2px bg-current top-6px;
+  transition: transform 0.5s ease-in-out 0s;
+}
+
+.burger::after {
+  @apply content-none absolute block w-full h-2px bg-current bottom-6px;
+  transition: transform 0.5s ease-in-out 0s;
+}
+
+.burger-check:checked ~ .burger {
+  @apply bg-transparent;
+}
+
+.burger-check:checked ~ .burger::before {
+  transform: rotate(-405deg) translate3d(5px,-5px,0)
+}
+
+.burger-check:checked ~ .burger::after {
+  transform: rotate(405deg) translate3d(3.5px,4px,0);
+}
+
+.nav-mobile {
+  backdrop-filter: blur(20px);
+}
+
+.nav-link-mobile--active::before {
+  @apply content-none absolute block h-24px w-4px bg-#F1F1F3 left-[-12px];
+}

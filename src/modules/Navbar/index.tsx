@@ -1,50 +1,106 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { connect } from '@cfxjs/use-wallet-react/ethereum';
+import React, { useState, useEffect, type ComponentProps } from 'react';
 import cx from 'clsx';
+import { Link, useLocation } from 'react-router-dom';
+import { shortenAddress } from '@utils/address';
+import { useAccount } from '@cfxjs/use-wallet-react/ethereum';
+import Dropdown from '@components/Dropdown';
+import AuthConnectButton from '@modules/AuthConnectButton';
 import GoledoWhite from '@assets/tokens/goledo-white.svg';
-import styles from './index.module.css';
+import Mobile from './Mobile';
+import './index.css';
 
-const NaveItem: React.FC<{ to: string; children: React.ReactElement<any> | string }> = ({ to, children }) => {
-  const location = useLocation();
+const NavLink: React.FC<ComponentProps<typeof Link> & { curPath: string }> = ({ to, children, curPath }) => (
+  <li className={cx('navbar-link relative flex items-center px-14px h-full overflow-hidden', { ['navbar-link--active']: curPath?.startsWith(to as string) })}>
+    <Link className="flex items-center h-full text-#F1F1F3 decoration-none select-none" to={to}>
+      {children}
+    </Link>
+  </li>
+);
+
+const Navbar: React.FC = () => {
+  const { pathname: curPath } = useLocation();
+  const account = useAccount();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [curPath]);
 
   return (
-    <li className="flex items-center relative">
-      <Link
-        className={cx(styles.link, {
-          [styles.active]: location?.pathname === to,
-        })}
-        to={to}
-      >
-        {children}
-      </Link>
-    </li>
+    <header className='flex justify-center h-61px bg-#111 border-b-1px border-#FEFEFE border-opacity-15 '>
+      <Mobile open={isMobileMenuOpen} curPath={curPath === '/' ? '/dashboard' : curPath} />
+      <nav className={cx('max-w-1920px mx-auto absolute flex items-center w-full h-60px px-32px bg-#111 z-100')}>
+        <img src={GoledoWhite} alt="goledo icon" className="w-34px h-34px mr-auto sm:mr-40px" />
+        <ul className="navbar-linkArea display-none sm:flex h-full items-center text-14px font-semibold">
+          <NavLink to="/dashboard" curPath={curPath === '/' ? '/dashboard' : curPath}>
+            Dashboard
+          </NavLink>
+          <NavLink to="/markets" curPath={curPath}>
+            Markets
+          </NavLink>
+          <NavLink to="/stake" curPath={curPath}>
+            Stake
+          </NavLink>
+        </ul>
+        <More />
+
+        <AuthConnectButton className='w-140px !rounded-100px'>
+          <div className='flex items-center px-12px h-36px rounded-100px border-1px border-#ebebed1f text-14px text-#F1F1F3 font-semibold'>
+            {shortenAddress(account)}
+          </div>
+        </AuthConnectButton>
+        
+        <label className='burger-container ml-20px sm:display-none' htmlFor="burger-check" >
+          <input className="burger-check" id="burger-check" type="checkbox" checked={isMobileMenuOpen} onChange={e => setIsMobileMenuOpen(e.target.checked)}/>
+          <span className='burger' />
+        </label>
+      </nav>
+    </header>
   );
 };
 
-const Navbar: React.FC = () => {
+const MoreContent: React.FC = () => {
   return (
-    <header className={styles.header}>
-      <nav className={cx('flex h-60px t-0 sticky py-8px px-20px items-center justify-between', styles.nav)}>
-        <div className="flex items-center">
-          <img src={GoledoWhite} alt="goledo icon" className="h-34px mr-32px" />
-          <ul className="flex items-center gap-24px m-0 p-0">
-            <NaveItem to="/dashboard">Dashboard</NaveItem>
-            <NaveItem to="/markets">Markets</NaveItem>
-            <NaveItem to="/stake">Stake</NaveItem>
-          </ul>
-        </div>
-        <div>
-          <button
-            onClick={connect}
-            className={cx('border-#FDF9F9 border rounded-full h-36px text-#E2B26A px-2 cursor-pointer', styles.button)}
-          >
-            Connect Wallet
-          </button>
-        </div>
-      </nav>
-      <div></div>
-    </header>
+    <div className="min-w-200px rounded-8px bg-white dropdown-shadow text-14px font-semibold no-underline overflow-hidden">
+      <a
+        className="relative flex items-center h-44px px-50px text-#160042 hover:bg-#F1F1F3 transition-colors no-underline"
+        href="https://goledo.gitbook.io/goledo/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span className="i-bi:question-circle absolute left-16px text-20px" />
+        FAQ
+      </a>
+      <a
+        className="relative flex items-center h-44px px-50px text-#160042 hover:bg-#F1F1F3 transition-colors no-underline"
+        href="https://goledo.gitbook.io/goledo/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span className="i-logos:telegram absolute left-16px text-20px" />
+        Telegram
+      </a>
+      <a
+        className="relative flex items-center h-44px px-50px text-#160042 hover:bg-#F1F1F3 transition-colors no-underline"
+        href="https://github.com/goledo-finance/goledo-interface"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span className="i-ant-design:github-filled absolute left-16px text-20px" />
+        Github
+      </a>
+    </div>
+  );
+};
+
+const More: React.FC = () => {
+  return (
+    <Dropdown placement="bottom-start" trigger="mouseenter click" interactiveDebounce={100} Content={<MoreContent /> }>
+      <div className="display-none sm:flex mr-auto relative items-center px-14px h-full rounded-6px text-14px text-#F1F1F3 font-semibold hover:bg-#fafbfc14 transition-colors select-none cursor-pointer">
+        More
+        <span className='i-ci:more-horizontal text-28px ml-2px translate-y-1px' />
+      </div>
+    </Dropdown>
   );
 };
 

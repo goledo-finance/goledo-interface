@@ -8,6 +8,9 @@ import { tokensStore } from './Tokens';
 const OneYearSeconds = Unit.fromMinUnit(31536000);
 
 interface GoledoStore {
+  name: 'Goledo';
+  symbol: 'GOL';
+  decimals: 18;
   stakeAPR?: Unit;
   lockAPR?: Unit;
   usdPrice?: Unit;
@@ -29,6 +32,9 @@ interface GoledoStore {
 }
 
 const initState = {
+  name: 'Goledo',
+  symbol: 'GOL',
+  decimals: 18,
   stakeAPR: undefined,
   lockAPR: undefined,
   usdPrice: undefined,
@@ -184,6 +190,7 @@ tokensStore.subscribe((state) => state.tokens, calcGoledoAPR, { fireImmediately:
 
 
 const selectors = {
+  all: (state: GoledoStore) => state,
   stakeAPR: (state: GoledoStore) => state.stakeAPR,
   lockAPR: (state: GoledoStore) => state.lockAPR,
   usdPrice: (state: GoledoStore) => state.usdPrice,
@@ -201,6 +208,7 @@ const selectors = {
   withdrawableBalance: (state: GoledoStore) => state.withdrawableBalance,
 };
 
+export const useGoledo = () => goledoStore(selectors.all);
 export const useGoledoStakeAPR = () => goledoStore(selectors.stakeAPR);
 export const useGoledoLockAPR = () => goledoStore(selectors.lockAPR);
 export const useGoledoUsdPrice = () => goledoStore(selectors.balance);

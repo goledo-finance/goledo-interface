@@ -17,7 +17,7 @@ interface PropsEnhance {
 
 export type Props = PropsEnhance & TippyProps;
 
-const Popper: React.FC<Props> = ({ children, Content, className, style, arrow, animation, animationType = 'zoom', animationDuration, ...props }) => {
+const Popper: React.FC<Props> = ({ children, Content, className, style, arrow, animation, animationType = 'zoom', animationDuration, appendTo = document.body, ...props }) => {
   const [styles, api] = useSpring(() => transitionAnimation[animationType].from);
 
   const onMount = useCallback(() => {
@@ -69,6 +69,7 @@ const Popper: React.FC<Props> = ({ children, Content, className, style, arrow, a
           {arrow && <div data-popper-arrow className="popper-arrow" />}
         </a.div>
       )}
+      appendTo={appendTo}
       {...props}
       animation={true}
       onMount={onMount}

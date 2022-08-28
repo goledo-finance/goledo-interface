@@ -323,7 +323,7 @@ const aggregateData = debounce(() => {
   if (supplyTokens.length) {
     const curUserSupplyPrice = supplyTokens.reduce((pre, cur) => pre.add(cur.supplyPrice ?? Zero), Zero);
     tokensStore.setState({ curUserSupplyPrice });
-    if (supplyTokens.every(token => token.supplyAPY)) {
+    if (curUserSupplyPrice.greaterThan(Zero) && supplyTokens.every(token => token.supplyAPY)) {
       tokensStore.setState({ curUserSupplyAPY: supplyTokens.reduce((pre, cur) => pre.add((cur.supplyPrice ?? Zero).mul(cur.supplyAPY ?? Zero).div(curUserSupplyPrice)), Zero) });
     }
   }

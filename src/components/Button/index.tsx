@@ -6,10 +6,9 @@ import './index.css';
 
 export interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'contained' | 'outlined' | 'dash' | 'text' | 'link';
-  color?: 'primary' | 'secondary' | 'danger' | 'green';
+  color?: 'primary' | 'danger' | 'green';
   size?: 'mini' | 'small' | 'medium' | 'large';
   shape?: 'rect' | 'circle' | 'round';
-  reverse?: boolean;
   fullWidth?: boolean;
   loading?: boolean;
   icon?: ReactNode;
@@ -31,7 +30,6 @@ const Button = forwardRef<HTMLButtonElement, PropsWithChildren<Props>>(
       disabled = false,
       fullWidth = false,
       loading = false,
-      reverse = false,
       icon,
       startIcon,
       endIcon,
@@ -47,7 +45,6 @@ const Button = forwardRef<HTMLButtonElement, PropsWithChildren<Props>>(
           fullWidth && 'fui-button--fullWidth',
           loading && 'is-loading',
           disabled && 'is-disabled',
-          reverse && 'fui-button--reverse',
           className
         ),
         ref: _forwardRef,
