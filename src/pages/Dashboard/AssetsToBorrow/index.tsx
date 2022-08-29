@@ -1,13 +1,12 @@
 import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { useTokens, TokenInfo, useCurUserBorrowPrice, useCurUserBorrowAPY, useUserData } from '@store/index';
+import { useTokens, TokenInfo } from '@store/index';
 import tokensIcon from '@assets/tokens';
 import Card from '@components/Card';
 import Table, { type Columns } from '@components/Table';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
 
-const Zero = Unit.fromMinUnit(0);
 const PointZeroOne = Unit.fromMinUnit(0.01);
 const Hundred = Unit.fromMinUnit(100);
 

@@ -24,9 +24,9 @@ const WaitWalletContent: React.FC<{ wallet: 'Fluent' | 'MetaMask'; tip?: string 
   return (
     <div className="w-[340px] min-h-[150px] p-[24px] text-center bg-gray-200 rounded-[8px]">
       <Spin className="mx-auto text-[36px] text-[#808BE7]" />
-      <p className="font-medium text-[16px] text-[#3D3F4C] mt-[12px] leading-[22px]">Waiting</p>
+      <p className="font-semibold text-[16px] text-[#3D3F4C] mt-[12px] leading-[22px]">Waiting</p>
       <p className="mt-[8px] text-[14px] text-[#3D3F4C] leading-[18px]">Confirm the Action in your {wallet} Wallet...</p>
-      {tip && <p className="mt-[8px] text-[14px] text-[#E96170] leading-[18px] font-medium">{tip}</p>}
+      {tip && <p className="mt-[8px] text-[14px] text-[#E96170] leading-[18px] font-semibold">{tip}</p>}
     </div>
   );
 });
@@ -49,7 +49,7 @@ const TransactionSubmittedContent: React.FC<{ TxnHash: string; action: string; b
         />
 
         <img className="w-[48px] h-[48px] mt-[28px] mx-auto" src={Success} alt="success icon" />
-        <p className="mt-[12px] font-medium text-[16px] leading-[22px] text-[#3D3F4C] text-center">{action} Submitted</p>
+        <p className="mt-[12px] font-semibold text-[16px] leading-[22px] text-[#3D3F4C] text-center">{action} Submitted</p>
         <p className="mt-[12px] mb-[4px] text-[14px] leading-[18px] text-[#3D3F4C] text-left">Txn Hash:</p>
 
         {!blockExplorerUrl && <p className="text-[14px] leading-[18px] text-[#3D3F4C] text-left break-words">{TxnHash}</p>}

@@ -108,6 +108,7 @@ interface TokensStore {
     healthFactor: string;
     borrowPowerUsed: string;
     availableBorrowsUSD: Unit;
+    loanToValue: string;
   }
 }
 
@@ -148,9 +149,9 @@ ethereumStore.subscribe(
         const userData = {
           healthFactor: Unit.fromMinUnit(userAccountData?.healthFactor?._hex ?? 0).toDecimalStandardUnit(2),
           borrowPowerUsed: totalDebtUSD.div(totalDebtUSD.add(availableBorrowsUSD)).mul(Hundred).toDecimalMinUnit(2),
-          availableBorrowsUSD
+          availableBorrowsUSD,
+          loanToValue: Unit.fromMinUnit(userAccountData?.ltv?._hex ?? 0).div(Unit.fromMinUnit(10000)).toDecimalMinUnit(),
         }
-
 
         const reservesData = UiPoolDataContract.interface.decodeFunctionResult('getReservesData', returnData?.[1]);
         const tokensPoolDataArr: Array<TokenData> = reservesData[0]?.map((token: any) => convertOriginTokenData(token, availableBorrowsUSD));

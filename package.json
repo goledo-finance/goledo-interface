@@ -4,13 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build:tsc": "tsc && vite build",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@cfxjs/use-wallet-react": "0.0.1-28",
+    "@cfxjs/use-wallet-react": "0.0.1-29",
     "@react-spring/web": "^9.5.2",
     "@tippyjs/react": "^4.2.6",
     "@xstate/react": "^3.0.1",

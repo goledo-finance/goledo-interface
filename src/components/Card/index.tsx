@@ -26,7 +26,7 @@ const Card: React.FC<HTMLAttributes<HTMLDivElement> & Props> = ({ className, tit
 
           {titleRight}
           {showHideButton && (
-            <Button variant="text" size="medium" onClick={() => setShow((pre) => !pre)}>
+            <Button className="xl:display-none" variant="text" size="medium" onClick={() => setShow((pre) => !pre)}>
               {showContent ? 'Hide' : 'Show'}
             </Button>
           )}

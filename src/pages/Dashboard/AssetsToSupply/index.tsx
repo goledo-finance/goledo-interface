@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { useTokens, TokenInfo, useCurUserBorrowPrice, useCurUserBorrowAPY, useUserData } from '@store/index';
+import { useTokens, TokenInfo } from '@store/index';
 import tokensIcon from '@assets/tokens';
 import Card from '@components/Card';
 import Table, { type Columns } from '@components/Table';
@@ -40,10 +41,12 @@ const columns: Columns<TokenInfo> = [{
 }, {
   name: '',
   width: '28%',
-  render: () => (
+  render: ({ address }) => (
     <div className='w-full h-full flex justify-end items-center gap-12px'>
       <Button size='small' className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none'>Supply</Button>
-      <Button size='small' variant='outlined' className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none'>Details</Button>
+      <Link to={`/detail/${address}`} className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none no-underline'>
+        <Button size='small' variant='outlined' fullWidth>Details</Button>
+      </Link>
     </div>
   )
 }];

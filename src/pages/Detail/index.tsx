@@ -1,11 +1,15 @@
 import React, { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { useTokens } from '@store/Tokens';
+import { useTokens, type TokenInfo} from '@store/Tokens';
 import { type Unit } from '@cfxjs/use-wallet-react/ethereum';
+import PageHeader from '@modules/Layout/PageHeader';
+import PageWrapper from '@modules/Layout/PageWrapper';
 import SummaryPanel from './SummaryPanel';
 import ReserveOverview from './ReserveOverview';
+import Supplies from './Supplies';
+import Borrows from './Borrows';
 
-export type Token = NonNullable<ReturnType<typeof useTokens>>[number] & { availableBalance?: Unit; availablePrice?: Unit; };
+export type Token = TokenInfo & { availableBalance?: Unit; availablePrice?: Unit; };
 const Detail: React.FC = () => {
   const { tokenAddress } = useParams() ?? {};
   const tokens = useTokens();
@@ -23,10 +27,20 @@ const Detail: React.FC = () => {
   
   if (!token) return null;
   return (
-    <div>
-      <SummaryPanel {...token} availableBalance={availableBalance} availablePrice={availablePrice} />
-      <ReserveOverview {...token} availableBalance={availableBalance} availablePrice={availablePrice} />
-    </div>
+    <>
+      <PageHeader className='pt-32px lt-md:pt-14px'>
+        <SummaryPanel {...token} availableBalance={availableBalance} availablePrice={availablePrice} />
+      </PageHeader>
+      <PageWrapper>
+        <div className='flex gap-16px lt-lg:flex-col'>
+          <ReserveOverview {...token} availableBalance={availableBalance} availablePrice={availablePrice} />
+          <div className='w-36% flex-auto flex flex-col gap-16px lt-lg:w-full'>
+            <Supplies  {...token} />
+            <Borrows  {...token} />
+          </div>
+        </div>
+      </PageWrapper>
+    </>
   );
 };
 

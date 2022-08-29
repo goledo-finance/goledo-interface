@@ -42,7 +42,7 @@ const ToastComponent: React.FC<{ content: string | Content; duration: number; hi
       <div className="relative max-w[400px] min-w-[300px] bg-white rounded  overflow-hidden">
         <div className={type === 'info' ? 'p-[24px]' : 'pl-[56px] py-[24px] pr-[24px]'}>
           {type !== 'info' && <img src={iconTypeMap[type]} alt="type img" className="absolute w-[24px] h-[24px] left-[16px] top-[24px]" />}
-          <p className="mb-[8px] leading-[22px] text-[16px] text-[#3D3F4C] font-medium max-w-[280px]">
+          <p className="mb-[8px] leading-[22px] text-[16px] text-[#3D3F4C] font-semibold max-w-[280px]">
             {typeof content === 'object' && content.title ? content.title : 'Notification'}
           </p>
           {showClose && <img src={Close} alt="close img" className="absolute right-[28px] top-[24px] w-[16px] h-[16px] cursor-pointer" onClick={hide} />}

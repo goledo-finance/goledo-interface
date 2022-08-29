@@ -8,7 +8,7 @@ const AuthConnectButton: React.FC<ComponentProps<typeof Button>> = ({ children, 
     const status = useStatus();
     const chainId = useChainId();
     const chainMatch = chainId === Network.chainId;
-
+    
 	const handleClick = useCallback<React.MouseEventHandler<HTMLButtonElement>>((evt) => {
         if (status === 'not-active') {
             connectToWallet();

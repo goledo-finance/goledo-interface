@@ -1,6 +1,6 @@
 /** common **/
 .fui-button {
-  @apply relative inline-flex justify-center items-center whitespace-nowrap outline-none transition-colors font-medium cursor-pointer;
+  @apply relative inline-flex justify-center items-center #F1F1F3space-nowrap outline-none transition-colors font-semibold cursor-pointer;
 }
 
 button.fui-button {
@@ -33,23 +33,6 @@ button.absolute {
   @apply text-[14px] h-[40px] px-[22px] rounded-8px;
 }
 
-.fui-button.fui-button--circle {
-  @apply rounded-full;
-}
-
-.fui-button--mini.fui-button--circle,
-.fui-button--small.fui-button--circle {
-  @apply w-[32px] h-[32px];
-}
-
-.fui-button--medium.fui-button--circle {
-  @apply w-[40px] h-[40px];
-}
-
-.fui-button--large.fui-button--circle {
-  @apply w-[48px] h-[48px];
-}
-
 /** disabled & loading **/
 .fui-button.is-disabled,
 .fui-button.is-loading {
@@ -65,86 +48,65 @@ a.fui-button.is-disabled:not(.is-loading) {
   @apply bg-#F0F1F1 text-#A9ABB2 border-transparent;
 }
 
-a.fui-button--link.is-disabled,
 a.fui-button--text.is-disabled,
-button.fui-button--link.is-disabled,
 button.fui-button--text.is-disabled {
   @apply bg-transparent text-#A9ABB2;
 }
 
 /* contained button */
+.fui-button--contained {
+  @apply border-none;
+}
+
 .fui-button--contained.fui-button--primary {
-  @apply bg-[#111111] text-white;
+  @apply bg-[#111111] text-#F1F1F3;
 }
 
 .fui-button--contained.fui-button--primary:hover,
 .fui-button--contained.fui-button--primary:focus-visible {
-  @apply bg-[#292E41] text-white;
-}
-
-.fui-button--contained.fui-button--danger {
-  @apply bg-[#E96170] text-white;
-}
-
-.fui-button--contained.fui-button--danger:hover,
-.fui-button--contained.fui-button--danger:focus-visible {
-  @apply bg-[#CD4957] text-white;
+  @apply bg-[#292E41] text-#F1F1F3;
 }
 
 .fui-button--contained.fui-button--green {
-  @apply bg-[#3AC170] text-white;
+  @apply bg-[#3AC170] text-#F1F1F3;
 }
 
 .fui-button--contained.fui-button--green:hover,
 .fui-button--contained.fui-button--green:focus-visible {
-  @apply bg-[#3AC170] text-white;
+  @apply bg-[#3AC170] text-#F1F1F3;
 }
 
 /* outlined dash button */
-.fui-button--outlined,
-.fui-button--dash {
+.fui-button--outlined {
   @apply border-1px;
 }
 
-.fui-button--outlined.fui-button--primary,
-.fui-button--dash.fui-button--primary {
+.fui-button--outlined.fui-button--primary {
   @apply border-[#111111] text-[#111111] bg-transparent;
 }
 
 .fui-button--outlined.fui-button--primary:hover,
-.fui-button--outlined.fui-button--primary:focus-visible,
-.fui-button--dash.fui-button--primary:hover,
-.fui-button--dash.fui-button--primary:focus-visible {
-  @apply border-[#292E41] text-[#292E41] bg-transparent;
+.fui-button--outlined.fui-button--primary:focus-visible {
+  @apply border-[#292E41] text-[#292E41] bg-#292E410a;
+}
+
+.fui-button--outlined.fui-button--white {
+  @apply border-#EBEBED1F text-#F1F1F3 bg-transparent;
+}
+
+.fui-button--outlined.fui-button--white:hover,
+.fui-button--outlined.fui-button--white:focus-visible {
+  @apply border-#EBEBED59 text-white bg-#FFFFFF14;
 }
 
 
-.fui-button--outlined.fui-button--danger,
-.fui-button--dash.fui-button--danger {
-  @apply border-[#E96170] text-[#E96170] bg-transparent;
-}
-
-.fui-button--outlined.fui-button--danger:hover,
-.fui-button--outlined.fui-button--danger:focus-visible,
-.fui-button--dash.fui-button--danger:hover,
-.fui-button--dash.fui-button--danger:focus-visible {
-  @apply border-[#CD4957] text-[#CD4957] bg-transparent;
-}
-
-.fui-button--outlined.fui-button--green,
-.fui-button--dash.fui-button--green {
-  @apply border-[#3AC170] text-[#3AC170] bg-transparent;
+.fui-button--outlined.fui-button--green {
+  @apply border-#3AC170 text-#3AC170 bg-transparent;
 }
 
 .fui-button--outlined.fui-button--green:hover,
-.fui-button--outlined.fui-button--green:focus-visible,
-.fui-button--dash.fui-button--green:hover,
-.fui-button--dash.fui-button--green:focus-visible {
-  @apply border-[#3AC170] text-[#3AC170] bg-transparent;
-}
-
-.fui-button--dash {
-  @apply border-dashed;
+.fui-button--outlined.fui-button--green:focus-visible{
+  @apply border-#3AC170 text-#3AC170 bg-#3ac1702e;
 }
 
 /* text button */
@@ -163,53 +125,6 @@ button.fui-button--text.is-disabled {
 .fui-button--text.fui-button--primary:hover,
 .fui-button--text.fui-button--primary:focus-visible {
   @apply bg-[#F7F8FA] text-#303549;
-}
-
-.fui-button--text.fui-button--danger {
-  @apply bg-transparent text-[#E96170];
-}
-
-.fui-button--text.fui-button--danger:hover,
-.fui-button--text.fui-button--danger:focus-visible {
-  @apply bg-[#FFF2F4] text-[#E96170];
-}
-
-.fui-button--text.fui-button--green {
-  @apply bg-transparent text-[#3AC170];
-}
-
-.fui-button--text.fui-button--green:hover,
-.fui-button--text.fui-button--green:focus-visible {
-  @apply bg-[#FFF2F4] text-[#3AC170];
-}
-
-/* link button */
-.fui-button--link:hover,
-.fui-button--link:focus-visible {
-  @apply underline underline-offset-[2px];
-}
-
-.fui-button--link.fui-button--primary {
-  @apply bg-transparent text-[#111111];
-}
-
-.fui-button--link.fui-button--danger {
-  @apply bg-transparent text-[#E96170];
-}
-
-.fui-button--link.fui-button--green {
-  @apply bg-transparent text-[#3AC170];
-}
-
-/** circle button overwrite */
-.fui-button--circle {
-  box-shadow: 0px 4px 8px -2px rgba(0, 0, 0, 0.1);
-}
-.fui-button.fui-button--circle.fui-button--outlined,
-.fui-button.fui-button--circle.fui-button--dash,
-.fui-button.fui-button--circle.fui-button--text,
-.fui-button.fui-button--circle.fui-button--link {
-  @apply border-[1px] bg-transparent text-[#A9ABB2] border-transparent hover:bg-transparent hover:text-[#111111] hover:border-[#111111];
 }
 
 /** loading **/
@@ -255,13 +170,6 @@ button.fui-button--text.is-disabled {
 
 .fui-button--contained.fui-button--primary::after {
   box-shadow: 0 0 0 6px #111111;
-}
-.fui-button--contained.fui-button--secondary:not(.fui-button--circle):after {
-  box-shadow: 0 0 0 6px transparent;
-}
-
-.fui-button--contained.fui-button--danger::after {
-  box-shadow: 0 0 0 6px #cd4957;
 }
 
 .fui-button--contained.fui-button--green::after {

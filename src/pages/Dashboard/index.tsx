@@ -22,7 +22,7 @@ const DashBoard: React.FC = () => {
     _setCurrentAsset(asset);
     Localstorage.setItem({ key: 'dashboard-asset', data: asset });
   }, []);
-
+  
   return (
     <>
       <PageHeader>
