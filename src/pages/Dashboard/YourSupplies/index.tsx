@@ -4,6 +4,7 @@ import { useTokens, useCurUserSupplyAPY, useCurUserSupplyPrice, type TokenInfo }
 import tokensIcon from '@assets/tokens';
 import Card from '@components/Card';
 import Table, { type Columns } from '@components/Table';
+import Toggle from '@components/Toggle';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
 
@@ -40,7 +41,7 @@ const columns: Columns<TokenInfo> = [{
   renderHeader: () => <div className='flex justify-center items-center'>Collateral</div>,
   render: () => (
     <div className='flex items-center'>
-      <input type="checkbox"/>
+      <Toggle checked />
     </div>
   )
 }, {
