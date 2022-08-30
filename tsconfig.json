@@ -25,7 +25,8 @@
       "@router/*": ["./src/router/*"],
       "@store/*": ["./src/store/*"],
       "@hooks/*": ["./src/hooks/*"],
-      "@components/*": ["./src/components/*"]
+      "@components/*": ["./src/components/*"],
+      "@service/*": ["./src/service/*"]
     }
   },
   "include": ["src"],

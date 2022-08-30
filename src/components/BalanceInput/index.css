@@ -1,0 +1,36 @@
+.balanceInput-wrapper {
+  @apply relative py-8px px-12px border-1px border-#EAECEF bg-white rounded-2px transition-colors;
+}
+
+.balanceInput-wrapper:focus-within {
+    @apply border-#303549 ring-1px ring-#303549;
+}
+
+.balanceInput {
+  @apply w-full text-20px overflow-ellipsis placeholder-#D2D4DC font-normal border-none outline-none text-#303549 invalid:text-#E96170;
+}
+
+.balanceInput-errorBorder {
+    @apply absolute -left-1px -top-1px -right-1px -bottom-1px rounded-2px border-1px border-#E96170 ring-1px ring-#E96170 opacity-0 pointer-events-none transition-opacity;
+}
+
+.balanceInput:invalid ~ .balanceInput-errorBorder {
+    @apply opacity-100;
+}
+
+.balanceInput-error {
+  @apply absolute right-[2px] -top-[20px] text-[12px] text-[#E96170] opacity-0 transition-opacity duration-100;
+}
+
+.balanceInput:invalid {
+  @apply border-[#E96170];
+}
+
+.balanceInput:invalid ~ .balanceInput-error {
+  @apply opacity-100;
+}
+
+
+.balanceInput:disabled {
+    @apply bg-[#F7F8FA] text-opacity-70 cursor-not-allowed;
+}

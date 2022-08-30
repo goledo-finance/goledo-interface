@@ -14,7 +14,7 @@ const Hundred = Unit.fromMinUnit(100);
 
 const columns: Columns<TokenInfo> = [{
   name: 'Assets',
-  width: '15%',
+  width: '13%',
   renderHeader: () => <div className='w-full h-full flex justify-start items-center pl-4px'>Assets</div>,
   render: ({ symbol }) => (
     <div className='w-full h-full flex justify-start items-center pl-4px font-semibold'>
@@ -24,7 +24,7 @@ const columns: Columns<TokenInfo> = [{
   )
 }, {
   name: 'Balance',
-  width: '28%',
+  width: '24%',
   render: ({ supplyBalance, supplyPrice }) => (
     <div>
       <p className='font-semibold'>{supplyBalance?.toDecimalStandardUnit(2)}</p>
@@ -37,7 +37,7 @@ const columns: Columns<TokenInfo> = [{
   render: ({ supplyAPY }) => <div className='font-semibold'>{`${supplyAPY?.greaterThan(PointZeroOne) ? `${supplyAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}`}</div>
 }, {
   name: 'Collateral',
-  width: '24%',
+  width: '17%',
   renderHeader: () => <div className='flex justify-center items-center'>Collateral</div>,
   render: () => (
     <div className='flex items-center'>
@@ -46,7 +46,7 @@ const columns: Columns<TokenInfo> = [{
   )
 }, {
   name: '',
-  width: '15%',
+  width: '28%',
   render: () => (
     <div className='w-full h-full flex justify-end items-center'>
       <Button size='small' fullWidth className='max-w-164px lt-md:max-w-none'>Withdraw</Button>

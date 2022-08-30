@@ -3,8 +3,8 @@
 }
 
 .input {
-  @apply w-full overflow-ellipsis border-[1px] border-[#EAECEF] bg-white rounded-[2px] transition-colors placeholder-[#979797]
-    focus:outline-none focus:border-[#808BE7] focus:ring-1 focus:ring-[#808BE7]
+  @apply w-full overflow-ellipsis border-[1px] border-#EAECEF bg-white rounded-[2px] transition-colors placeholder-[#979797]
+    focus:outline-none focus:border-#303549 focus:ring-1 focus:ring-#303549
     invalid:border-[#E96170] invalid:text-[#E96170]
     focus:invalid:border-[#E96170] focus:invalid:ring-[#E96170];
 }
@@ -55,16 +55,6 @@
 
 .prefix-icon ~ .input.outer-placeholder + * {
   @apply left-[36px];
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  appearance: none !important;
-  margin: 0;
-}
-
-input[type='number'] {
-  -moz-appearance: textfield;
 }
 
 .input:disabled {

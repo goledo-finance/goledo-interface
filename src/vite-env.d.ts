@@ -36,6 +36,7 @@ interface ImportMetaEnv {
   readonly VITE_ChefIncentivesControllerContractAddress: string;
   readonly VITE_MasterChefAddress: string;
   readonly VITE_SwappiPairAddress: string;
+  readonly VITE_WETHGatewayAddress: string;
 }
 
 interface ImportMeta {
@@ -44,3 +45,4 @@ interface ImportMeta {
 
 type OverWrite<T, U> = Omit<T, keyof U> & U;
 type PartialOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+type PartialOmit<T, K extends keyof T> = Pick<T, K> & Partial<Omit<T, K>>;

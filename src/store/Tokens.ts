@@ -1,7 +1,7 @@
 import create from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import LocalStorage from 'localstorage-enhance';
-import { store as ethereumStore, Unit } from '@cfxjs/use-wallet-react/ethereum';
+import { store as walletStore, Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { intervalFetchChain } from '@utils/fetchChain';
 import { UiPoolDataContract, LendingPoolContract, MulticallContract, createERC20Contract } from '@utils/contracts';
 import { isEqual, debounce } from 'lodash-es';
@@ -116,7 +116,7 @@ export const tokensStore = create(subscribeWithSelector(() =>({ tokensInPool: Lo
 
 
 let unsub: VoidFunction | null = null;
-ethereumStore.subscribe(
+walletStore.subscribe(
   (state) => state.accounts,
   (accounts) => {
     unsub?.();
@@ -187,8 +187,7 @@ ethereumStore.subscribe(
 // get balances
 let unsubBalance: VoidFunction | null = null;
 const calcUserBalance = debounce(() => {
-  const account = ethereumStore.getState().accounts?.[0];
-  const cfxBalance = ethereumStore.getState().balance;
+  const account = walletStore.getState().accounts?.[0];
   const tokens = tokensStore.getState().tokensInPool;
   unsubBalance?.();
 
@@ -231,7 +230,7 @@ const calcUserBalance = debounce(() => {
 
       tokens.forEach((token, index) => {
         if (token.symbol === 'CFX') {
-          tokensBalance[token.address].balance = cfxBalance;
+          tokensBalance[token.address].balance = walletStore.getState().balance;
         } else {
           tokensBalance[token.address].balance = Unit.fromMinUnit(result?.['returnData']?.[index] ?? 0);
         }
@@ -246,8 +245,8 @@ const calcUserBalance = debounce(() => {
   });
 }, 10);
 tokensStore.subscribe((state) => state.tokensInPool, calcUserBalance, { fireImmediately: true });
-ethereumStore.subscribe((state) => state.accounts, calcUserBalance, { fireImmediately: true });
-ethereumStore.subscribe((state) => state.balance, calcUserBalance, { fireImmediately: true });
+walletStore.subscribe((state) => state.accounts, calcUserBalance, { fireImmediately: true });
+walletStore.subscribe((state) => state.balance, calcUserBalance, { fireImmediately: true });
 
 
 

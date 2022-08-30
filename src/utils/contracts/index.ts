@@ -9,8 +9,9 @@ import ChefIncentivesController from './abis/ChefIncentivesController.json';
 import MasterChef from './abis/MasterChef.json';
 import SwappiPair from './abis/SwappiPair.json';
 import GoledoToken from './abis/GoledoToken.json';
+import WETHGateway from './abis/WETHGateway.json';
 
-const HttpProvider = new providers.JsonRpcProvider(import.meta.env.VITE_ESpaceRpcUrl);
+export const HttpProvider = new providers.JsonRpcProvider(import.meta.env.VITE_ESpaceRpcUrl);
 
 export const UiPoolDataContract = new Contract(import.meta.env.VITE_UiPoolDataProviderAddress, UiPoolDataProvider, HttpProvider);
 export const LendingPoolContract = new Contract(import.meta.env.VITE_LendingPoolAddress, LendingPool, HttpProvider);
@@ -20,6 +21,7 @@ export const MultiFeeDistributionContract = new Contract(import.meta.env.VITE_Mu
 export const ChefIncentivesControllerContract = new Contract(import.meta.env.VITE_ChefIncentivesControllerContractAddress, ChefIncentivesController, HttpProvider);
 export const MasterChefContract = new Contract(import.meta.env.VITE_MasterChefAddress, MasterChef, HttpProvider);
 export const SwappiPaiContract = new Contract(import.meta.env.VITE_SwappiPairAddress, SwappiPair, HttpProvider);
+export const WETHGatewayContract = new Contract(import.meta.env.VITE_WETHGatewayAddress, WETHGateway, HttpProvider);
 
 export const createERC20Contract = (tokenAddress: string) => new Contract(tokenAddress, ERC20ABI, HttpProvider);
 export const GoledoTokenContract = new Contract(import.meta.env.VITE_GoledoTokenAddress, GoledoToken, HttpProvider);

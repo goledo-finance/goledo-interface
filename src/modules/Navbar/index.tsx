@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
         </ul>
         <More />
 
-        <AuthConnectButton className='w-140px !rounded-100px'>
+        <AuthConnectButton className='min-w-156px !rounded-100px'>
           <div className='flex items-center px-12px h-36px rounded-100px border-1px border-#ebebed1f text-14px text-#F1F1F3 font-semibold'>
             {shortenAddress(account)}
           </div>
