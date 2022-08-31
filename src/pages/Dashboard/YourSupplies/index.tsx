@@ -7,6 +7,7 @@ import Table, { type Columns } from '@components/Table';
 import Toggle from '@components/Toggle';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
+import showWithdrawModal from '@service/handleWithdraw';
 
 const Zero = Unit.fromMinUnit(0);
 const PointZeroOne = Unit.fromMinUnit(0.01);
@@ -47,9 +48,9 @@ const columns: Columns<TokenInfo> = [{
 }, {
   name: '',
   width: '28%',
-  render: () => (
+  render: ({ address, symbol }) => (
     <div className='w-full h-full flex justify-end items-center'>
-      <Button size='small' fullWidth className='max-w-164px lt-md:max-w-none'>Withdraw</Button>
+      <Button size='small' fullWidth className='max-w-164px lt-md:max-w-none' onClick={() => showWithdrawModal({ address, symbol })}>Withdraw</Button>
     </div>
   )
 }];

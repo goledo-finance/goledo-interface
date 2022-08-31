@@ -1,4 +1,5 @@
 import React, { memo, useEffect, useRef, type ReactNode } from 'react';
+import cx from 'clsx';
 import { useChainId, useAccount } from '@cfxjs/use-wallet-react/ethereum';
 import { PopupClass } from '@components/Popup';
 import Button from '@components/Button';
@@ -11,8 +12,8 @@ ModalPopup.setListStyle({
 ModalPopup.setItemWrapperClassName('toast-item-wrapper');
 ModalPopup.setAnimatedSize(false);
 
-const Modal: React.FC<{ Content: ReactNode | Function; title: string }> = memo(
-  ({ Content, title }) => {
+const Modal: React.FC<{ Content: ReactNode | Function; title: string; className: string; }> = memo(
+  ({ Content, title, className }) => {
     const hasInit = useRef(false);
     const chainId = useChainId();
     const account = useAccount();
@@ -26,7 +27,7 @@ const Modal: React.FC<{ Content: ReactNode | Function; title: string }> = memo(
     }, [account, chainId]);
 
     return (
-      <div className="relative w-90vw max-w-560px p-24px rounded-8px bg-white overflow-hidden dropdown-shadow">
+      <div className={cx("relative w-90vw max-w-560px p-24px rounded-8px bg-white overflow-hidden dropdown-shadow", className)}>
         <div className='flex justify-between items-center text-22px text-#303549 font-semibold'>
           {title}
           <Button className='w-36px h-36px rounded-full' variant='text' onClick={ModalPopup.hideAll}>
@@ -40,9 +41,9 @@ const Modal: React.FC<{ Content: ReactNode | Function; title: string }> = memo(
   }
 );
 
-export const showModal = ({ Content, title }: { Content: Function | ReactNode; title: string; }) => {
+export const showModal = ({ Content, title, className }: { Content: Function | ReactNode; title: string; className?: string; }) => {
   return ModalPopup.show({
-    Content: <Modal Content={Content} title={title} />,
+    Content: <Modal Content={Content} title={title} className={className}/>,
     duration: 0,
     showMask: true,
     animationType: 'door',

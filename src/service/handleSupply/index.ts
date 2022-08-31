@@ -2,10 +2,9 @@ import { sendTransaction, store as walletStore, Unit } from '@cfxjs/use-wallet-r
 import { LendingPoolContract, WETHGatewayContract } from '@utils/contracts';
 export { default } from './showModal';
 
-
 export const createCFXData = (account: string) => WETHGatewayContract.interface.encodeFunctionData('depositETH', [import.meta.env.VITE_LendingPoolAddress, account, '0'])
 
-export const handleSupply = async ({ amount, symbol, address }: { amount: Unit; symbol:string; address: string;}) => {
+export const handleSupply = async ({ amount, symbol, tokenAddress }: { amount: Unit; symbol:string; tokenAddress: string;}) => {
     const account = walletStore.getState().accounts?.[0];
 
     try {
@@ -13,7 +12,7 @@ export const handleSupply = async ({ amount, symbol, address }: { amount: Unit; 
         if (symbol === 'CFX') {
             data = WETHGatewayContract.interface.encodeFunctionData('depositETH', [import.meta.env.VITE_LendingPoolAddress, account, '0']);
         } else {
-            data = LendingPoolContract.interface.encodeFunctionData('deposit', [address, amount.toHexMinUnit(), account, '0']);
+            data = LendingPoolContract.interface.encodeFunctionData('deposit', [tokenAddress, amount.toHexMinUnit(), account, '0']);
         }
 
         const TxnHash = await sendTransaction({

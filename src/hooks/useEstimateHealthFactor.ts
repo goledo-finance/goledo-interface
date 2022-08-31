@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useTokens, type TokenInfo } from '@store/index';
+import { cloneDeep } from 'lodash-es';
 
 const Zero = Unit.fromMinUnit(0);
 const TenThousand = Unit.fromMinUnit(10000);
@@ -8,9 +9,11 @@ const TenThousand = Unit.fromMinUnit(10000);
 const useEstimateHealthFactor = (estimateToken: PartialOmit<TokenInfo, 'symbol'>) => {
   const _tokens = useTokens();
   const tokens = useMemo(() => {
-    const targetToken = _tokens?.find(token => token.symbol === estimateToken.symbol);
-    if (!targetToken) return _tokens;
-    Object.assign(targetToken, estimateToken);
+    const targetTokenIndex = _tokens?.findIndex(token => token.symbol === estimateToken.symbol);
+    if (!targetTokenIndex || targetTokenIndex === -1) return _tokens;
+    const res = [..._tokens ?? []];
+    res[targetTokenIndex] = cloneDeep(res[targetTokenIndex]);
+    Object.assign(res[targetTokenIndex], estimateToken);
     return [..._tokens ?? []];
   }, [_tokens, estimateToken]);
 
