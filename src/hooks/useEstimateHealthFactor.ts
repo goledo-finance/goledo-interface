@@ -10,11 +10,11 @@ const useEstimateHealthFactor = (estimateToken: PartialOmit<TokenInfo, 'symbol'>
   const _tokens = useTokens();
   const tokens = useMemo(() => {
     const targetTokenIndex = _tokens?.findIndex(token => token.symbol === estimateToken.symbol);
-    if (!targetTokenIndex || targetTokenIndex === -1) return _tokens;
+    if (targetTokenIndex === undefined || targetTokenIndex === -1) return _tokens;
     const res = [..._tokens ?? []];
     res[targetTokenIndex] = cloneDeep(res[targetTokenIndex]);
     Object.assign(res[targetTokenIndex], estimateToken);
-    return [..._tokens ?? []];
+    return [...res ?? []];
   }, [_tokens, estimateToken]);
 
   const curUserSupplyTokens = useMemo(() => tokens?.filter((token) => token.supplyBalance?.greaterThan(Zero)), [tokens]);
@@ -35,7 +35,7 @@ const useEstimateHealthFactor = (estimateToken: PartialOmit<TokenInfo, 'symbol'>
     () => (curUserBorrowPrice && sumReserveLiquidationThreshold ? (curUserBorrowPrice.greaterThan(Zero) ? sumReserveLiquidationThreshold?.div(curUserBorrowPrice) : undefined) : undefined),
     [sumReserveLiquidationThreshold, curUserBorrowPrice]
   );
-  
+  console.log(healthFactor?.toDecimalMinUnit(2))
   return healthFactor?.toDecimalMinUnit(2);
 };
 

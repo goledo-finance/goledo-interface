@@ -10,10 +10,9 @@ import BalanceText from '@components/BalanceText';
 import useEstimateHealthFactor from '@hooks/useEstimateHealthFactor';
 import useERC20Token from '@hooks/useERC20Token';
 import useTransaction from '@hooks/useTransaction';
-import useEstimateCfxGasFee from '@hooks/useEstimateCfxGasFee';
 import Success from '@assets/icons/success.svg';
 import Error from '@assets/icons/error.svg';
-import { handleBorrow, createCFXData } from './index';
+import { handleBorrow } from './index';
 
 const Zero = Unit.fromMinUnit(0);
 const PointZeroOne = Unit.fromMinUnit(0.01);

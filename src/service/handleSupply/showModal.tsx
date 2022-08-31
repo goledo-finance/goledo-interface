@@ -31,7 +31,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const estimateToken = useMemo(() => {
     const res: PartialOmit<TokenInfo, 'symbol'> = { symbol: token.symbol };
     if (!confirmAmountUnit || !token.supplyBalance || !token.usdPrice) return res;
-    const supplyBalance = token.supplyBalance.sub(confirmAmountUnit);
+    const supplyBalance = token.supplyBalance.add(confirmAmountUnit);
     const supplyPrice = token.usdPrice.mul(supplyBalance);
     res.supplyBalance = supplyBalance;
     res.supplyPrice = supplyPrice;
