@@ -140,7 +140,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You withdrew <span className='font-semibold'>{confirmAmountUnit?.toDecimalStandardUnit(2)}</span> CFX
+                You withdrew <span className='font-semibold'>{confirmAmountUnit?.toDecimalStandardUnit(2)}</span> {token?.symbol}
               </>
             )}
             {transactionStatus === 'failed' && error}

@@ -15,7 +15,7 @@ import Error from '@assets/icons/error.svg';
 import { handleBorrow } from './index';
 
 const Zero = Unit.fromMinUnit(0);
-const PointZeroOne = Unit.fromMinUnit(0.01);
+const PointZeroOne = Unit.fromMinUnit(0.0001);
 const Hundred = Unit.fromMinUnit(100);
 
 const ModalContent: React.FC<{ address: string }> = ({ address }) => {
@@ -129,7 +129,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             loading={(approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending') ? 'start' : undefined}
             onClick={() => {
               if (approveStatus === 'approved') {
-                sendTransaction({ amount: confirmAmountUnit, symbol: token.symbol, tokenAddress: token.borrowTokenAddress });
+                sendTransaction({ amount: confirmAmountUnit, symbol: token.symbol, tokenAddress: address });
               } else if (approveStatus === 'need-approve') {
                 handleApprove();
               }
@@ -157,7 +157,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You supplied <span className='font-semibold'>{confirmAmountUnit?.toDecimalStandardUnit(2)}</span> CFX
+                You Borrowed <span className='font-semibold'>{confirmAmountUnit?.toDecimalStandardUnit(2)}</span> {token?.symbol}
               </>
             )}
             {transactionStatus === 'failed' && error}

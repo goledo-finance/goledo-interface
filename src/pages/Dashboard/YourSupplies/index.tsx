@@ -10,7 +10,7 @@ import Button from '@components/Button';
 import showWithdrawModal from '@service/handleWithdraw';
 
 const Zero = Unit.fromMinUnit(0);
-const PointZeroOne = Unit.fromMinUnit(0.01);
+const PointZeroOne = Unit.fromMinUnit(0.0001);
 const Hundred = Unit.fromMinUnit(100);
 
 const columns: Columns<TokenInfo> = [{
