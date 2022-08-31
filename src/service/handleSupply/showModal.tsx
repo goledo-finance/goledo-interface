@@ -2,15 +2,20 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { TokenInfo, useTokens, useUserData } from '@store/Tokens';
-import { showModal } from '@components/showPopup/Modal';
+import { showModal, hideAllModal } from '@components/showPopup/Modal';
 import BalanceInput from '@components/BalanceInput';
 import ToolTip from '@components/Tooltip';
 import Button from '@components/Button';
 import BalanceText from '@components/BalanceText';
 import useEstimateHealthFactor from '@hooks/useEstimateHealthFactor';
 import useERC20Token from '@hooks/useERC20Token';
-import { handleSupply } from './index';
+import useTransaction from '@hooks/useTransaction';
+import useEstimateCfxGasFee from '@hooks/useEstimateCfxGasFee';
+import Success from '@assets/icons/success.svg';
+import Error from '@assets/icons/error.svg';
+import { handleSupply, createCFXData } from './index';
 
+const Zero = Unit.fromMinUnit(0);
 const PointZeroOne = Unit.fromMinUnit(0.01);
 const Hundred = Unit.fromMinUnit(100);
 
@@ -18,7 +23,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const [confirmAmount, setConfirmAmount] = useState<string | null>(null);
   const confirmAmountUnit = useMemo(() => (confirmAmount ? Unit.fromStandardUnit(confirmAmount || 0) : undefined), [confirmAmount]);
 
-  const { register, handleSubmit: withForm, setValue, watch } = useForm();
+  const { register, handleSubmit: withForm } = useForm();
 
   const userData = useUserData();
   const tokens = useTokens();
@@ -34,28 +39,30 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   }, [token, confirmAmountUnit]);
   const estimateHealthFactor = useEstimateHealthFactor(estimateToken);
 
-  const { status, handleApprove } = useERC20Token({
+  const cfxGasFee = useEstimateCfxGasFee({ createData: createCFXData, to: import.meta.env.VITE_WETHGatewayAddress, isCFX: token?.symbol === 'CFX' });
+
+  const handleContinue = useCallback(withForm(({ amount }) => setConfirmAmount(amount)),[]);
+
+  const { status: approveStatus, handleApprove } = useERC20Token({
     isCFX: token.symbol === 'CFX',
     tokenAddress: address,
     contractAddress: import.meta.env.VITE_LendingPoolAddress,
     amount: confirmAmountUnit,
   });
 
-  const onSubmit = useCallback(
-    withForm(({ amount }) => setConfirmAmount(amount)),
-    []
-  );
+  const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleSupply);
 
+  const max = token?.symbol !== 'CFX' ? token?.balance : (cfxGasFee && token?.balance ? (token.balance.greaterThan(cfxGasFee) ? token.balance.sub(cfxGasFee) : Zero) : undefined);
   if (!token) return null;
   return (
-    <div>
+    <div className='relative'>
       {!confirmAmount && (
-        <form onSubmit={onSubmit} className="mt-10px">
+        <form onSubmit={handleContinue} className="mt-10px">
           <BalanceInput
             {...register('amount', {
               required: true,
               min: Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals),
-              max: token?.balance?.toDecimalStandardUnit(),
+              max: max?.toDecimalStandardUnit(),
             })}
             title={
               <span>
@@ -70,15 +77,15 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             decimals={token?.decimals}
             usdPrice={token?.usdPrice!}
             min={Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals)}
-            max={token?.balance!}
+            max={max}
           />
 
-          <Button fullWidth size="large" className="mt-40px">
-            Continue
+          <Button fullWidth size="large" className="mt-48px" disabled={!max} loading={!max ? 'start' : undefined}>
+            {max ? 'Continue' : 'Checking Gas Fee...'}
           </Button>
         </form>
       )}
-      {confirmAmount && confirmAmountUnit && (
+      {confirmAmount && confirmAmountUnit && transactionStatus !== 'success' && transactionStatus !== 'failed' && (
         <>
           <p className="mt-30px mb-4px text-14px text-#62677B">These are your transaction details. Make sure to check if this is correct before submitting.</p>
           <div className="flex flex-col gap-16px p-12px rounded-4px border-1px border-#EAEBEF text-14px text-#303549">
@@ -120,20 +127,57 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           <Button
             fullWidth
             size="large"
-            className="mt-40px"
-            disabled={status === 'checking-approve' || status === 'approving'}
+            className="mt-48px"
+            disabled={approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending'}
+            loading={(approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending') ? 'start' : undefined}
             onClick={() => {
-              if (status === 'approved') {
-                handleSupply({ amount: confirmAmountUnit, symbol: token.symbol, address: token.address });
-              } else if (status === 'need-approve') {
+              if (approveStatus === 'approved') {
+                sendTransaction({ amount: confirmAmountUnit, symbol: token.symbol, address: token.address });
+              } else if (approveStatus === 'need-approve') {
                 handleApprove();
               }
             }}
           >
-            {status === 'checking-approve' && 'Checking Approve...'}
-            {status === 'approving' && 'Approving...'}
-            {status === 'need-approve' && `Approve ${token?.symbol}`}
-            {status === 'approved' && `Supply ${token?.symbol}`}
+            {transactionStatus === 'waiting' && (
+              <>
+                {approveStatus === 'checking-approve' && 'Checking Approve...'}
+                {approveStatus === 'approving' && 'Approving...'}
+                {approveStatus === 'need-approve' && `Approve ${token?.symbol}`}
+                {approveStatus === 'approved' && `Supply ${token?.symbol}`}
+              </>
+            )}
+            {transactionStatus === 'sending' && `Supplying ${token?.symbol}...`}
+          </Button>
+        </>
+      )}
+      {(transactionStatus === 'success' || transactionStatus === 'failed') && (
+        <>
+          <img src={transactionStatus === 'success' ? Success : Error} alt="error" className="block w-48px h-48px mt-24px mx-auto" />
+          <p className="mt-12px mb-8px text-20px text-#303549 text-center font-semibold">
+            {transactionStatus === 'success' && 'All done!'}
+            {transactionStatus === 'failed' && 'Transaction failed!'}
+          </p>
+          <p className="text-14px text-#303549 text-center">
+            {transactionStatus === 'success' && (
+              <>
+                You supplied <span className='font-semibold'>{confirmAmountUnit?.toDecimalStandardUnit(2)}</span> CFX
+              </>
+            )}
+            {transactionStatus === 'failed' && error}
+          </p>
+          {scanUrl &&
+            <a
+              className='absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline'
+              href={scanUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Review tx details
+              <span className='i-charm:link-external ml-3px text-10px translate-y-[-.5px]' />
+            </a>
+          }
+          <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
+            OK
           </Button>
         </>
       )}

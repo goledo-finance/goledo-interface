@@ -12,18 +12,18 @@ export const isTransactionReceipt = async (transactionHash: string) => {
 
 const waitTwoSeconds = () => new Promise((resolve) => setTimeout(resolve, 2000));
 
-const retryTimes = Array.from({ length: 7 });
-const waitTransactionReceipt = async (transactionHash: string): Promise<TranscationReceipt> => {
+const waitTransactionReceipt = async (transactionHash: string, waitTime: number = 44000): Promise<TranscationReceipt> => {
   return new Promise<TranscationReceipt>(async (resolve, reject) => {
-        for await (const _ of retryTimes) {
-            const txReceipt = await isTransactionReceipt(transactionHash);
-            if (txReceipt !== null) {
-                resolve(txReceipt);
-                return;
-            }
-            await waitTwoSeconds();
-        }
-        reject(new Error('Transaction timeout'));
+    const retryTimes = Array.from({ length: Math.floor(waitTime / 2000) });
+    for await (const _ of retryTimes) {
+      const txReceipt = await isTransactionReceipt(transactionHash);
+      if (txReceipt !== null) {
+        resolve(txReceipt);
+        return;
+      }
+      await waitTwoSeconds();
+    }
+    reject(new Error('Transaction timeout'));
   });
 };
 

@@ -10,7 +10,7 @@ export interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'mini' | 'small' | 'medium' | 'large';
   shape?: 'rect' | 'circle' | 'round';
   fullWidth?: boolean;
-  loading?: boolean;
+  loading?: boolean | 'start' | 'end';
   icon?: ReactNode;
   startIcon?: ReactNode;
   endIcon?: ReactNode;
@@ -43,7 +43,7 @@ const Button = forwardRef<HTMLButtonElement, PropsWithChildren<Props>>(
         className: cx(
           `fui-button fui-button--${variant} fui-button--${color} fui-button--${size} fui-button--${shape}`,
           fullWidth && 'fui-button--fullWidth',
-          loading && 'is-loading',
+          loading === true && 'is-loading',
           disabled && 'is-disabled',
           className
         ),
@@ -52,10 +52,15 @@ const Button = forwardRef<HTMLButtonElement, PropsWithChildren<Props>>(
       },
       <>
         {startIcon && <span className="fui-button__icon">{renderReactNode(startIcon)}</span>}
-        {children && <span className="fui-button__content">{children}</span>}
+        {children && 
+          <span className="fui-button__content">
+            {loading === 'start' && <Spin className='mr-8px text-1.5em'/>}
+            {children}
+          </span>
+        }
         {!children && icon && <span className="fui-button__icon">{renderReactNode(icon)}</span>}
         {endIcon && <span className="fui-button__icon">{renderReactNode(endIcon)}</span>}
-        {loading && <Spin className="fui-button__loading" />}
+        {loading === true && <Spin className="fui-button__loading" />}
       </>
     );
   }

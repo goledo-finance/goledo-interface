@@ -127,6 +127,10 @@ button.fui-button--text.is-disabled {
   @apply bg-[#F7F8FA] text-#303549;
 }
 
+.fui-button__content {
+  @apply inline-flex items-center h-full;
+}
+
 /** loading **/
 .is-loading > .fui-button__content,
 .is-loading > .fui-button__icon {

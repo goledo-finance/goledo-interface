@@ -3,7 +3,7 @@
 }
 
 .balanceInput-wrapper:focus-within {
-    @apply border-#303549 ring-1px ring-#303549;
+  @apply border-#303549 ring-1px ring-#303549;
 }
 
 .balanceInput {
@@ -11,11 +11,11 @@
 }
 
 .balanceInput-errorBorder {
-    @apply absolute -left-1px -top-1px -right-1px -bottom-1px rounded-2px border-1px border-#E96170 ring-1px ring-#E96170 opacity-0 pointer-events-none transition-opacity;
+  @apply absolute -left-1px -top-1px -right-1px -bottom-1px rounded-2px border-1px border-#E96170 ring-1px ring-#E96170 opacity-0 pointer-events-none transition-opacity;
 }
 
 .balanceInput:invalid ~ .balanceInput-errorBorder {
-    @apply opacity-100;
+  @apply opacity-100;
 }
 
 .balanceInput-error {
@@ -30,7 +30,6 @@
   @apply opacity-100;
 }
 
-
 .balanceInput:disabled {
-    @apply bg-[#F7F8FA] text-opacity-70 cursor-not-allowed;
+  @apply bg-transparent;
 }

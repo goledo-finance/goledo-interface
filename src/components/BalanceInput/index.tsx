@@ -15,7 +15,7 @@ export type Props = OverWrite<
     symbol: string;
     decimals: number;
     usdPrice: Unit;
-    max: Unit;
+    max?: Unit;
     title?: string | React.ReactNode;
     error?: string;
     inputClassName?: string;
@@ -41,7 +41,7 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
 
     const handleChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>(
       (evt) => {
-        if (!domRef.current || !curInputPrice.current) return;
+        if (!domRef.current || !curInputPrice.current || !usdPrice) return;
         onChange?.(evt);
         curInputPrice.current.innerText = evt.target.value
           ? `$${Unit.fromStandardUnit(evt.target.value, decimals).mul(usdPrice).toDecimalStandardUnit(2, decimals)}`
@@ -63,6 +63,7 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
               max={max?.toDecimalStandardUnit(undefined, decimals)}
               onChange={handleChange}
               type="number"
+              disabled={!max}
               {...props}
             />
             <div className="ml-16px flex items-center text-18px text-#303549 font-semibold">
@@ -79,7 +80,7 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
                 Balance <BalanceText balance={max} decimals={decimals} placement="bottom"/>
               </span>
 
-              <Button className="ml-8px !text-#62677B font-normal" variant="text" size="mini" type="button" onClick={handleClickMax}>
+              <Button className="ml-8px !text-#62677B font-normal" variant="text" size="mini" type="button" disabled={!max} onClick={handleClickMax}>
                 MAX
               </Button>
             </div>
