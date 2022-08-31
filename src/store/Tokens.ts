@@ -47,6 +47,8 @@ export interface TokenInfo {
   name: string;
   symbol: string;
   decimals: number;
+  supplyTokenAddress: string;
+  borrowTokenAddress: string;
 
   usdPrice?: Unit;
   collateral?: boolean;
@@ -294,7 +296,7 @@ const aggregateData = debounce(() => {
     return;
   }
 
-  const tokens = tokensInPool?.map(({ address, symbol, name, decimals }) => ({ address, symbol, name, decimals })) as Array<TokenInfo>;
+  const tokens = tokensInPool?.map(({ address, symbol, name, decimals, supplyTokenAddress, borrowTokenAddress }) => ({ address, symbol, name, decimals, supplyTokenAddress, borrowTokenAddress })) as Array<TokenInfo>;
   tokens.forEach((token) => {
     if (tokensBalance?.[token.address]) {
       Object.assign(token, tokensBalance[token.address])
@@ -311,7 +313,7 @@ const aggregateData = debounce(() => {
     token.maxLTV = tokensData?.[token.address]?.maxLTV?.toFixed(2);
     token.canBecollateral = tokensData?.[token.address]?.canBecollateral;
     token.availableBorrowBalance = tokensData?.[token.address]?.availableBorrowBalance;
-    
+
     if (tokensData?.[token.address]?.reserveLiquidationThreshold) {
       token.liquidationThreshold = tokensData[token.address].reserveLiquidationThreshold.div(Hundred).toDecimalMinUnit(2);
     }

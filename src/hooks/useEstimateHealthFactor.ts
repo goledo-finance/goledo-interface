@@ -35,7 +35,7 @@ const useEstimateHealthFactor = (estimateToken: PartialOmit<TokenInfo, 'symbol'>
     () => (curUserBorrowPrice && sumReserveLiquidationThreshold ? (curUserBorrowPrice.greaterThan(Zero) ? sumReserveLiquidationThreshold?.div(curUserBorrowPrice) : undefined) : undefined),
     [sumReserveLiquidationThreshold, curUserBorrowPrice]
   );
-  console.log(healthFactor?.toDecimalMinUnit(2))
+  
   return healthFactor?.toDecimalMinUnit(2);
 };
 

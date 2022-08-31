@@ -1,7 +1,7 @@
 import { sendTransaction, store as walletStore, Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { LendingPoolContract, WETHGatewayContract } from '@utils/contracts';
 export { default } from './showModal';
-console.log(WETHGatewayContract)
+
 export const handleWithdraw = async ({ amount, tokenAddress, symbol }: { amount: Unit; tokenAddress: string; symbol: string }) => {
   const account = walletStore.getState().accounts?.[0];
 
