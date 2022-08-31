@@ -9,7 +9,7 @@ import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
 import Network from '@utils/Network';
 
-const PointZeroOne = Unit.fromMinUnit(0.01);
+const PointZeroOne = Unit.fromMinUnit(0.0001);
 const Hundred = Unit.fromMinUnit(100);
 
 const columns: Columns<TokenInfo> = [{

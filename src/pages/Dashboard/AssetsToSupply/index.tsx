@@ -9,7 +9,7 @@ import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
 import showSupplyModal from '@service/handleSupply';
 
-const PointZeroOne = Unit.fromMinUnit(0.01);
+const PointZeroOne = Unit.fromMinUnit(0.0001);
 const Hundred = Unit.fromMinUnit(100);
 
 const columns: Columns<TokenInfo> = [{
@@ -30,7 +30,7 @@ const columns: Columns<TokenInfo> = [{
 }, {
   name: 'APY',
   width: '18%',
-  render: ({ borrowAPY }) => <div className='font-semibold'>{`${borrowAPY?.greaterThan(PointZeroOne) ? `${borrowAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}`}</div>
+  render: ({ supplyAPY }) => <div className='font-semibold'>{`${supplyAPY?.greaterThan(PointZeroOne) ? `${supplyAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}`}</div>
 }, {
   name: 'Can be collateral',
   width: '17%',

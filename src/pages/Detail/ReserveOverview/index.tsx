@@ -5,7 +5,7 @@ import tokensIcon from '@assets/tokens';
 import { type Token } from '../index';
 import './index.css';
 
-const PointZeroOne = Unit.fromMinUnit(0.01);
+const PointZeroOne = Unit.fromMinUnit(0.0001);
 const Hundred = Unit.fromMinUnit(100);
 
 const ReserveOverview: React.FC<Token> = ({
