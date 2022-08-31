@@ -30,7 +30,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const estimateToken = useMemo(() => {
     const res: PartialOmit<TokenInfo, 'symbol'> = { symbol: token.symbol };
     if (!confirmAmountUnit || !token.borrowBalance || !token.usdPrice) return res;
-    const borrowBalance = token.borrowBalance.sub(confirmAmountUnit);
+    const borrowBalance = token.borrowBalance.add(confirmAmountUnit);
     const borrowPrice = token.usdPrice.mul(borrowBalance);
     res.borrowBalance = borrowBalance;
     res.borrowPrice = borrowPrice;
@@ -93,19 +93,6 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
                 <p className="mt-2px text-12px text-#62677B">${confirmAmountUnit.mul(token?.usdPrice!).toDecimalStandardUnit(2)}</p>
               </div>
             </div>
-
-            <div className="flex justify-between">
-              <span>Borrow APY</span>
-              <div className="text-right">
-                {`${token?.borrowAPY?.greaterThan(PointZeroOne) ? `${token?.borrowAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}`}
-              </div>
-            </div>
-
-            <div className="flex justify-between">
-              <span>Collateralization</span>
-              <div className="text-right">Disabled</div>
-            </div>
-
             {estimateHealthFactor && (
               <div className="flex justify-between">
                 <span>Health factor</span>
