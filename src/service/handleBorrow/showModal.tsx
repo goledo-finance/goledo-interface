@@ -94,18 +94,6 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               </div>
             </div>
 
-            <div className="flex justify-between">
-              <span>Borrow APY</span>
-              <div className="text-right">
-                {`${token?.borrowAPY?.greaterThan(PointZeroOne) ? `${token?.borrowAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}`}
-              </div>
-            </div>
-
-            <div className="flex justify-between">
-              <span>Collateralization</span>
-              <div className="text-right">Disabled</div>
-            </div>
-
             {estimateHealthFactor && (
               <div className="flex justify-between">
                 <span>Health factor</span>
