@@ -42,7 +42,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
 
   const { status: approveStatus, handleApprove } = useERC20Token({
     isCFX: token.symbol === 'CFX',
-    tokenAddress: token.borrowTokenAddress,
+    tokenAddress: address,
     contractAddress: import.meta.env.VITE_LendingPoolAddress,
     amount: confirmAmountUnit,
   });
@@ -93,6 +93,19 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
                 <p className="mt-2px text-12px text-#62677B">${confirmAmountUnit.mul(token?.usdPrice!).toDecimalStandardUnit(2)}</p>
               </div>
             </div>
+
+            <div className="flex justify-between">
+              <span>Borrow APY</span>
+              <div className="text-right">
+                {`${token?.borrowAPY?.greaterThan(PointZeroOne) ? `${token?.borrowAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}`}
+              </div>
+            </div>
+
+            <div className="flex justify-between">
+              <span>Collateralization</span>
+              <div className="text-right">Disabled</div>
+            </div>
+
             {estimateHealthFactor && (
               <div className="flex justify-between">
                 <span>Health factor</span>
@@ -116,7 +129,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             loading={(approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending') ? 'start' : undefined}
             onClick={() => {
               if (approveStatus === 'approved') {
-                sendTransaction({ amount: confirmAmountUnit, symbol: token.symbol, tokenAddress: token.address });
+                sendTransaction({ amount: confirmAmountUnit, symbol: token.symbol, tokenAddress: token.borrowTokenAddress });
               } else if (approveStatus === 'need-approve') {
                 handleApprove();
               }
