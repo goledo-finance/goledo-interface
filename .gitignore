@@ -26,3 +26,4 @@ dist-ssr
 pnpm-lock.yaml
 yarn.lock
 stats.html
+__unconfig_vite.config.ts
