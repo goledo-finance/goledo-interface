@@ -62,8 +62,8 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
       : undefined;
   const debt = token?.borrowBalance;
   const max = debt && maxBalance ? Unit.min(debt, maxBalance) : undefined;
-  const debtAfterRepay = confirmAmount ? debt?.sub(Unit.fromMinUnit(confirmAmount)) : undefined;
-  console.log(maxBalance?.toString(), debt?.toString(), max?.toString(), debtAfterRepay?.toString())
+  const debtAfterRepay = confirmAmount ? debt?.sub(Unit.fromStandardUnit(confirmAmount)) : undefined;
+  console.log(token?.balance?.toString(), maxBalance?.toString(), debt?.toString(), max?.toString(), debtAfterRepay?.toString())
 
   if (!token) return null;
   return (
