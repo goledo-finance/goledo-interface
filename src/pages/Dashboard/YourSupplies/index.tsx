@@ -8,6 +8,7 @@ import Toggle from '@components/Toggle';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
 import showWithdrawModal from '@service/handleWithdraw';
+import showCollateralChangeModal from '@service/handleCollateralChange';
 
 const Zero = Unit.fromMinUnit(0);
 const PointZeroOne = Unit.fromMinUnit(0.0001);
@@ -40,9 +41,9 @@ const columns: Columns<TokenInfo> = [{
   name: 'Collateral',
   width: '17%',
   renderHeader: () => <div className='flex justify-center items-center'>Collateral</div>,
-  render: ({collateral, canBeCollateral}) => (
+  render: ({collateral, canBeCollateral, address, symbol}) => (
     <div className='flex items-center'>
-      <Toggle checked={collateral} disabled={!canBeCollateral} />
+      <Toggle checked={collateral && canBeCollateral} disabled={!canBeCollateral} onClick={() => showCollateralChangeModal({ address, symbol })} />
     </div>
   )
 }, {
@@ -91,7 +92,6 @@ const YourSupplies: React.FC = () => {
         : curUserSupplyTokens.filter((token) => token.collateral).reduce((pre, cur) => pre.add(cur.supplyPrice ?? Zero), Zero),
     [curUserSupplyTokens]
   );
-  console.log(tokens)
 
   return (
     <Card title='Your Supplies' showHideButton='no-pb' className='w-50% lt-2xl:w-full'>
