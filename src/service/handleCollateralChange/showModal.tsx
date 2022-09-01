@@ -26,13 +26,12 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleCollateralChange);
 
   const { collateral, canBeCollateral } = token;
-  const collateralAfterSwitch = !collateral;
   const estimateToken = useMemo(() => {
     const res: PartialOmit<TokenInfo, 'symbol'> = { symbol: token.symbol };
     if (token.collateral === undefined) return res;
-    token.collateral = collateralAfterSwitch;
+    token.collateral = !token.collateral;
     return res;
-  }, [token, collateralAfterSwitch]);
+  }, [token]);
   const estimateHealthFactor = useEstimateHealthFactor(estimateToken);
 
   // error handling
@@ -59,6 +58,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
     }
   };
 
+  const collateralAfterSwitch = !collateral;
   if (!token) return null;
   return (
     <div className="relative">
