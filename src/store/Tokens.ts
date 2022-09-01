@@ -409,7 +409,6 @@ const convertOriginTokenData = (originData: any, availableBorrowsUSD: Unit) => {
     reserveLiquidationBonus: Unit.fromMinUnit(originData.reserveLiquidationBonus._hex),
     maxLTV: Number(originData.baseLTVasCollateral._hex) / 100,
   } as TokenData;
-  
   res.availableBorrowBalance = Unit.fromStandardUnit(availableBorrowsUSD.div(res.usdPrice).toDecimalStandardUnit(res.decimals, res.decimals), res.decimals);
   const liquidityRate = Unit.fromMinUnit(originData.liquidityRate._hex);
   const supplyAPR = liquidityRate.div(Ray);

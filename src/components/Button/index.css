@@ -138,7 +138,7 @@ button.fui-button--text.is-disabled {
 }
 
 .fui-button__loading {
-  @apply !absolute left-[50%] top-[50%] -translate-x-[50%] -translate-y-[calc(50%-0.05em)] text-[1.6em];
+  @apply !absolute left-[50%] top-[50%] -translate-x-[50%] -translate-y-[calc(50%-0.14em)] text-[1.6em];
 }
 
 /** start end icon **/
