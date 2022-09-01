@@ -4,6 +4,7 @@ import { useLp } from '@store/index';
 import Card from '@components/Card';
 import Button from '@components/Button';
 import showStakeAndUnstakeLPModal from '@service/handleStakeAndUnStakeLP';
+import handleVestingGoledo from '@service/handleVestingGoledo';
 
 const Hundred = Unit.fromMinUnit(100);
 
@@ -16,8 +17,8 @@ const LP: React.FC = () => {
     totalMarketStakedPrice,
     stakedBalance,
     stakedPrice,
-    pendingRewardsBalance,
-    pendingRewardsPrice,
+    earnedGoledoBalance,
+    earnedGoledoPrice,
     totalRewardsPerDayBalance,
     totalRewardsPerDayPrice,
     totalRewardsPerWeekBalance,
@@ -55,8 +56,8 @@ const LP: React.FC = () => {
       <div className="flex justify-between items-center h-56px border-b-1px border-#eaebef">
         <span>Pending Rewards</span>
         <div className="text-right">
-          <p className='text-#111'>{pendingRewardsBalance?.toDecimalStandardUnit(2)} Goledo</p>
-          <p>${pendingRewardsPrice?.toDecimalStandardUnit(2)}</p>
+          <p className='text-#111'>{earnedGoledoBalance?.toDecimalStandardUnit(2)} Goledo</p>
+          <p>${earnedGoledoPrice?.toDecimalStandardUnit(2)}</p>
         </div>
       </div>
 
@@ -79,7 +80,7 @@ const LP: React.FC = () => {
       <div className='mt-12px flex gap-12px'>
         <Button size='large' className='w-33% !flex-auto' loading={!balance} onClick={() => showStakeAndUnstakeLPModal({ type: 'Stake' })}>Stake</Button>
         <Button size='large' className='w-33% !flex-auto' loading={!balance} onClick={() => showStakeAndUnstakeLPModal({ type: 'Unstake' })}>Unstake</Button>
-        <Button size='large' className='w-33% !flex-auto'>Vest</Button>
+        <Button size='large' className='w-33% !flex-auto' loading={!earnedGoledoBalance} onClick={() => handleVestingGoledo({ tokenAddress: 'lp'})}>Vest</Button>
       </div>
     </Card>
   );

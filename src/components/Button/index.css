@@ -1,6 +1,6 @@
 /** common **/
 .fui-button {
-  @apply relative inline-flex justify-center items-center #F1F1F3space-nowrap outline-none transition-colors font-semibold cursor-pointer;
+  @apply relative inline-flex justify-center items-center #F1F1F3 whitespace-nowrap outline-none transition-colors font-semibold cursor-pointer;
 }
 
 button.fui-button {
@@ -18,19 +18,19 @@ button.absolute {
 
 /* size & shape */
 .fui-button--mini {
-  @apply text-[12px] h-[24px] px-[10px] rounded-4px ;
+  @apply text-[12px] h-[24px] px-[10px] rounded-4px leading-22px ;
 }
 
 .fui-button--small {
-  @apply text-[12px] h-[32px] px-[14px] rounded-4px;
+  @apply text-[12px] h-[32px] px-[14px] rounded-4px leading-30px;
 }
 
 .fui-button--medium {
-  @apply text-[14px] h-[36px] px-[18px] rounded-6px;
+  @apply text-[14px] h-[36px] px-[18px] rounded-6px leading-34px;
 }
 
 .fui-button--large {
-  @apply text-[14px] h-[40px] px-[22px] rounded-8px;
+  @apply text-[14px] h-[40px] px-[22px] rounded-8px leading-38px;
 }
 
 /** disabled & loading **/

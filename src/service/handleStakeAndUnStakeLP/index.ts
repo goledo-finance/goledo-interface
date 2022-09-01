@@ -7,8 +7,8 @@ export const handleStake = async ({ amount, type }: { amount: Unit; type: 'Stake
     const TxnHash = await sendTransaction({
       to: import.meta.env.VITE_MasterChefAddress,
       data: type === 'Stake' ?
-        MasterChefContract.interface.encodeFunctionData('deposit', [import.meta.env.VITE_LPTokenAddress, amount.toHexMinUnit()])
-        : MasterChefContract.interface.encodeFunctionData('withdraw', [import.meta.env.VITE_LPTokenAddress, amount.toHexMinUnit()]),
+        MasterChefContract.interface.encodeFunctionData('deposit', [import.meta.env.VITE_SwappiPairAddress, amount.toHexMinUnit()])
+        : MasterChefContract.interface.encodeFunctionData('withdraw', [import.meta.env.VITE_SwappiPairAddress, amount.toHexMinUnit()]),
     });
     return TxnHash;
   } catch (err) {

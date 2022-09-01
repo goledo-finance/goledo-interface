@@ -3,7 +3,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import LocalStorage from 'localstorage-enhance';
 import { store as walletStore, Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { intervalFetchChain } from '@utils/fetchChain';
-import { UiPoolDataContract, LendingPoolContract, MulticallContract, createERC20Contract } from '@utils/contracts';
+import { UiPoolDataContract, LendingPoolContract, MulticallContract, ChefIncentivesControllerContract, createERC20Contract } from '@utils/contracts';
 import { isEqual, debounce } from 'lodash-es';
 
 interface Token {
@@ -71,6 +71,7 @@ export interface TokenInfo {
   totalMarketBorrowBalance?: Unit;
   totalMarketBorrowPrice?: Unit;
   availableBorrowBalance?: Unit;
+  earnedGoledoBalance?: Unit;
 }
 
 interface TokensStore {
@@ -87,6 +88,7 @@ interface TokensStore {
       borrowBalance?: Unit;
       totalMarketSupplyBalance?: Unit;
       totalMarketBorrowBalance?: Unit;
+      earnedGoledoBalance?: Unit,
     }
   >;
 
@@ -219,18 +221,24 @@ const calcUserBalance = debounce(() => {
     const tokenContract = createERC20Contract(borrowTokenAddress);
     return [borrowTokenAddress, tokenContract.interface.encodeFunctionData('totalSupply')];
   });
+
   const promises = getBalancePromises
     .concat(getSupplyBalancePromises)
     .concat(getBrrowBalancePromises)
     .concat(getTotalSupplyBalancePromises)
     .concat(getTotalBrrowBalancePromises);
+  promises.push([
+    import.meta.env.VITE_ChefIncentivesControllerContractAddress,
+    ChefIncentivesControllerContract.interface.encodeFunctionData('claimableReward', [account, tokens.map(token => token.borrowTokenAddress).concat(tokens.map(token => token.supplyTokenAddress))])
+  ]);
 
   unsubBalance = intervalFetchChain(() => MulticallContract.callStatic.aggregate(promises), {
     intervalTime: 5000,
     equalKey: 'tokensBalance',
-    callback: (result: { returnData: Array<string> }) => {
+    callback: (result: { returnData: any; }) => {
       const tokensBalance: TokensStore['tokensBalance'] = Object.fromEntries(tokens.map((token) => [token.address, {}]));
-
+      const eachTokenEarnedGoledoBalance = ChefIncentivesControllerContract.interface.decodeFunctionResult('claimableReward', result?.['returnData']?.at(-1))?.[0];
+      
       tokens.forEach((token, index) => {
         if (token.symbol === 'CFX') {
           tokensBalance[token.address].balance = walletStore.getState().balance;
@@ -242,7 +250,9 @@ const calcUserBalance = debounce(() => {
         tokensBalance[token.address].borrowBalance = Unit.fromMinUnit(result?.['returnData']?.[index + tokens.length * 2] ?? 0);
         tokensBalance[token.address].totalMarketSupplyBalance = Unit.fromMinUnit(result?.['returnData']?.[index + tokens.length * 3] ?? 0);
         tokensBalance[token.address].totalMarketBorrowBalance = Unit.fromMinUnit(result?.['returnData']?.[index + tokens.length * 4] ?? 0);
+        tokensBalance[token.address].earnedGoledoBalance = Unit.fromMinUnit(eachTokenEarnedGoledoBalance?.[index]?._hex ?? 0).add(Unit.fromMinUnit(eachTokenEarnedGoledoBalance?.[index + tokens.length]?._hex ?? 0));
       });
+
       tokensStore.setState({ tokensBalance });
     },
   });

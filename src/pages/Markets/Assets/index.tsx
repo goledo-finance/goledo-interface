@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useTokens, TokenInfo } from '@store/index';
@@ -8,7 +8,9 @@ import Table, { type Columns } from '@components/Table';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
 import Network from '@utils/Network';
+import handleVestingGoledo from '@service/handleVestingGoledo';
 
+const Zero = Unit.fromMinUnit(0);
 const PointZeroOne = Unit.fromMinUnit(0.0001);
 const Hundred = Unit.fromMinUnit(100);
 
@@ -51,9 +53,17 @@ const columns: Columns<TokenInfo> = [{
 }, {
   name: '',
   width: '20%',
-  render: ({ address }) => (
+  render: ({ address, earnedGoledoBalance }) => (
     <div className='w-full h-full flex justify-end items-center gap-12px'>
-      <Button size='small' className='!flex-shrink-1 lt-md:max-w-none lt-md:w-50%'>Vest xxxx Goledo</Button>
+        <Button
+          size='small'
+          className='!flex-shrink-1 lt-md:max-w-none lt-md:w-50%'
+          loading={!earnedGoledoBalance}
+          disabled={earnedGoledoBalance?.equals(Zero)}
+          onClick={() => handleVestingGoledo({ tokenAddress: address })}
+        >
+          {earnedGoledoBalance?.greaterThan(Zero) ? `Vest ${earnedGoledoBalance?.toDecimalStandardUnit(2) ?? '--'} Goledo` : 'None to vest'}
+        </Button>
       <Link to={`/detail/${address}`} className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none no-underline'>
         <Button size='small' variant='outlined' fullWidth>Details</Button>
       </Link>

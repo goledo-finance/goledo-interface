@@ -6,6 +6,7 @@ import Table, { type Columns } from '@components/Table';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
 import GoledoIcon from '@assets/tokens/goledo.svg';
+import handleVestingGoledo from '@service/handleVestingGoledo';
 
 const Hundred = Unit.fromMinUnit(100);
 
@@ -67,9 +68,17 @@ const columns: Columns<Goledo> = [{
 }, {
   name: '',
   width: '15%',
-  render: () => (
+  render: ({ earnedBalance }) => (
     <div className='w-full h-full flex justify-end items-center'>
-      <Button size='small' fullWidth className='max-w-164px lt-md:max-w-none'>Vest</Button>
+      <Button
+        size='small'
+        fullWidth
+        className='max-w-164px lt-md:max-w-none'
+        loading={!earnedBalance}
+        onClick={() => handleVestingGoledo({ tokenAddress: 'all' })}
+      >
+        Vest
+      </Button>
     </div>
   )
 }];

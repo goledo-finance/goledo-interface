@@ -37,7 +37,6 @@ interface ImportMetaEnv {
   readonly VITE_MasterChefAddress: string;
   readonly VITE_SwappiPairAddress: string;
   readonly VITE_WETHGatewayAddress: string;
-  readonly VITE_LPTokenAddress: string;
 }
 
 interface ImportMeta {

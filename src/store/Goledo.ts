@@ -112,7 +112,8 @@ const getData = debounce(() => {
 
       const stakedBalance = Unit.fromMinUnit(returnData[2] ?? 0);
       
-      let earnedBalance = Unit.fromMinUnit(returnData[3]);
+      // let earnedBalance = Unit.fromMinUnit(returnData[3]);
+      let earnedBalance = Unit.fromMinUnit(0);
       const eachTokenEarned = ChefIncentivesControllerContract.interface.decodeFunctionResult('claimableReward', returnData[4])?.[0];
       eachTokenEarned?.forEach(({ _hex}: { _hex: string; }) => earnedBalance = earnedBalance.add(Unit.fromMinUnit(_hex)));
 
