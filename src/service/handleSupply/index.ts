@@ -22,7 +22,7 @@ export const handleSupply = async ({ amount, symbol, tokenAddress }: { amount: U
         });
         return TxnHash;
     } catch (err) {
-        console.log('handleSupply Error', err);
+        console.log(`handle Supply ${symbol} Error`, err);
         throw err;
     }
 }

@@ -11,6 +11,7 @@ interface GoledoStore {
   name: 'Goledo';
   symbol: 'GOL';
   decimals: 18;
+  address: string;
   stakeAPR?: Unit;
   lockAPR?: Unit;
   usdPrice?: Unit;
@@ -35,6 +36,7 @@ const initState = {
   name: 'Goledo',
   symbol: 'GOL',
   decimals: 18,
+  address: import.meta.env.VITE_GoledoTokenAddress,
   stakeAPR: undefined,
   lockAPR: undefined,
   usdPrice: undefined,

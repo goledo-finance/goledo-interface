@@ -9,6 +9,7 @@ const tokensIcon = {
     BTC,
     CFX,
     GOL,
+    GOLCFX: GOL,
     USDT
 } as Record<string, string>;
 

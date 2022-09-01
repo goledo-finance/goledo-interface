@@ -2,7 +2,7 @@ import create from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { store as ethereumStore, Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { intervalFetchChain } from '@utils/fetchChain';
-import { MasterChefContract, SwappiPaiContract, MulticallContract } from '@utils/contracts';
+import { MasterChefContract, SwappiPaiContract, MulticallContract, LpTokenContract } from '@utils/contracts';
 import { debounce } from 'lodash-es';
 import { tokensStore } from './Tokens';
 import { goledoStore } from './Goledo';
@@ -12,8 +12,13 @@ const OneWeekSeconds = Unit.fromMinUnit(604800);
 const OneYearSeconds = Unit.fromMinUnit(31536000);
 
 interface LPStore {
+  name: 'GOLCFX';
+  symbol: 'GOLCFX';
+  decimals: 18;
+  address: string;
   stakeAPR?: Unit;
   usdPrice?: Unit;
+  balance?: Unit;
   stakedBalance?: Unit;
   stakedPrice?: Unit;
   totalMarketStakedBalance?: Unit;
@@ -31,8 +36,13 @@ interface LPStore {
 }
 
 const initState = {
+  name: 'GOLCFX',
+  symbol: 'GOLCFX',
+  decimals: 18,
+  address: import.meta.env.VITE_LPTokenAddress,
   stakeAPR: undefined,
   usdPrice: undefined,
+  balance: undefined,
   stakedBalance: undefined,
   stakedPrice: undefined,
   totalMarketStakedBalance: undefined,
@@ -67,6 +77,7 @@ const getData = debounce(() => {
     [import.meta.env.VITE_MasterChefAddress, MasterChefContract.interface.encodeFunctionData('rewardsPerSecond')],
     [import.meta.env.VITE_SwappiPairAddress, SwappiPaiContract.interface.encodeFunctionData('getReserves')],
     [import.meta.env.VITE_SwappiPairAddress, SwappiPaiContract.interface.encodeFunctionData('totalSupply')],
+    [import.meta.env.VITE_LPTokenAddress, LpTokenContract.interface.encodeFunctionData('balanceOf', [account])],
   ];
   
   unsub = intervalFetchChain(() => MulticallContract.callStatic.aggregate(promises), {
@@ -89,7 +100,9 @@ const getData = debounce(() => {
       const reserve0 = Unit.fromMinUnit(reservesData?._reserve0?._hex ?? 0);
       const totalSupply = Unit.fromMinUnit(SwappiPaiContract.interface.decodeFunctionResult('totalSupply', returnData[6])?.[0]?._hex ?? 0);
 
-      lpStore.setState({ totalMarketStakedBalance, stakedBalance, pendingRewardsBalance, rewardsPerSecond, totalRewardsPerDayBalance, totalRewardsPerWeekBalance, reserve0, totalSupply });
+      const balance = Unit.fromMinUnit(returnData[7] ?? 0);
+
+      lpStore.setState({ totalMarketStakedBalance, stakedBalance, pendingRewardsBalance, rewardsPerSecond, totalRewardsPerDayBalance, totalRewardsPerWeekBalance, reserve0, totalSupply, balance });
     },
   });
 }, 10);
@@ -142,6 +155,7 @@ const selectors = {
   all: (state: LPStore) => state,
   stakeAPR: (state: LPStore) => state.stakeAPR,
   usdPrice: (state: LPStore) => state.usdPrice,
+  balance: (state: LPStore) => state.balance,
   stakedBalance: (state: LPStore) => state.stakedBalance,
   stakedPrice: (state: LPStore) => state.stakedPrice,
   totalMarketStakedBalance: (state: LPStore) => state.totalMarketStakedBalance,
@@ -157,6 +171,7 @@ const selectors = {
 export const useLp = () => lpStore(selectors.all);
 export const useLpStakeAPR = () => lpStore(selectors.stakeAPR);
 export const useLpUsdPrice = () => lpStore(selectors.usdPrice);
+export const useLpBalance = () => lpStore(selectors.balance);
 export const useLpStakedBalance = () => lpStore(selectors.stakedBalance);
 export const useLpPStakedPrice = () => lpStore(selectors.stakedPrice);
 export const useLpTotalMarketStakedBalance = () => lpStore(selectors.totalMarketStakedBalance);

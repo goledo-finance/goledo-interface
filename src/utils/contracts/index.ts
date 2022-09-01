@@ -25,3 +25,4 @@ export const WETHGatewayContract = new Contract(import.meta.env.VITE_WETHGateway
 
 export const createERC20Contract = (tokenAddress: string) => new Contract(tokenAddress, ERC20ABI, HttpProvider);
 export const GoledoTokenContract = new Contract(import.meta.env.VITE_GoledoTokenAddress, GoledoToken, HttpProvider);
+export const LpTokenContract = new Contract(import.meta.env.VITE_LPTokenAddress, ERC20ABI, HttpProvider);

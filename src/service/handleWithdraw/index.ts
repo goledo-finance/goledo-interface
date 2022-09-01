@@ -19,7 +19,7 @@ export const handleWithdraw = async ({ amount, tokenAddress, symbol }: { amount:
     });
     return TxnHash;
   } catch (err) {
-    console.log('handleWithdraw Error', err);
+    console.log(`handle withdraw ${symbol} Error`, err);
     throw err;
   }
 };
