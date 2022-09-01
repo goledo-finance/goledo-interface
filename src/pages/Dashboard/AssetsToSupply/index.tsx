@@ -42,9 +42,17 @@ const columns: Columns<TokenInfo> = [{
 }, {
   name: '',
   width: '28%',
-  render: ({ address, symbol }) => (
+  render: ({ address, symbol, balance }) => (
     <div className='w-full h-full flex justify-end items-center gap-12px'>
-      <Button size='small' className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none' onClick={() => showSupplyModal({ address, symbol })}>Supply</Button>
+      <Button
+        size='small'
+        className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none'
+        loading={!balance}
+        onClick={() => showSupplyModal({ address, symbol })}
+      >
+        Supply
+      </Button>
+
       <Link to={`/detail/${address}`} className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none no-underline'>
         <Button size='small' variant='outlined' fullWidth>Details</Button>
       </Link>

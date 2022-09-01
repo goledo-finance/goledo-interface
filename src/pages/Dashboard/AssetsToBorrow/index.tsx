@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useTokens, TokenInfo } from '@store/index';
 import tokensIcon from '@assets/tokens';
@@ -38,14 +39,20 @@ const columns: Columns<TokenInfo> = [
   {
     name: '',
     width: '30%',
-    render: ({ address, symbol }) => (
+    render: ({ address, symbol, availableBorrowBalance }) => (
       <div className="w-full h-full flex justify-end items-center gap-12px">
-        <Button size="small" className="max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none" onClick={() => showBorrowModal({ address, symbol })}>
+        <Button
+          size="small"
+          className="max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none"
+          loading={!availableBorrowBalance}
+          onClick={() => showBorrowModal({ address, symbol })}
+        >
           Borrow
         </Button>
-        <Button size="small" variant="outlined" className="max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none">
-          Detail
-        </Button>
+
+        <Link to={`/detail/${address}`} className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none no-underline'>
+          <Button size='small' variant='outlined' fullWidth>Details</Button>
+        </Link>
       </div>
     ),
   },

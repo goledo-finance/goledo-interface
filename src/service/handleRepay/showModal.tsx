@@ -28,15 +28,20 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const estimateToken = useMemo(() => {
     const res: PartialOmit<TokenInfo, 'symbol'> = { symbol: token.symbol };
     if (!confirmAmountUnit || !token.borrowBalance || !token.usdPrice) return res;
-    const repayBalance = token.borrowBalance.sub(confirmAmountUnit);
-    const repayPrice = token.usdPrice.mul(repayBalance);
-    res.repayBalance = repayBalance;
-    res.repayPrice = repayPrice;
+    const borrowBalance = token.borrowBalance?.sub?.(confirmAmountUnit);
+    const borrowPrice = token.usdPrice?.mul?.(borrowBalance);
+    res.borrowBalance = borrowBalance;
+    res.borrowPrice = borrowPrice;
     return res;
   }, [token, confirmAmountUnit]);
   const estimateHealthFactor = useEstimateHealthFactor(estimateToken);
 
-  const cfxGasFee = useEstimateCfxGasFee({ createData: createCFXData, to: import.meta.env.VITE_WETHGatewayAddress, isCFX: token?.symbol === 'CFX' });
+  const cfxGasFee = useEstimateCfxGasFee({
+    createData: createCFXData,
+    to: import.meta.env.VITE_WETHGatewayAddress,
+    amount: token?.borrowBalance && token.balance ? Unit.min(token?.borrowBalance, token.balance) : undefined,
+    isCFX: token?.symbol === 'CFX',
+  });
 
   const handleContinue = useCallback(
     withForm(({ amount }) => setConfirmAmount(amount)),
@@ -51,7 +56,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   });
 
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleRepay);
-  console.log(token)
+
   const maxBalance =
     token?.symbol !== 'CFX'
       ? token?.balance
@@ -63,7 +68,6 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const debt = token?.borrowBalance;
   const max = debt && maxBalance ? Unit.min(debt, maxBalance) : undefined;
   const debtAfterRepay = confirmAmount ? debt?.sub(Unit.fromStandardUnit(confirmAmount)) : undefined;
-  console.log(token?.balance?.toString(), maxBalance?.toString(), debt?.toString(), max?.toString(), debtAfterRepay?.toString())
 
   if (!token) return null;
   return (

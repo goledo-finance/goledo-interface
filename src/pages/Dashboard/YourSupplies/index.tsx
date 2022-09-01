@@ -48,9 +48,17 @@ const columns: Columns<TokenInfo> = [{
 }, {
   name: '',
   width: '28%',
-  render: ({ address, symbol }) => (
+  render: ({ address, symbol, supplyBalance }) => (
     <div className='w-full h-full flex justify-end items-center'>
-      <Button size='small' fullWidth className='max-w-164px lt-md:max-w-none' onClick={() => showWithdrawModal({ address, symbol })}>Withdraw</Button>
+      <Button
+        size='small'
+        fullWidth
+        className='max-w-164px lt-md:max-w-none'
+        loading={!supplyBalance}
+        onClick={() => showWithdrawModal({ address, symbol })}
+      >
+        Withdraw
+      </Button>
     </div>
   )
 }];

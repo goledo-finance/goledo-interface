@@ -45,7 +45,7 @@ const columns: Columns<TokenInfo> = [
   {
     name: '',
     width: '30%',
-    render: ({ address, symbol }) => (
+    render: ({ address, symbol, borrowBalance }) => (
       <div className="w-full h-full flex justify-end items-center gap-12px">
         <Button size="small" className="max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none" onClick={() => showRepayModal({ address, symbol })}>
           Repay
@@ -54,6 +54,7 @@ const columns: Columns<TokenInfo> = [
           size="small"
           variant="outlined"
           className="max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none"
+          loading={!borrowBalance}
           onClick={() => showBorrowModal({ address, symbol })}
         >
           Borrow

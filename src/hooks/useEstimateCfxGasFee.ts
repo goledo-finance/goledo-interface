@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAccount, useBalance, Unit, provider } from '@cfxjs/use-wallet-react/ethereum';
 
-const useEstimateCfxGasFee = ({ createData, to, isCFX }: { isCFX?: boolean; to: string; createData: (account: string) => string; }) => {
+const useEstimateCfxGasFee = ({ createData, to, isCFX, amount }: { isCFX?: boolean; to: string; amount?: Unit; createData: ({ amount, account }: { amount: string; account: string; }) => string; }) => {
   const count = useRef(0);
   const [cfxGasFee, setCfxGasFee] = useState<Unit | undefined>(undefined);
   const account = useAccount();
@@ -10,10 +10,13 @@ const useEstimateCfxGasFee = ({ createData, to, isCFX }: { isCFX?: boolean; to: 
   useEffect(() => {
     if (isCFX !== true) return;
     const fetcher = async () => {
-      if (!provider || !balance || !account) return;
-      const minUnitBalance = Unit.lessThan(balance, Unit.fromStandardUnit('16e-12'))
+      if (!provider || !account) return;
+      const usedAmount = amount || balance;
+      if (!usedAmount) return;
+
+      const minUnitAmount = Unit.lessThan(usedAmount, Unit.fromStandardUnit('16e-12'))
         ? Unit.fromStandardUnit(0).toHexMinUnit()
-        : Unit.sub(balance, Unit.fromStandardUnit('16e-12')).toHexMinUnit();
+        : Unit.sub(usedAmount, Unit.fromStandardUnit('16e-12')).toHexMinUnit();
       count.current += 1;
       const fetchCount = count.current;
 
@@ -23,9 +26,9 @@ const useEstimateCfxGasFee = ({ createData, to, isCFX }: { isCFX?: boolean; to: 
           params: [
             {
               from: account,
-              data: createData(account),
+              data: createData({ account, amount: minUnitAmount}),
               to,
-              value: minUnitBalance,
+              value: minUnitAmount,
             },
           ],
         }),
@@ -42,7 +45,7 @@ const useEstimateCfxGasFee = ({ createData, to, isCFX }: { isCFX?: boolean; to: 
     };
 
     fetcher();
-  }, [isCFX, balance, account]);
+  }, [isCFX, balance, amount, account]);
 
   return cfxGasFee;
 };
