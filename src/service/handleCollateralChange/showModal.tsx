@@ -22,20 +22,17 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const tokens = useTokens();
   const token = tokens?.find((t) => t.address === address)!;
   const userData = useUserData();
-  
+
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleCollateralChange);
 
   const { collateral, canBeCollateral } = token;
   const collateralAfterSwitch = !collateral;
   const estimateToken = useMemo(() => {
     const res: PartialOmit<TokenInfo, 'symbol'> = { symbol: token.symbol };
-    if (!token.supplyBalance || !token.usdPrice) return res;
-    const supplyBalance = Unit.fromMinUnit(0);
-    const supplyPrice = token.usdPrice.mul(supplyBalance);
-    res.supplyBalance = supplyBalance;
-    res.supplyPrice = supplyPrice;
+    if (token.collateral === undefined) return res;
+    token.collateral = collateralAfterSwitch;
     return res;
-  }, [token]);
+  }, [token, collateralAfterSwitch]);
   const estimateHealthFactor = useEstimateHealthFactor(estimateToken);
 
   // error handling
