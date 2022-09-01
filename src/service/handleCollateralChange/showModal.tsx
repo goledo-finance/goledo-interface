@@ -40,7 +40,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
     blockingError = ErrorType.DO_NOT_HAVE_SUPPLIES_IN_THIS_CURRENCY;
   } else if (!canBeCollateral) {
     blockingError = ErrorType.CAN_NOT_USE_THIS_CURRENCY_AS_COLLATERAL;
-  } else if (collateral && token?.borrowBalance?.greaterThan(Zero) && estimateHealthFactor && (Number(estimateHealthFactor) <= 1)) {
+  } else if (collateral && token?.borrowBalance?.greaterThan(Zero) && estimateHealthFactor && (Number(estimateHealthFactor) < 1)) {
     blockingError = ErrorType.CAN_NOT_SWITCH_USAGE_AS_COLLATERAL_MODE;
   }
 
@@ -57,7 +57,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
         return null;
     }
   };
-
+  
   const collateralAfterSwitch = !collateral;
   if (!token) return null;
   return (

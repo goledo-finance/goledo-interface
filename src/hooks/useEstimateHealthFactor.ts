@@ -36,6 +36,8 @@ const useEstimateHealthFactor = (estimateToken: PartialOmit<TokenInfo, 'symbol'>
     [sumReserveLiquidationThreshold, curUserBorrowPrice]
   );
   
+  const res = healthFactor?.toDecimalMinUnit();
+  if (res?.indexOf('.') !== -1 && res?.indexOf('e') !== -1) return '0';
   return healthFactor?.toDecimalMinUnit(2);
 };
 
