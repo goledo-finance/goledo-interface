@@ -28,19 +28,22 @@ const ReserveOverview: React.FC<Token> = ({
   return (
     <Card title="Reserve Overview" className="w-64% flex-auto lt-lg:w-full">
       <div className="mt-34px flex justify-between lt-md:flex-col lt-md:mt-20px">
-        <div className='flex lt-md:items-center lt-md:mb-18px'>
+        <div className="flex lt-md:items-center lt-md:mb-18px">
           <div
             className="ml-32px mr-54px lt-xl:ml-6px lt-xl:mr-28px flex justify-center items-center w-120px h-120px lt-xl:w-100px lt-xl:h-100px lt-md:w-52px lt-md:h-52px lt-md:mx-0 rounded-full"
             style={{ background: `conic-gradient(#FE6060 0, #FE6060 ${100 - borrowedPercent}%, #3AC170 ${100 - borrowedPercent}%, #3AC170)` }}
           >
-            <img className="w-100px h-100px lt-xl:w-82px lt-xl:h-82px lt-md:w-40px lt-md:h-40px rounded-full border-2px border-white" src={tokensIcon[symbol]} alt={symbol} />
+            <img
+              className="w-100px h-100px lt-xl:w-82px lt-xl:h-82px lt-md:w-40px lt-md:h-40px rounded-full border-2px border-white"
+              src={tokensIcon[symbol]}
+              alt={symbol}
+            />
           </div>
-          <div className='md:display-none ml-8px'>
-            <p className='text-16px text-#303549 font-semibold'>{name || 'Unset'}</p>
-            <p className='text-12px text-#62677B'>{symbol}</p>
+          <div className="md:display-none ml-8px">
+            <p className="text-16px text-#303549 font-semibold">{name || 'Unset'}</p>
+            <p className="text-12px text-#62677B">{symbol}</p>
           </div>
         </div>
-
 
         <div className="flex-auto flex flex-col gap-14px text-14px text-#303549 font-semibold">
           <div className="flex justify-between items-center">
@@ -77,7 +80,19 @@ const ReserveOverview: React.FC<Token> = ({
           <div className="flex justify-between items-center">
             <span>Used Colloteral</span>
             <span className="text-#3AC170 font-normal">
-              {canBecollateral ? '✅ Can be collateral' : canBecollateral === false ? `❎ Can't be collateral` : '--'}
+              {canBecollateral ? (
+                <>
+                  <span className="i-charm:circle-tick text-18px mr-6px translate-y-[-1px]" />
+                  Can be collateral
+                </>
+              ) : canBecollateral === false ? (
+                <>
+                  <span className="i-charm:circle-cross text-18px mr-6px translate-y-[-1px]" />
+                  Can't be collateral
+                </>
+              ) : (
+                '--'
+              )}
             </span>
           </div>
 

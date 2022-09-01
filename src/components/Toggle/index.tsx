@@ -1,7 +1,5 @@
 import React, { forwardRef } from 'react';
 import cx from 'clsx';
-import Spin from '@components/Spin';
-import renderReactNode from '@utils/renderReactNode';
 import './index.css';
 
 export interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {

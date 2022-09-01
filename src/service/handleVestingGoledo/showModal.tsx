@@ -18,13 +18,16 @@ const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all'; }> = ({ toke
 
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleVestingGoledo);
 
+  const [vestingBalanceBefore, setVestingBalanceBefore] = useState<typeof amount | undefined>(undefined);
   const [vestingAmount, setVestingAmount] = useState<typeof amount | undefined>(undefined);
   useEffect(() => {
     if (transactionStatus === 'sending') {
+      setVestingBalanceBefore(goledoVestingBalance);
       setVestingAmount(amount);
     }
   }, [transactionStatus]);
 
+  const usedVestingBalance = vestingBalanceBefore || goledoVestingBalance;
   if (!goledoUsdPrice || !amount) return null;
   return (
     <div className='relative'>
@@ -44,14 +47,14 @@ const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all'; }> = ({ toke
               <span>Vesting GOL</span>
               <div className="text-right">
                 <p>
-                  <span>{goledoVestingBalance?.toDecimalStandardUnit(2)}</span>
+                  <span>{usedVestingBalance?.toDecimalStandardUnit(2)}</span>
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  <span>{goledoVestingBalance?.add(amount)?.toDecimalStandardUnit(2)}</span>
+                  <span>{usedVestingBalance?.add(vestingAmount || amount)?.toDecimalStandardUnit(2)}</span>
                 </p>
                 <p className="mt-2px text-12px text-#62677B">
-                  <span>${goledoVestingBalance?.mul(goledoUsdPrice!).toDecimalStandardUnit(2)}</span>
+                  <span>${usedVestingBalance?.mul(goledoUsdPrice!).toDecimalStandardUnit(2)}</span>
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-10px translate-y-[-1px]" />
-                  <span>${goledoVestingBalance?.add(amount)?.mul(goledoUsdPrice!).toDecimalStandardUnit(2)}</span>
+                  <span>${usedVestingBalance?.add(vestingAmount || amount)?.mul(goledoUsdPrice!).toDecimalStandardUnit(2)}</span>
                 </p>
               </div>
             </div>

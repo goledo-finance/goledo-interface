@@ -55,6 +55,7 @@ const columns: Columns<TokenInfo> = [{
         fullWidth
         className='max-w-164px lt-md:max-w-none'
         loading={!supplyBalance}
+        disabled={supplyBalance?.equalsWith(Zero)}
         onClick={() => showWithdrawModal({ address, symbol })}
       >
         Withdraw

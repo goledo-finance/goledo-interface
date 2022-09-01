@@ -102,11 +102,11 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Lock'  }> = ({ type }) => {
               <>
                 {approveStatus === 'checking-approve' && 'Checking Approve...'}
                 {approveStatus === 'approving' && 'Approving...'}
-                {approveStatus === 'need-approve' && `Approve ${goledo?.symbol}`}
-                {approveStatus === 'approved' && `${type == 'Stake' ? 'Staking' : 'Locking'} ${goledo?.symbol}`}
+                {approveStatus === 'need-approve' && `Approve Goledo`}
+                {approveStatus === 'approved' && `${type == 'Stake' ? 'Staking' : 'Locking'} Goledo`}
               </>
             )}
-            {transactionStatus === 'sending' && `${type == 'Stake' ? 'Staking' : 'Locking'} ${goledo?.symbol}...`}
+            {transactionStatus === 'sending' && `${type == 'Stake' ? 'Staking' : 'Locking'} Goledo...`}
           </Button>
         </>
       )}

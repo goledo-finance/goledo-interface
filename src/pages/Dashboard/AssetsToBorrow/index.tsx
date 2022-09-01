@@ -9,6 +9,7 @@ import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
 import showBorrowModal from '@service/handleBorrow';
 
+const Zero = Unit.fromMinUnit(0);
 const PointZeroOne = Unit.fromMinUnit(0.0001);
 const Hundred = Unit.fromMinUnit(100);
 
@@ -45,6 +46,7 @@ const columns: Columns<TokenInfo> = [
           size="small"
           className="max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none"
           loading={!availableBorrowBalance}
+          disabled={availableBorrowBalance?.equalsWith(Zero)}
           onClick={() => showBorrowModal({ address, symbol })}
         >
           Borrow

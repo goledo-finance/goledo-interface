@@ -9,6 +9,7 @@ import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
 import showSupplyModal from '@service/handleSupply';
 
+const Zero = Unit.fromMinUnit(0);
 const PointZeroOne = Unit.fromMinUnit(0.0001);
 const Hundred = Unit.fromMinUnit(100);
 
@@ -34,9 +35,10 @@ const columns: Columns<TokenInfo> = [{
 }, {
   name: 'Can be collateral',
   width: '17%',
-  render: () => (
+  render: ({ canBecollateral }) => (
     <div className='flex items-center'>
-      <input type="checkbox"/>
+      {canBecollateral && <span className='i-charm:circle-tick text-18px text-#3AC170'/>}
+      {canBecollateral === false && '--'}
     </div>
   )
 }, {
@@ -48,6 +50,7 @@ const columns: Columns<TokenInfo> = [{
         size='small'
         className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none'
         loading={!balance}
+        disabled={balance?.equalsWith(Zero)}
         onClick={() => showSupplyModal({ address, symbol })}
       >
         Supply
