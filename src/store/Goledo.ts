@@ -214,7 +214,7 @@ const selectors = {
 export const useGoledo = () => goledoStore(selectors.all);
 export const useGoledoStakeAPR = () => goledoStore(selectors.stakeAPR);
 export const useGoledoLockAPR = () => goledoStore(selectors.lockAPR);
-export const useGoledoUsdPrice = () => goledoStore(selectors.balance);
+export const useGoledoUsdPrice = () => goledoStore(selectors.usdPrice);
 export const useGoledoBalance = () => goledoStore(selectors.balance);
 export const useGoledoStakedBalance = () => goledoStore(selectors.stakedBalance);
 export const useGoledoStakedPrice = () => goledoStore(selectors.stakedPrice);
