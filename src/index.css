@@ -58,10 +58,6 @@ body {
     @apply !display-none;
 }
 
-.scrollbar__thumbPlaceholder--vertical {
-    @apply display-none sm:block;
-}
-
 .scrollbar__thumb {
   @apply bg-white;
 }
