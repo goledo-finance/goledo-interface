@@ -29,7 +29,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const estimateToken = useMemo(() => {
     const res: PartialOmit<TokenInfo, 'symbol'> = { symbol: token.symbol };
     if (token.collateral === undefined) return res;
-    token.collateral = !token.collateral;
+    res.collateral = !token.collateral;
     return res;
   }, [token]);
   const estimateHealthFactor = useEstimateHealthFactor(estimateToken);

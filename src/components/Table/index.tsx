@@ -26,7 +26,7 @@ const Table = <T extends object>({ columns, data, className, cellClassName = 'h-
       ))}
       {data?.map((item) =>
         columns.map((col, index) => (
-          <div className={cx('text-14px text-#303549', cellClassName)} key={index}>
+          <div className={cx('text-14px text-#303549 whitespace-nowrap', cellClassName)} key={index}>
             {col.render(item)}
           </div>
         ))
