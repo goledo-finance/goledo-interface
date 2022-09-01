@@ -7,6 +7,7 @@ import Table, { type Columns } from '@components/Table';
 import Toggle from '@components/Toggle';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
+import BalanceText from '@components/BalanceText';
 import showWithdrawModal from '@service/handleWithdraw';
 import showCollateralChangeModal from '@service/handleCollateralChange';
 
@@ -27,10 +28,10 @@ const columns: Columns<TokenInfo> = [{
 }, {
   name: 'Balance',
   width: '24%',
-  render: ({ supplyBalance, supplyPrice }) => (
+  render: ({ supplyBalance, supplyPrice, symbol, decimals }) => (
     <div>
-      <p className='font-semibold'>{supplyBalance?.toDecimalStandardUnit(2)}</p>
-      <p className='text-12px text-#62677B'>${supplyPrice?.toDecimalStandardUnit(2)}</p>
+      <p className='font-semibold'><BalanceText balance={supplyBalance} symbol={symbol} decimals={decimals} /></p>
+      <p className='text-12px text-#62677B'>$<BalanceText balance={supplyPrice} symbol="" decimals={18} /></p>
     </div>
   )
 }, {

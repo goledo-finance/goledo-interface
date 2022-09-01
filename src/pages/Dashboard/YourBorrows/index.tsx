@@ -32,7 +32,7 @@ const columns: Columns<TokenInfo> = [
     render: ({ symbol, decimals, borrowBalance, borrowPrice }) => (
       <div>
         <p className="font-semibold"><BalanceText balance={borrowBalance} symbol={symbol} decimals={decimals} /></p>
-        <p className="text-12px text-#62677B"><BalanceText balance={borrowPrice} symbol="$" decimals={18} /></p>
+        <p className="text-12px text-#62677B">$<BalanceText balance={borrowPrice} symbol="" decimals={18} /></p>
       </div>
     ),
   },
