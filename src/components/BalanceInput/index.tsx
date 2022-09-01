@@ -64,6 +64,7 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
               onChange={handleChange}
               type="number"
               disabled={!max}
+              autoFocus
               {...props}
             />
             <div className="ml-16px flex items-center text-18px text-#303549 font-semibold">
