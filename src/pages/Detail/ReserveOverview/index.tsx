@@ -20,7 +20,7 @@ const ReserveOverview: React.FC<Token> = ({
   maxLTV,
   liquidationThreshold,
   liquidationPenalty,
-  canBecollateral,
+  canBeCollateral,
 }) => {
   const borrowedPercent =
     availableBalance && totalMarketBorrowBalance ? Number(totalMarketBorrowBalance.div(availableBalance).mul(Hundred).toDecimalMinUnit(2)) : 100;
@@ -80,12 +80,12 @@ const ReserveOverview: React.FC<Token> = ({
           <div className="flex justify-between items-center">
             <span>Used Colloteral</span>
             <span className="text-#3AC170 font-normal">
-              {canBecollateral ? (
+              {canBeCollateral ? (
                 <>
                   <span className="i-charm:circle-tick text-18px mr-6px translate-y-[-1px]" />
                   Can be collateral
                 </>
-              ) : canBecollateral === false ? (
+              ) : canBeCollateral === false ? (
                 <>
                   <span className="i-charm:circle-cross text-18px mr-6px translate-y-[-1px]" />
                   Can't be collateral

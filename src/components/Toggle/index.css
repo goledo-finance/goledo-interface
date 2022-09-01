@@ -29,7 +29,10 @@
 .is-disabled > label {
   @apply !bg-#eee cursor-default;
 }
+.is-disabled > label:before {
+  @apply !bg-#eee;
+}
 .is-disabled > label:after {
-  @apply !shadow-none !bg-#eee;
+  @apply !shadow-none !bg-#fff;
 }
 

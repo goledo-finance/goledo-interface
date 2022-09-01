@@ -21,7 +21,7 @@ interface TokenData extends Token {
   supplyAPY: Unit;
   borrowAPY: Unit;
   availableLiquidity: Unit;
-  canBecollateral: boolean;
+  canBeCollateral: boolean;
   reserveLiquidationThreshold: Unit;
   reserveLiquidationBonus: Unit;
   maxLTV: number;
@@ -57,7 +57,7 @@ export interface TokenInfo {
   maxLTV?: string;
   liquidationThreshold?: string;
   liquidationPenalty?: string;
-  canBecollateral?: boolean;
+  canBeCollateral?: boolean;
 
   balance?: Unit;
   supplyBalance?: Unit;
@@ -321,7 +321,7 @@ const aggregateData = debounce(() => {
     token.usdPrice = tokensData?.[token.address]?.usdPrice;
     token.collateral = userTokensData?.[token.address]?.collateral;
     token.maxLTV = tokensData?.[token.address]?.maxLTV?.toFixed(2);
-    token.canBecollateral = tokensData?.[token.address]?.canBecollateral;
+    token.canBeCollateral = tokensData?.[token.address]?.canBeCollateral;
     token.availableBorrowBalance = tokensData?.[token.address]?.availableBorrowBalance;
 
     if (tokensData?.[token.address]?.reserveLiquidationThreshold) {
@@ -404,7 +404,7 @@ const convertOriginTokenData = (originData: any, availableBorrowsUSD: Unit) => {
     borrowTokenAddress: originData.variableDebtTokenAddress,
     usdPrice: Unit.fromMinUnit(originData.priceInEth._hex).div(Decimal),
     availableLiquidity: Unit.fromMinUnit(originData.availableLiquidity._hex),
-    canBecollateral: originData.usageAsCollateralEnabled,
+    canBeCollateral: originData.usageAsCollateralEnabled,
     reserveLiquidationThreshold: Unit.fromMinUnit(originData.reserveLiquidationThreshold._hex),
     reserveLiquidationBonus: Unit.fromMinUnit(originData.reserveLiquidationBonus._hex),
     maxLTV: Number(originData.baseLTVasCollateral._hex) / 100,

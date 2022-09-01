@@ -40,9 +40,9 @@ const columns: Columns<TokenInfo> = [{
   name: 'Collateral',
   width: '17%',
   renderHeader: () => <div className='flex justify-center items-center'>Collateral</div>,
-  render: () => (
+  render: ({collateral, canBeCollateral}) => (
     <div className='flex items-center'>
-      <Toggle checked />
+      <Toggle checked={collateral} disabled={!canBeCollateral} />
     </div>
   )
 }, {
@@ -91,6 +91,7 @@ const YourSupplies: React.FC = () => {
         : curUserSupplyTokens.filter((token) => token.collateral).reduce((pre, cur) => pre.add(cur.supplyPrice ?? Zero), Zero),
     [curUserSupplyTokens]
   );
+  console.log(tokens)
 
   return (
     <Card title='Your Supplies' showHideButton='no-pb' className='w-50% lt-2xl:w-full'>

@@ -35,10 +35,10 @@ const columns: Columns<TokenInfo> = [{
 }, {
   name: 'Can be collateral',
   width: '17%',
-  render: ({ canBecollateral }) => (
+  render: ({ canBeCollateral }) => (
     <div className='flex items-center'>
-      {canBecollateral && <span className='i-charm:circle-tick text-18px text-#3AC170'/>}
-      {canBecollateral === false && '--'}
+      {canBeCollateral && <span className='i-charm:circle-tick text-18px text-#3AC170'/>}
+      {canBeCollateral === false && '--'}
     </div>
   )
 }, {
