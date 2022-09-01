@@ -4,15 +4,17 @@ import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { TokenInfo, useTokens, useUserData } from '@store/Tokens';
 import { showModal, hideAllModal } from '@components/showPopup/Modal';
 import BalanceInput from '@components/BalanceInput';
-import ToolTip from '@components/Tooltip';
 import Button from '@components/Button';
 import BalanceText from '@components/BalanceText';
 import useEstimateHealthFactor from '@hooks/useEstimateHealthFactor';
 import useERC20Token from '@hooks/useERC20Token';
+import useEstimateCfxGasFee from '@hooks/useEstimateCfxGasFee';
 import useTransaction from '@hooks/useTransaction';
 import Success from '@assets/icons/success.svg';
 import Error from '@assets/icons/error.svg';
-import { handleBorrow } from './index';
+import { handleRepay, createCFXData } from './index';
+
+const Zero = Unit.fromMinUnit(0);
 
 const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const { register, handleSubmit: withForm } = useForm();
@@ -26,15 +28,20 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const estimateToken = useMemo(() => {
     const res: PartialOmit<TokenInfo, 'symbol'> = { symbol: token.symbol };
     if (!confirmAmountUnit || !token.borrowBalance || !token.usdPrice) return res;
-    const borrowBalance = token.borrowBalance.add(confirmAmountUnit);
-    const borrowPrice = token.usdPrice.mul(borrowBalance);
-    res.borrowBalance = borrowBalance;
-    res.borrowPrice = borrowPrice;
+    const repayBalance = token.borrowBalance.sub(confirmAmountUnit);
+    const repayPrice = token.usdPrice.mul(repayBalance);
+    res.repayBalance = repayBalance;
+    res.repayPrice = repayPrice;
     return res;
   }, [token, confirmAmountUnit]);
   const estimateHealthFactor = useEstimateHealthFactor(estimateToken);
 
-  const handleContinue = useCallback(withForm(({ amount }) => setConfirmAmount(amount)),[]);
+  const cfxGasFee = useEstimateCfxGasFee({ createData: createCFXData, to: import.meta.env.VITE_WETHGatewayAddress, isCFX: token?.symbol === 'CFX' });
+
+  const handleContinue = useCallback(
+    withForm(({ amount }) => setConfirmAmount(amount)),
+    []
+  );
 
   const { status: approveStatus, handleApprove } = useERC20Token({
     isCFX: token.symbol === 'CFX',
@@ -43,12 +50,24 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
     amount: confirmAmountUnit,
   });
 
-  const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleBorrow);
+  const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleRepay);
+  console.log(token)
+  const maxBalance =
+    token?.symbol !== 'CFX'
+      ? token?.balance
+      : cfxGasFee && token?.balance
+      ? token.balance.greaterThan(cfxGasFee)
+        ? token.balance.sub(cfxGasFee)
+        : Zero
+      : undefined;
+  const debt = token?.borrowBalance;
+  const max = debt && maxBalance ? Unit.min(debt, maxBalance) : undefined;
+  const debtAfterRepay = confirmAmount ? debt?.sub(Unit.fromMinUnit(confirmAmount)) : undefined;
+  console.log(maxBalance?.toString(), debt?.toString(), max?.toString(), debtAfterRepay?.toString())
 
-  const max = token?.availableBorrowBalance;
   if (!token) return null;
   return (
-    <div className='relative'>
+    <div className="relative">
       {!confirmAmount && (
         <form onSubmit={handleContinue} className="mt-10px">
           <BalanceInput
@@ -57,14 +76,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               min: Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals),
               max: max?.toDecimalStandardUnit(),
             })}
-            title={
-              <span>
-                Amount
-                <ToolTip text="This is the total amount available for you to borrow. You can borrow based on your collateral and until the borrow cap is reached.">
-                  <span className="i-bi:info-circle ml-4px text-12px cursor-pointer" />
-                </ToolTip>
-              </span>
-            }
+            title={<span>How much do you want to repay?</span>}
             step={String(`1e-${token?.decimals}`)}
             symbol={token?.symbol}
             decimals={token?.decimals}
@@ -83,10 +95,18 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           <p className="mt-30px mb-4px text-14px text-#62677B">These are your transaction details. Make sure to check if this is correct before submitting.</p>
           <div className="flex flex-col gap-16px p-12px rounded-4px border-1px border-#EAEBEF text-14px text-#303549">
             <div className="flex justify-between">
-              <span>Amount</span>
+              <span>Remaining debt</span>
               <div className="text-right">
-                <BalanceText balance={confirmAmountUnit} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
-                <p className="mt-2px text-12px text-#62677B">${confirmAmountUnit.mul(token?.usdPrice!).toDecimalStandardUnit(2)}</p>
+                <p>
+                  <BalanceText balance={debt} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
+                  <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
+                  <BalanceText balance={debtAfterRepay} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
+                </p>
+                <p className="mt-6px text-12px text-#303549">
+                  <span className="mt-2px">${debt?.mul(token?.usdPrice!).toDecimalStandardUnit(2)}</span>
+                  <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
+                  <span className="mt-2px">${debtAfterRepay?.mul(token?.usdPrice!).toDecimalStandardUnit(2)}</span>
+                </p>
               </div>
             </div>
 
@@ -110,7 +130,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             size="large"
             className="mt-48px"
             disabled={approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending'}
-            loading={(approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending') ? 'start' : undefined}
+            loading={approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending' ? 'start' : undefined}
             onClick={() => {
               if (approveStatus === 'approved') {
                 sendTransaction({ amount: confirmAmountUnit, symbol: token.symbol, tokenAddress: address });
@@ -124,10 +144,10 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
                 {approveStatus === 'checking-approve' && 'Checking Approve...'}
                 {approveStatus === 'approving' && 'Approving...'}
                 {approveStatus === 'need-approve' && `Approve ${token?.symbol}`}
-                {approveStatus === 'approved' && `Borrow ${token?.symbol}`}
+                {approveStatus === 'approved' && `Repay ${token?.symbol}`}
               </>
             )}
-            {transactionStatus === 'sending' && `Borrowing ${token?.symbol}...`}
+            {transactionStatus === 'sending' && `Repaying ${token?.symbol}...`}
           </Button>
         </>
       )}
@@ -141,22 +161,22 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You Borrowed <span className='font-semibold'>{confirmAmountUnit?.toDecimalStandardUnit(2)}</span> {token?.symbol}
+                You Repaid <span className="font-semibold">{confirmAmountUnit?.toDecimalStandardUnit(2)}</span> {token?.symbol}
               </>
             )}
             {transactionStatus === 'failed' && error}
           </p>
-          {scanUrl &&
+          {scanUrl && (
             <a
-              className='absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline'
+              className="absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline"
               href={scanUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
               Review tx details
-              <span className='i-charm:link-external ml-3px text-10px translate-y-[-.5px]' />
+              <span className="i-charm:link-external ml-3px text-10px translate-y-[-.5px]" />
             </a>
-          }
+          )}
           <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
@@ -166,7 +186,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   );
 };
 
-const showBorrowModal = ({ symbol, address }: { symbol: string; address: string }) =>
-  showModal({ Content: <ModalContent address={address} />, title: `Borrow ${symbol}` });
+const showRepayModal = ({ symbol, address }: { symbol: string; address: string }) =>
+  showModal({ Content: <ModalContent address={address} />, title: `Repay ${symbol}` });
 
-export default showBorrowModal;
+export default showRepayModal;

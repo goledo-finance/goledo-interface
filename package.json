@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@cfxjs/use-wallet-react": "0.0.1-29",
+    "@cfxjs/use-wallet-react": "0.0.1-31",
     "@react-spring/web": "^9.5.2",
     "@tippyjs/react": "^4.2.6",
     "clsx": "^1.2.1",
