@@ -96,7 +96,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             </div>
           </div>
 
-          {blockingError !== undefined && <p className="text-#bc0000b8">{handleBlocked()}</p>}
+          {blockingError !== undefined && <p className="text-#bc0000b8 mt-24px text-12px tracking-wide">{handleBlocked()}</p>}
 
           <Button
             fullWidth
