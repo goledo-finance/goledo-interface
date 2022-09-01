@@ -6,6 +6,7 @@ import Card from '@components/Card';
 import Table, { type Columns } from '@components/Table';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
+import BalanceText from '@components/BalanceText';
 import showBorrowModal from '@service/handleBorrow';
 import showRepayModal from '@service/handleRepay';
 
@@ -28,10 +29,10 @@ const columns: Columns<TokenInfo> = [
   {
     name: 'DEBT',
     width: '29%',
-    render: ({ borrowBalance, borrowPrice }) => (
+    render: ({ symbol, decimals, borrowBalance, borrowPrice }) => (
       <div>
-        <p className="font-semibold">{borrowBalance?.toDecimalStandardUnit(2)}</p>
-        <p className="text-12px text-#62677B">${borrowPrice?.toDecimalStandardUnit(2)}</p>
+        <p className="font-semibold"><BalanceText balance={borrowBalance} symbol={symbol} decimals={decimals} /></p>
+        <p className="text-12px text-#62677B"><BalanceText balance={borrowPrice} symbol="$" decimals={18} /></p>
       </div>
     ),
   },

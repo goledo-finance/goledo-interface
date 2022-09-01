@@ -22,21 +22,20 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const tokens = useTokens();
   const token = tokens?.find((t) => t.address === address)!;
   const userData = useUserData();
-
+  
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleCollateralChange);
 
   const { collateral, canBeCollateral } = token;
   const collateralAfterSwitch = !collateral;
-  const allCollateralTokensBalance = tokens?.filter((token) => token.collateral).reduce((pre, cur) => pre.add(cur.supplyBalance ?? Zero), Zero);
   const estimateToken = useMemo(() => {
     const res: PartialOmit<TokenInfo, 'symbol'> = { symbol: token.symbol };
-    if (!allCollateralTokensBalance || !token.supplyBalance || !token.usdPrice) return res;
-    const supplyBalance = allCollateralTokensBalance?.[collateralAfterSwitch ? 'add' : 'sub'](token?.supplyBalance);
+    if (!token.supplyBalance || !token.usdPrice) return res;
+    const supplyBalance = Unit.fromMinUnit(0);
     const supplyPrice = token.usdPrice.mul(supplyBalance);
     res.supplyBalance = supplyBalance;
     res.supplyPrice = supplyPrice;
     return res;
-  }, [token, allCollateralTokensBalance]);
+  }, [token]);
   const estimateHealthFactor = useEstimateHealthFactor(estimateToken);
 
   // error handling
@@ -45,7 +44,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
     blockingError = ErrorType.DO_NOT_HAVE_SUPPLIES_IN_THIS_CURRENCY;
   } else if (!canBeCollateral) {
     blockingError = ErrorType.CAN_NOT_USE_THIS_CURRENCY_AS_COLLATERAL;
-  } else if (collateral && token?.borrowBalance?.greaterThan(Zero) && estimateHealthFactor && estimateHealthFactor <= '1') {
+  } else if (collateral && token?.borrowBalance?.greaterThan(Zero) && estimateHealthFactor && (Number(estimateHealthFactor) <= 1)) {
     blockingError = ErrorType.CAN_NOT_SWITCH_USAGE_AS_COLLATERAL_MODE;
   }
 

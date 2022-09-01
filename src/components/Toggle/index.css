@@ -13,7 +13,7 @@
   @apply content-none block absolute rounded-full w-32px h-16px bg-#8e92a3 left-2px;
 }
 .fui-toggle > label:after {
-  @apply content-none block absolute w-16px h-16px rounded-full bg-#fff transition duration-400ms ease-out ml-4px;
+  @apply content-none block absolute w-16px h-16px rounded-full bg-#fff transition duration-400ms ease-out ml-2px;
 }
 
 .is-checked > label {
