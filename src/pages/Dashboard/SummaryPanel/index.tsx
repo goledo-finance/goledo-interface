@@ -56,7 +56,7 @@ const SummaryPanel: React.FC = () => {
         : undefined,
     [curUserSupplyPrice, curUserSupplyAPY, curUserBorrowPrice, curUserBorrowAPY]
   );
-
+  console.log(userData?.healthFactor)
   return (
     <ConfluxEspaceMarket>
       <div className="flex w-full xl:w-fit justify-center gap-56px lt-xl:mt-8px lt-sm:mt-24px lt-sm:gap-24px">
@@ -71,7 +71,7 @@ const SummaryPanel: React.FC = () => {
         <SummaryPanelItem iconName="i-codicon:heart" title="Health Factor">
           <div className="flex items-center">
             <span className="text-#3AC170">
-              {userData?.healthFactor && curUserSupplyPrice ? (curUserSupplyPrice?.equalsWith(Zero) ? '∞' : userData?.healthFactor) : '--'}
+              {userData?.healthFactor ?? '--'}
             </span>
             <Button variant="outlined" size="mini" color="green" className="!rounded-6px ml-8px  ">
               <span className='lt-sm:display-none'>RISK</span>

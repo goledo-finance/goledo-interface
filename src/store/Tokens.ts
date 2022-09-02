@@ -152,10 +152,15 @@ walletStore.subscribe(
 
         const totalDebtUSD = Unit.fromMinUnit(userAccountData?.totalDebtETH?._hex ?? 0);
         const userData = {
-          healthFactor: Unit.fromMinUnit(userAccountData?.healthFactor?._hex ?? 0).toDecimalStandardUnit(2),
+          healthFactor: Unit.fromMinUnit(userAccountData?.healthFactor?._hex ?? 0).toDecimalStandardUnit(),
           borrowPowerUsed: totalDebtUSD.div(totalDebtUSD.add(availableBorrowsUSD)).mul(Hundred).toDecimalMinUnit(2),
           availableBorrowsUSD,
           loanToValue: Unit.fromMinUnit(userAccountData?.ltv?._hex ?? 0).div(Unit.fromMinUnit(10000)).toDecimalMinUnit(),
+        }
+        if (userData.healthFactor.indexOf('e+') !== -1) {
+          userData.healthFactor = '∞';
+        } else if (userData.healthFactor.indexOf('e-') !== -1) {
+          userData.healthFactor = '0';
         }
 
         const reservesData = UiPoolDataContract.interface.decodeFunctionResult('getReservesData', returnData?.[1]);
