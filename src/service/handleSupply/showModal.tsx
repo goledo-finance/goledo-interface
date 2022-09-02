@@ -152,7 +152,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
       )}
       {(transactionStatus === 'success' || transactionStatus === 'failed') && (
         <>
-          <img src={transactionStatus === 'success' ? Success : Error} alt="error" className="block w-48px h-48px mt-24px mx-auto" />
+          <img src={transactionStatus === 'success' ? Success : Error} alt={transactionStatus} className="block w-48px h-48px mt-24px mx-auto" />
           <p className="mt-12px mb-8px text-20px text-#303549 text-center font-semibold">
             {transactionStatus === 'success' && 'All done!'}
             {transactionStatus === 'failed' && 'Transaction failed!'}
