@@ -38,7 +38,7 @@ const useEstimateHealthFactor = (estimateToken: PartialOmit<TokenInfo, 'symbol'>
   
   const res = healthFactor?.toDecimalMinUnit();
   if (res?.indexOf('e-') !== -1) return '0';
-  if (res?.indexOf('e+') !== -1) return '∞'
+  if (res?.indexOf('e+') !== -1) return 'Infinity'
   return healthFactor?.toDecimalMinUnit(2);
 };
 

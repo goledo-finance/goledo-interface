@@ -9,15 +9,15 @@ const useERC20Token = ({
   tokenAddress,
   contractAddress,
   amount,
-  isCFX,
+  needApprove = true,
 }: {
   tokenAddress: string;
   contractAddress: string;
   amount: Unit | undefined;
-  isCFX?: boolean;
+  needApprove?: boolean;
 }) => {
   const [status, setStatus] = useState<Status>('checking-approve');
-  const tokenContract = useMemo(() => (tokenAddress ? createERC20Contract(tokenAddress) : undefined), []);
+  const tokenContract = useMemo(() => (tokenAddress ? createERC20Contract(tokenAddress) : undefined), [tokenAddress]);
   const account = useAccount();
 
   const checkApprove = useCallback(async () => {
@@ -54,12 +54,12 @@ const useERC20Token = ({
   }, [checkApprove]);
 
   useEffect(() => {
-    if (!amount) return;
+    if (!needApprove || !amount) return;
     checkApprove();
-  }, [amount]);
+  }, [amount, needApprove]);
 
   return {
-    status: isCFX ? 'approved' : status,
+    status: !needApprove ? 'approved' : status,
     handleApprove,
   };
 };

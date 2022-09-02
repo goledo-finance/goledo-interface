@@ -14,31 +14,31 @@ import Error from '@assets/icons/error.svg';
 import { handleWithdraw } from './index';
 
 const ModalContent: React.FC<{ address: string }> = ({ address }) => {
-  const { register, handleSubmit: withForm } = useForm();
+  const { register, handleSubmit: withForm, watch } = useForm();
   const tokens = useTokens();
   const token = tokens?.find((t) => t.address === address)!;
   const userData = useUserData();
 
-  const [confirmAmount, setConfirmAmount] = useState<string | null>(null);
-  const confirmAmountUnit = useMemo(() => (confirmAmount ? Unit.fromStandardUnit(confirmAmount || 0, token?.decimals) : undefined), [confirmAmount]);
+  const currentAmountUnit = Unit.fromStandardUnit(watch('amount') || 0, token?.decimals);
+  const [confirmAmountUnit, setConfirmAmountUnit] = useState<Unit | undefined>();
 
   const estimateToken = useMemo(() => {
     const res: PartialOmit<TokenInfo, 'symbol'> = { symbol: token.symbol };
-    if (!confirmAmountUnit || !token.supplyBalance || !token.usdPrice) return res;
-    const supplyBalance = token.supplyBalance.sub(confirmAmountUnit);
+    if (!currentAmountUnit || !token.supplyBalance || !token.usdPrice) return res;
+    const supplyBalance = token.supplyBalance.sub(currentAmountUnit);
     const supplyPrice = token.usdPrice.mul(supplyBalance);
     res.supplyBalance = supplyBalance;
     res.supplyPrice = supplyPrice;
     return res;
-  }, [token, confirmAmountUnit]);
+  }, [token, currentAmountUnit]);
   const estimateHealthFactor = useEstimateHealthFactor(estimateToken);
 
-  const handleContinue = useCallback(withForm(({ amount }) => setConfirmAmount(amount)),[]);
+  const handleContinue = useCallback(withForm(({ amount }) => setConfirmAmountUnit(Unit.fromStandardUnit(amount, token.decimals))),[]);
 
   const { status: approveStatus, handleApprove } = useERC20Token({
-    isCFX: token.symbol === 'CFX',
-    tokenAddress: address,
-    contractAddress: import.meta.env.VITE_LendingPoolAddress,
+    needApprove: token?.symbol === 'CFX',
+    tokenAddress: token?.supplyTokenAddress,
+    contractAddress: import.meta.env.VITE_WETHGatewayAddress,
     amount: confirmAmountUnit,
   });
 
@@ -48,7 +48,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   if (!token) return null;
   return (
     <div className='relative'>
-      {!confirmAmount && (
+      {!confirmAmountUnit && (
         <form onSubmit={handleContinue} className="mt-10px">
           <BalanceInput
             {...register('amount', {
@@ -65,12 +65,12 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             max={max}
           />
 
-          <Button fullWidth size="large" className="mt-48px">
+          <Button fullWidth size="large" className="mt-48px" disabled={Number(estimateHealthFactor) < 1}>
             Continue
           </Button>
         </form>
       )}
-      {confirmAmount && confirmAmountUnit && transactionStatus !== 'success' && transactionStatus !== 'failed' && (
+      {confirmAmountUnit && transactionStatus !== 'success' && transactionStatus !== 'failed' && (
         <>
           <p className="mt-30px mb-4px text-14px text-#62677B">These are your transaction details. Make sure to check if this is correct before submitting.</p>
           <div className="flex flex-col gap-16px p-12px rounded-4px border-1px border-#EAEBEF text-14px text-#303549">

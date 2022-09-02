@@ -158,10 +158,10 @@ walletStore.subscribe(
           loanToValue: Unit.fromMinUnit(userAccountData?.ltv?._hex ?? 0).div(Unit.fromMinUnit(10000)).toDecimalMinUnit(),
         }
         if (userData.healthFactor.indexOf('e+') !== -1) {
-          userData.healthFactor = '∞';
+          userData.healthFactor = 'Infinity';
         } else if (userData.healthFactor.indexOf('e-') !== -1) {
           userData.healthFactor = '0';
-        }
+        } else userData.healthFactor = Unit.fromMinUnit(userAccountData?.healthFactor?._hex ?? 0).toDecimalStandardUnit(2);
 
         const reservesData = UiPoolDataContract.interface.decodeFunctionResult('getReservesData', returnData?.[1]);
         const tokensPoolDataArr: Array<TokenData> = reservesData[0]?.map((token: any) => convertOriginTokenData(token, availableBorrowsUSD));

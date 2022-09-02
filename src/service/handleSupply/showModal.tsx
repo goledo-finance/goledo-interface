@@ -44,7 +44,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const handleContinue = useCallback(withForm(({ amount }) => setConfirmAmount(amount)),[]);
 
   const { status: approveStatus, handleApprove } = useERC20Token({
-    isCFX: token.symbol === 'CFX',
+    needApprove: token.symbol !== 'CFX',
     tokenAddress: address,
     contractAddress: import.meta.env.VITE_LendingPoolAddress,
     amount: confirmAmountUnit,
