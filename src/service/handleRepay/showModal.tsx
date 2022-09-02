@@ -107,9 +107,9 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
                   <BalanceText balance={debtAfterRepay} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
                 </p>
                 <p className="mt-6px text-12px text-#303549">
-                  <span className="mt-2px">${debt?.mul(token?.usdPrice!).toDecimalStandardUnit(2)}</span>
+                  <span className="mt-2px">$<BalanceText balance={debt?.mul(token?.usdPrice ?? Zero)} decimals={18} symbol="" /></span>
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  <span className="mt-2px">${debtAfterRepay?.mul(token?.usdPrice!).toDecimalStandardUnit(2)}</span>
+                  <span className="mt-2px">$<BalanceText balance={debtAfterRepay?.mul(token?.usdPrice ?? Zero)} decimals={18} symbol="" /></span>
                 </p>
               </div>
             </div>

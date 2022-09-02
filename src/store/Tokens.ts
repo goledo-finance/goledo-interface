@@ -149,7 +149,6 @@ walletStore.subscribe(
       callback: ({ returnData }: { returnData?: Array<any> } = { returnData: undefined }) => {
         const userAccountData = LendingPoolContract.interface.decodeFunctionResult('getUserAccountData', returnData?.[0]);
         const availableBorrowsUSD = Unit.fromMinUnit(userAccountData?.availableBorrowsETH?._hex ?? 0);
-
         const totalDebtUSD = Unit.fromMinUnit(userAccountData?.totalDebtETH?._hex ?? 0);
         const userData = {
           healthFactor: Unit.fromMinUnit(userAccountData?.healthFactor?._hex ?? 0).toDecimalStandardUnit(),
