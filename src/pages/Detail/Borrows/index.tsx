@@ -45,7 +45,7 @@ const Borrows: React.FC<Token> = ({ address, symbol, borrowBalance, availableBor
 
   return (
     <Card
-      title="Supplies"
+      title="Borrows"
       className="flex-auto flex flex-col gap-12px"
       titleRight={<Operate address={address} symbol={symbol} borrowBalance={borrowBalance} availableBorrowBalance={availableBorrowBalance} />}
     >
