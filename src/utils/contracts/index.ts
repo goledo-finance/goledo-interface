@@ -10,6 +10,7 @@ import MasterChef from './abis/MasterChef.json';
 import SwappiPair from './abis/SwappiPair.json';
 import GoledoToken from './abis/GoledoToken.json';
 import WETHGateway from './abis/WETHGateway.json';
+import DebtToken from './abis/DebtTokenBase.json';
 
 export const HttpProvider = new providers.JsonRpcProvider(import.meta.env.VITE_ESpaceRpcUrl);
 
@@ -24,5 +25,6 @@ export const SwappiPaiContract = new Contract(import.meta.env.VITE_SwappiPairAdd
 export const WETHGatewayContract = new Contract(import.meta.env.VITE_WETHGatewayAddress, WETHGateway, HttpProvider);
 
 export const createERC20Contract = (tokenAddress: string) => new Contract(tokenAddress, ERC20ABI, HttpProvider);
+export const createDebtTokenContract = (tokenAddress: string) => new Contract(tokenAddress, DebtToken, HttpProvider);
 export const GoledoTokenContract = new Contract(import.meta.env.VITE_GoledoTokenAddress, GoledoToken, HttpProvider);
 export const LpTokenContract = new Contract(import.meta.env.VITE_SwappiPairAddress, ERC20ABI, HttpProvider);

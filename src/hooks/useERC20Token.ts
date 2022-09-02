@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { sendTransaction, useAccount, Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { createERC20Contract } from '@utils/contracts';
+import { createERC20Contract, createDebtTokenContract } from '@utils/contracts';
 import waitTransactionReceipt from '@utils/waitTranscationReceipt';
 
 export type Status = 'checking-approve' | 'need-approve' | 'approving' | 'approved';
@@ -10,21 +10,23 @@ const useERC20Token = ({
   contractAddress,
   amount,
   needApprove = true,
+  isDebtToken,
 }: {
   tokenAddress: string;
   contractAddress: string;
   amount: Unit | undefined;
   needApprove?: boolean;
+  isDebtToken?: boolean;
 }) => {
   const [status, setStatus] = useState<Status>('checking-approve');
-  const tokenContract = useMemo(() => (tokenAddress ? createERC20Contract(tokenAddress) : undefined), [tokenAddress]);
+  const tokenContract = useMemo(() => (tokenAddress ? (!isDebtToken ? createERC20Contract : createDebtTokenContract)(tokenAddress) : undefined), [tokenAddress]);
   const account = useAccount();
 
   const checkApprove = useCallback(async () => {
     if (!tokenContract || !account || !contractAddress || !amount) return;
     try {
       setStatus('checking-approve');
-      const res = await tokenContract.allowance(account, contractAddress);
+      const res = await tokenContract[!isDebtToken ? 'allowance' : 'borrowAllowance'](account, contractAddress);
       const approveBalance = Unit.fromMinUnit(res._hex);
       if (approveBalance.greaterThanOrEqualTo(amount)) {
         setStatus('approved');

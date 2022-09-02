@@ -38,9 +38,10 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
 
   const { status: approveStatus, handleApprove } = useERC20Token({
     needApprove: token?.symbol === 'CFX',
-    tokenAddress: token?.supplyTokenAddress,
+    tokenAddress: token?.borrowTokenAddress,
     contractAddress: import.meta.env.VITE_WETHGatewayAddress,
     amount: confirmAmountUnit,
+    isDebtToken: true
   });
 
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleBorrow);
