@@ -23,6 +23,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const { register, handleSubmit: withForm } = useForm();
   const tokens = useTokens();
   const token = tokens?.find((t) => t.address === address)!;
+  const hasSupplied = !!tokens?.find(token => token.supplyBalance?.greaterThan(Zero));
   const userData = useUserData();
 
   const [confirmAmount, setConfirmAmount] = useState<string | null>(null);
@@ -106,10 +107,24 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
 
             <div className="flex justify-between">
               <span>Collateralization</span>
-              <div className="text-right">Disabled</div>
+              <div className="text-right text-#3AC170">
+                {token?.canBeCollateral ? (
+                  <>
+                    <span className="i-charm:circle-tick text-18px mr-6px translate-y-[-1px]" />
+                    Can be collateral
+                  </>
+                ) : token?.canBeCollateral === false ? (
+                  <>
+                    <span className="i-charm:circle-cross text-18px mr-6px translate-y-[-1px]" />
+                    Can't be collateral
+                  </>
+                ) : (
+                  '--'
+                )}
+              </div>
             </div>
 
-            {estimateHealthFactor && (
+            {hasSupplied && estimateHealthFactor && (
               <div className="flex justify-between">
                 <span>Health factor</span>
                 <div className="text-right">

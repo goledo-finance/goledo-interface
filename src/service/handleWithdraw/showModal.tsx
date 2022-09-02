@@ -13,10 +13,13 @@ import Success from '@assets/icons/success.svg';
 import Error from '@assets/icons/error.svg';
 import { handleWithdraw } from './index';
 
+const Zero = Unit.fromMinUnit(0);
+
 const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const { register, handleSubmit: withForm, watch } = useForm();
   const tokens = useTokens();
   const token = tokens?.find((t) => t.address === address)!;
+  const hasBorrowed = !!tokens?.find(token => token.borrowBalance?.greaterThan(Zero));
   const userData = useUserData();
 
   const currentAmountUnit = Unit.fromStandardUnit(watch('amount') || 0, token?.decimals);
@@ -89,7 +92,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               </div>
             </div>
 
-            {estimateHealthFactor && ( 
+            {hasBorrowed && estimateHealthFactor && ( 
               <div className="flex justify-between">
                 <span>Health factor</span>
                 <div className="text-right">
