@@ -21,6 +21,7 @@ export enum ErrorType {
 const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const tokens = useTokens();
   const token = tokens?.find((t) => t.address === address)!;
+  const hasBorrowed = !!tokens?.find(token => token.borrowBalance?.greaterThan(Zero));
   const userData = useUserData();
 
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleCollateralChange);
@@ -72,23 +73,25 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           <div className="flex flex-col pt-20px">
             <p className="mb-4px text-12px tracking-wide">Transaction overview</p>
             <div className="flex flex-col border border-#EAEBEF rounded p-12px text-14px">
-              <div className="flex justify-between mb-16px">
+              <div className="flex justify-between">
                 <span className="text-#303549">Supply Balance</span>
                 <div className="text-right">
                   <BalanceText balance={token?.supplyBalance} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
                 </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-#303549">Health Factor</span>
-                <div className="text-right">
-                  <p className="text-#F89F1A">
-                    <span>{userData?.healthFactor ?? ''}</span>
-                    <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                    <span>{estimateHealthFactor}</span>
-                  </p>
-                  <p className="mt-6px text-12px text-#62677B">{`Liquidation at <1.0`}</p>
+              {hasBorrowed &&
+                <div className="flex justify-between">
+                  <span className="text-#303549">Health Factor</span>
+                  <div className="text-right">
+                    <p className="text-#F89F1A">
+                      <span>{userData?.healthFactor ?? ''}</span>
+                      <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
+                      <span>{estimateHealthFactor}</span>
+                    </p>
+                    <p className="mt-6px text-12px text-#62677B">{`Liquidation at <1.0`}</p>
+                  </div>
                 </div>
-              </div>
+              }
             </div>
           </div>
 

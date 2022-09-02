@@ -1,5 +1,5 @@
 .fui-toggle {
-  @apply relative box-border inline-grid items-center justify-center w-36px h-20px mx-4px my-0 cursor-pointer;
+  @apply relative box-border inline-grid items-center justify-center w-36px h-20px mx-4px my-0 ;
 }
 
 .fui-toggle > input {
@@ -7,7 +7,7 @@
 }
 
 .fui-toggle > label {
-  @apply inline-grid box-border items-center outline-none select-none w-36px h-20px bg-#8e92a3 rounded-full;
+  @apply inline-grid box-border items-center outline-none select-none w-36px h-20px bg-#8e92a3 rounded-full cursor-pointer;
 }
 .fui-toggle > label:before {
   @apply content-none block absolute rounded-full w-32px h-16px bg-#8e92a3 left-2px;

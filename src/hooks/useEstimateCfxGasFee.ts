@@ -13,7 +13,6 @@ const useEstimateCfxGasFee = ({ createData, to, isCFX, amount }: { isCFX?: boole
       if (!provider || !account) return;
       const usedAmount = amount || balance;
       if (!usedAmount) return;
-
       const minUnitAmount = Unit.lessThan(usedAmount, Unit.fromStandardUnit('16e-12'))
         ? Unit.fromStandardUnit(0).toHexMinUnit()
         : Unit.sub(usedAmount, Unit.fromStandardUnit('16e-12')).toHexMinUnit();
@@ -26,7 +25,7 @@ const useEstimateCfxGasFee = ({ createData, to, isCFX, amount }: { isCFX?: boole
           params: [
             {
               from: account,
-              data: createData({ account, amount: minUnitAmount}),
+              data: createData({ account, amount: minUnitAmount }),
               to,
               value: minUnitAmount,
             },
@@ -41,7 +40,7 @@ const useEstimateCfxGasFee = ({ createData, to, isCFX, amount }: { isCFX?: boole
           if (fetchCount !== count.current) return;
           const gasFee = Unit.mul(Unit.mul(Unit.fromMinUnit(estimateGas), Unit.fromMinUnit(gasPrice)), Unit.fromMinUnit('1.5'));
           setCfxGasFee(gasFee);
-        }).catch(_ => {})
+        }).catch(_ => {console.log('123', _)})
     };
 
     fetcher();

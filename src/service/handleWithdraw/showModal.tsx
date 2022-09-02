@@ -92,7 +92,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               </div>
             </div>
 
-            {hasBorrowed && estimateHealthFactor && ( 
+            {hasBorrowed && ( 
               <div className="flex justify-between">
                 <span>Health factor</span>
                 <div className="text-right">

@@ -73,7 +73,7 @@ const SummaryPanel: React.FC = () => {
             <span className="text-#3AC170">
               {userData?.healthFactor ?? '--'}
             </span>
-            <Button variant="outlined" size="mini" color="green" className="!rounded-6px ml-8px  ">
+            <Button variant="outlined" size="mini" color="green" className="!rounded-6px ml-8px translate-y-1px">
               <span className='lt-sm:display-none'>RISK</span>
               <span> DETAILS</span>
             </Button>
