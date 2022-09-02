@@ -337,22 +337,28 @@ const aggregateData = debounce(() => {
     }
   });
 
-  const supplyTokens = tokens.filter(token => token.supplyPrice);
+  const supplyTokens = tokens.filter(token => token.supplyBalance?.greaterThan(Zero));
   if (supplyTokens.length) {
     const curUserSupplyPrice = supplyTokens.reduce((pre, cur) => pre.add(cur.supplyPrice ?? Zero), Zero);
     tokensStore.setState({ curUserSupplyPrice });
     if (curUserSupplyPrice.greaterThan(Zero) && supplyTokens.every(token => token.supplyAPY)) {
       tokensStore.setState({ curUserSupplyAPY: supplyTokens.reduce((pre, cur) => pre.add((cur.supplyPrice ?? Zero).mul(cur.supplyAPY ?? Zero).div(curUserSupplyPrice)), Zero) });
     }
+  } else {
+    tokensStore.setState({ curUserSupplyPrice: Zero, curUserSupplyAPY: Zero });
   }
 
-  const borrowTokens = tokens.filter(token => token.borrowPrice);
+  const borrowTokens = tokens.filter(token => token.borrowBalance?.greaterThan(Zero));
   if (borrowTokens.length) {
     const curUserBorrowPrice = borrowTokens.reduce((pre, cur) => pre.add(cur.borrowPrice ?? Zero), Zero);
     tokensStore.setState({ curUserBorrowPrice });
     if (borrowTokens.every(token => token.borrowAPY)) {
-      tokensStore.setState({ curUserBorrowAPY: borrowTokens.reduce((pre, cur) => pre.add((cur.borrowPrice ?? Zero).mul(cur.borrowAPY ?? Zero).div(curUserBorrowPrice)), Zero) });
+      tokensStore.setState({
+        curUserBorrowAPY: borrowTokens.reduce((pre, cur) => pre.add((cur.borrowPrice ?? Zero).mul(cur.borrowAPY ?? Zero).div(curUserBorrowPrice)), Zero)
+      });
     }
+  } else {
+    tokensStore.setState({ curUserBorrowPrice: Zero, curUserBorrowAPY: Zero });
   }
 
   tokensStore.setState({ tokens });
