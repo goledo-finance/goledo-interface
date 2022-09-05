@@ -44,7 +44,7 @@ const useERC20Token = ({
       setStatus('approving');
       const txnHash = await sendTransaction({
         to: tokenAddress,
-        data: tokenContract.interface.encodeFunctionData('approve', [contractAddress, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff']),
+        data: tokenContract.interface.encodeFunctionData(!isDebtToken ? 'approve' : 'approveDelegation', [contractAddress, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff']),
       });
       const txReceipt = await waitTransactionReceipt(txnHash);
       checkApprove();
