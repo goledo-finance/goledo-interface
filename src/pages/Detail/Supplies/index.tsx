@@ -2,8 +2,11 @@ import React from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import Card from '@components/Card';
 import Button from '@components/Button';
+import BalanceText from '@modules/BalanceText';
+import Toggle from '@components/Toggle';
 import showSupplyModal from '@service/handleSupply';
 import showWithdrawModal from '@service/handleWithdraw';
+import showCollateralChangeModal from '@service/handleCollateralChange';
 import { type Token } from '../index';
 
 const Zero = Unit.fromMinUnit(0);
@@ -27,7 +30,7 @@ const Operate: React.FC<{ address: string; symbol: string; balance?: Unit; suppl
   );
 };
 
-const Supplies: React.FC<Token> = ({ address, symbol, balance, supplyBalance }) => {
+const Supplies: React.FC<Token> = ({ address, symbol, decimals, balance, supplyBalance, collateral, canBeCollateral }) => {
   return (
     <Card
       title="Supplies"
@@ -37,7 +40,7 @@ const Supplies: React.FC<Token> = ({ address, symbol, balance, supplyBalance }) 
       <div className="mt-4px flex justify-between text-14px text-#303549">
         <span>Your wallet balance</span>
         <span className="font-semibold">
-          {balance?.toDecimalStandardUnit(2) ?? '--'}
+          <BalanceText balance={balance} decimals={decimals} />
           <span className="text-#62677B font-normal"> {symbol}</span>
         </span>
       </div>
@@ -45,13 +48,14 @@ const Supplies: React.FC<Token> = ({ address, symbol, balance, supplyBalance }) 
       <div className="flex justify-between text-14px text-#303549">
         <span>You already deposited</span>
         <span className="font-semibold">
-          {supplyBalance?.toDecimalStandardUnit(2) ?? '--'}
+          <BalanceText balance={supplyBalance} decimals={decimals} />
           <span className="text-#62677B font-normal"> {symbol}</span>
         </span>
       </div>
 
       <div className="flex justify-between text-14px text-#303549">
         <span>Use as coliateral</span>
+        <Toggle checked={collateral && canBeCollateral} disabled={!canBeCollateral} onClick={() => showCollateralChangeModal({ address, symbol })} />
       </div>
     </Card>
   );

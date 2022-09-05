@@ -1,16 +1,18 @@
 import React from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import Card from '@components/Card';
+import BalanceText from '@modules/BalanceText';
+import PercentageText from '@modules/PercentageText';
 import tokensIcon from '@assets/tokens';
 import { type Token } from '../index';
 import './index.css';
 
-const PointZeroOne = Unit.fromMinUnit(0.0001);
 const Hundred = Unit.fromMinUnit(100);
 
 const ReserveOverview: React.FC<Token> = ({
   name,
   symbol,
+  decimals,
   supplyAPY,
   borrowAPY,
   totalMarketBorrowBalance,
@@ -49,32 +51,32 @@ const ReserveOverview: React.FC<Token> = ({
           <div className="flex justify-between items-center">
             <span>Total Borrowed</span>
             <span>
-              <span>{totalMarketBorrowBalance?.toDecimalStandardUnit(2) ?? '--'}</span>
-              <span className="text-#62677B">(${totalMarketBorrowPrice?.toDecimalStandardUnit(2) ?? '--'})</span>
+              <span><BalanceText balance={totalMarketBorrowBalance} decimals={decimals} /></span>
+              <span className="text-#62677B">(<BalanceText balance={totalMarketBorrowPrice} abbrDecimals={2} symbolPrefix="$" />)</span>
             </span>
           </div>
 
           <div className="flex justify-between items-center">
             <span>Available Liquidit</span>
             <span>
-              <span>{availableBalance?.toDecimalStandardUnit(2) ?? '--'}</span>
-              <span className="text-#62677B">(${availablePrice?.toDecimalStandardUnit(2) ?? '--'})</span>
+              <span><BalanceText balance={availableBalance} decimals={decimals} /></span>
+              <span className="text-#62677B">(<BalanceText balance={availablePrice} abbrDecimals={2} symbolPrefix="$" />)</span>
             </span>
           </div>
 
           <div className="flex justify-between items-center">
             <span>Maximum LTV</span>
-            <span>{maxLTV ? `${maxLTV}%` : '--'}</span>
+            <span><PercentageText value={maxLTV} /></span>
           </div>
 
           <div className="flex justify-between items-center">
             <span>Liquidation threshold</span>
-            <span>{liquidationThreshold ? `${liquidationThreshold}%` : '--'}</span>
+            <span><PercentageText value={liquidationThreshold} /></span>
           </div>
 
           <div className="flex justify-between items-center">
             <span>Liquidation penalty</span>
-            <span>{liquidationPenalty ? `${liquidationPenalty}%` : '--'}</span>
+            <span><PercentageText value={liquidationPenalty} /></span>
           </div>
 
           <div className="flex justify-between items-center">
@@ -101,7 +103,7 @@ const ReserveOverview: React.FC<Token> = ({
               <div className="p-14px border-b-1px border-#EAEBEF">Deposits</div>
               <div className="flex flex-wrap justify-between items-center p-14px pb-24px">
                 <span className="text-#62677B font-normal">Deposit APY</span>
-                <span>{supplyAPY?.greaterThan(PointZeroOne) ? `${supplyAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}</span>
+                <span><PercentageText value={supplyAPY} /></span>
               </div>
             </div>
 
@@ -109,7 +111,7 @@ const ReserveOverview: React.FC<Token> = ({
               <div className="p-14px border-b-1px border-#EAEBEF">Variable Borrowing</div>
               <div className="flex flex-wrap justify-between items-center p-14px pb-24px">
                 <span className="text-#62677B font-normal">Borrow APY</span>
-                <span>{borrowAPY?.greaterThan(PointZeroOne) ? `${borrowAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}</span>
+                <span><PercentageText value={borrowAPY} /></span>
               </div>
             </div>
           </div>

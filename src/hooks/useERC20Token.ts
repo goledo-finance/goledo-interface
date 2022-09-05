@@ -34,6 +34,7 @@ const useERC20Token = ({
         setStatus('need-approve');
       }
     } catch (err) {
+      setStatus('need-approve');
       console.log('Check approve err', err);
     }
   }, [amount]);

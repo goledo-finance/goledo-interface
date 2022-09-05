@@ -3,9 +3,10 @@ import { useForm } from 'react-hook-form';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { TokenInfo, useTokens, useUserData } from '@store/Tokens';
 import { showModal, hideAllModal } from '@components/showPopup/Modal';
-import BalanceInput from '@components/BalanceInput';
+import BalanceInput from '@modules/BalanceInput';
 import Button from '@components/Button';
-import BalanceText from '@components/BalanceText';
+import BalanceText from '@modules/BalanceText';
+import HealthFactor from '@modules/HealthFactor';
 import useEstimateHealthFactor from '@hooks/useEstimateHealthFactor';
 import useERC20Token from '@hooks/useERC20Token';
 import useTransaction from '@hooks/useTransaction';
@@ -16,27 +17,30 @@ import { handleWithdraw } from './index';
 const Zero = Unit.fromMinUnit(0);
 
 const ModalContent: React.FC<{ address: string }> = ({ address }) => {
-  const { register, handleSubmit: withForm, watch } = useForm();
+  const { register, handleSubmit: withForm } = useForm();
   const tokens = useTokens();
   const token = tokens?.find((t) => t.address === address)!;
-  const hasBorrowed = !!tokens?.find(token => token.borrowBalance?.greaterThan(Zero));
+  const hasBorrowed = !!tokens?.find((token) => token.borrowBalance?.greaterThan(Zero));
   const userData = useUserData();
 
-  const currentAmountUnit = Unit.fromStandardUnit(watch('amount') || 0, token?.decimals);
-  const [confirmAmountUnit, setConfirmAmountUnit] = useState<Unit | undefined>();
+  const [confirmAmount, setConfirmAmount] = useState<string | null>(null);
+  const confirmAmountUnit = useMemo(() => (confirmAmount ? Unit.fromStandardUnit(confirmAmount || 0, token?.decimals) : undefined), [confirmAmount]);
 
   const estimateToken = useMemo(() => {
     const res: PartialOmit<TokenInfo, 'symbol'> = { symbol: token.symbol };
-    if (!currentAmountUnit || !token.supplyBalance || !token.usdPrice) return res;
-    const supplyBalance = token.supplyBalance.sub(currentAmountUnit);
+    if (!confirmAmountUnit || !token.supplyBalance || !token.usdPrice) return res;
+    const supplyBalance = token.supplyBalance.sub(confirmAmountUnit);
     const supplyPrice = token.usdPrice.mul(supplyBalance);
     res.supplyBalance = supplyBalance;
     res.supplyPrice = supplyPrice;
     return res;
-  }, [token, currentAmountUnit]);
+  }, [token, confirmAmountUnit]);
   const estimateHealthFactor = useEstimateHealthFactor(estimateToken);
 
-  const handleContinue = useCallback(withForm(({ amount }) => setConfirmAmountUnit(Unit.fromStandardUnit(amount, token.decimals))),[]);
+  const handleContinue = useCallback(
+    withForm(({ amount }) => setConfirmAmount(amount)),
+    []
+  );
 
   const { status: approveStatus, handleApprove } = useERC20Token({
     needApprove: token?.symbol === 'CFX',
@@ -47,10 +51,11 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
 
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleWithdraw);
 
+  const isEstimateHealthFactorUnsafe = estimateHealthFactor && Number(estimateHealthFactor) < 1;
   const max = token?.supplyBalance;
   if (!token) return null;
   return (
-    <div className='relative'>
+    <div className="relative">
       {!confirmAmountUnit && (
         <form onSubmit={handleContinue} className="mt-10px">
           <BalanceInput
@@ -76,12 +81,14 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
       {confirmAmountUnit && transactionStatus !== 'success' && transactionStatus !== 'failed' && (
         <>
           <p className="mt-30px mb-4px text-14px text-#62677B">These are your transaction details. Make sure to check if this is correct before submitting.</p>
-          <div className="flex flex-col gap-16px p-12px rounded-4px border-1px border-#EAEBEF text-14px text-#303549">
+          <div className="relative flex flex-col gap-16px p-12px rounded-4px border-1px border-#EAEBEF text-14px text-#303549">
             <div className="flex justify-between">
               <span>Amount</span>
               <div className="text-right">
                 <BalanceText balance={confirmAmountUnit} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
-                <p className="mt-2px text-12px text-#62677B">${confirmAmountUnit.mul(token?.usdPrice!).toDecimalStandardUnit(2)}</p>
+                <p className="mt-2px text-12px text-#62677B">
+                  <BalanceText balance={confirmAmountUnit.mul(token?.usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
+                </p>
               </div>
             </div>
 
@@ -92,19 +99,25 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               </div>
             </div>
 
-            {hasBorrowed && ( 
+            {hasBorrowed && (
               <div className="flex justify-between">
                 <span>Health factor</span>
                 <div className="text-right">
-                  <p className="text-#F89F1A">
-                    <span>{userData?.healthFactor ?? ''}</span>
+                  <p>
+                    <HealthFactor value={userData?.healthFactor} />
                     <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                    <span>{estimateHealthFactor}</span>
+                    <HealthFactor value={estimateHealthFactor} />
                   </p>
                   <p className="mt-6px text-12px text-#62677B">{`Liquidation at <1.0`}</p>
                 </div>
               </div>
             )}
+
+            {isEstimateHealthFactorUnsafe &&
+              <p className='absolute bottom-0px left-0px translate-y-[calc(100%+6px)] text-12px text-#FE6060'>
+                Health factor after withdraw can not less than 1.0
+              </p>
+            }
           </div>
 
           <Button
@@ -112,8 +125,12 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             size="large"
             className="mt-48px"
             disabled={approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending'}
-            loading={(approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending') ? 'start' : undefined}
+            loading={approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending' ? 'start' : undefined}
             onClick={() => {
+              if (isEstimateHealthFactorUnsafe) {
+                setConfirmAmount('');
+                return;
+              }
               if (approveStatus === 'approved') {
                 sendTransaction({ amount: confirmAmountUnit, tokenAddress: token.address, symbol: token.symbol });
               } else if (approveStatus === 'need-approve') {
@@ -121,15 +138,21 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               }
             }}
           >
-            {transactionStatus === 'waiting' && (
+            {isEstimateHealthFactorUnsafe ? (
+              'Go back'
+            ) : (
               <>
-                {approveStatus === 'checking-approve' && 'Checking Approve...'}
-                {approveStatus === 'approving' && 'Approving...'}
-                {approveStatus === 'need-approve' && `Approve ${token?.symbol}`}
-                {approveStatus === 'approved' && `Withdraw ${token?.symbol}`}
+                {transactionStatus === 'waiting' && (
+                  <>
+                    {approveStatus === 'checking-approve' && 'Checking Approve...'}
+                    {approveStatus === 'approving' && 'Approving...'}
+                    {approveStatus === 'need-approve' && `Approve ${token?.symbol}`}
+                    {approveStatus === 'approved' && `Withdraw ${token?.symbol}`}
+                  </>
+                )}
+                {transactionStatus === 'sending' && `Withdrawing ${token?.symbol}...`}
               </>
             )}
-            {transactionStatus === 'sending' && `Withdrawing ${token?.symbol}...`}
           </Button>
         </>
       )}
@@ -143,22 +166,22 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You withdrew <span className='font-semibold'>{confirmAmountUnit?.toDecimalStandardUnit(2)}</span> {token?.symbol}
+                You withdrew <BalanceText className="font-semibold" balance={confirmAmountUnit} placement="top" symbol={token?.symbol} />
               </>
             )}
             {transactionStatus === 'failed' && error}
           </p>
-          {scanUrl &&
+          {scanUrl && (
             <a
-              className='absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline'
+              className="absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline"
               href={scanUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
               Review tx details
-              <span className='i-charm:link-external ml-3px text-10px translate-y-[-.5px]' />
+              <span className="i-charm:link-external ml-3px text-10px translate-y-[-.5px]" />
             </a>
-          }
+          )}
           <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>

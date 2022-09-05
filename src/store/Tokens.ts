@@ -3,7 +3,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import LocalStorage from 'localstorage-enhance';
 import { store as walletStore, Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { intervalFetchChain } from '@utils/fetchChain';
-import { UiPoolDataContract, LendingPoolContract, MulticallContract, ChefIncentivesControllerContract, createERC20Contract } from '@utils/contracts';
+import { UiPoolDataContract, LendingPoolContract, MultiFeeDistributionContract, MulticallContract, ChefIncentivesControllerContract, createERC20Contract } from '@utils/contracts';
 import { isEqual, debounce } from 'lodash-es';
 
 interface Token {
@@ -74,7 +74,7 @@ export interface TokenInfo {
   earnedGoledoBalance?: Unit;
 }
 
-interface TokensStore {
+export interface TokensStore {
   cfxUsdPrice?: Unit;
   tokensInPool?: Array<Token>;
 
@@ -113,7 +113,8 @@ interface TokensStore {
     borrowPowerUsed: string;
     availableBorrowsUSD: Unit;
     loanToValue: string;
-  }
+  };
+  claimableFees?: Array<{ name: string; symbol: string; address: string; supplyTokenAddress: string; decimals: number; balance: Unit; price: Unit; }>;
 }
 
 export const tokensStore = create(subscribeWithSelector(() =>({ tokensInPool: LocalStorage.getItem(`tokensInPool-${import.meta.env.MODE}`)} as TokensStore)));
@@ -124,8 +125,8 @@ walletStore.subscribe(
   (state) => state.accounts,
   (accounts) => {
     unsub?.();
-
     const account = accounts?.[0];
+    
     if (!account) {
       tokensStore.setState({
         tokensData: undefined,
@@ -142,6 +143,7 @@ walletStore.subscribe(
     const promises = [
       [import.meta.env.VITE_LendingPoolAddress, LendingPoolContract.interface.encodeFunctionData('getUserAccountData', [account])],
       [import.meta.env.VITE_UiPoolDataProviderAddress, UiPoolDataContract.interface.encodeFunctionData('getReservesData', [import.meta.env.VITE_LendingPoolAddressesProviderAddress, account])],
+      [import.meta.env.VITE_MultiFeeDistributionAddress, MultiFeeDistributionContract.interface.encodeFunctionData('claimableRewards', [account])],
     ];
 
     unsub = intervalFetchChain(() => MulticallContract.callStatic.aggregate(promises), {
@@ -184,7 +186,32 @@ walletStore.subscribe(
           userTokensPoolDataArr.map((userTokenData: UserTokenData) => [userTokenData.address, userTokenData])
         );
 
-        tokensStore.setState({ tokensData, userTokensData, userData });
+        const claimableFeesData = MultiFeeDistributionContract.interface.decodeFunctionResult('claimableRewards', returnData?.[2]);
+        const claimableFees: TokensStore['claimableFees'] = claimableFeesData?.[0]?.map((data: any) => {
+          const targetToken = tokensInPool.find((token) => token.supplyTokenAddress === data.token);
+          const balance = Unit.fromMinUnit(data.amount._hex ?? 0);
+          if (!targetToken) {
+            return {
+              address: import.meta.env.VITE_GoledoTokenAddress,
+              supplyTokenAddress: import.meta.env.VITE_GoledoTokenAddress,
+              balance,
+              name: 'Goledo',
+              symbol: 'GOL',
+              decimals: 18,
+            }
+          }
+          return {
+            address: targetToken?.address,
+            supplyTokenAddress: targetToken?.supplyTokenAddress,
+            balance,
+            price: tokensData[targetToken?.address]?.usdPrice?.mul(balance),
+            name: targetToken?.name,
+            symbol: targetToken?.symbol,
+            decimals: targetToken?.decimals,
+          }
+        });
+
+        tokensStore.setState({ tokensData, userTokensData, userData, claimableFees });
       },
     });
   },
@@ -387,6 +414,7 @@ const selectors = {
   curUserBorrowPrice: (state: TokensStore) => state.curUserBorrowPrice,
   curUserBorrowAPY: (state: TokensStore) => state.curUserBorrowAPY,
   userData: (state: TokensStore) => state.userData,
+  claimableFees: (state: TokensStore) => state.claimableFees
 };
 
 export const useTokens = () => tokensStore(selectors.tokens);
@@ -395,6 +423,7 @@ export const useCurUserSupplyAPY = () => tokensStore(selectors.curUserSupplyAPY)
 export const useCurUserBorrowPrice = () => tokensStore(selectors.curUserBorrowPrice);
 export const useCurUserBorrowAPY = () => tokensStore(selectors.curUserBorrowAPY);
 export const useUserData = () => tokensStore(selectors.userData);
+export const useClaimableFees = () => tokensStore(selectors.claimableFees);
 
 
 

@@ -3,9 +3,10 @@ import { useForm } from 'react-hook-form';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { TokenInfo, useTokens, useUserData } from '@store/Tokens';
 import { showModal, hideAllModal } from '@components/showPopup/Modal';
-import BalanceInput from '@components/BalanceInput';
+import BalanceInput from '@modules/BalanceInput';
 import Button from '@components/Button';
-import BalanceText from '@components/BalanceText';
+import BalanceText from '@modules/BalanceText';
+import HealthFactor from '@modules/HealthFactor';
 import useEstimateHealthFactor from '@hooks/useEstimateHealthFactor';
 import useERC20Token from '@hooks/useERC20Token';
 import useEstimateCfxGasFee from '@hooks/useEstimateCfxGasFee';
@@ -99,17 +100,17 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           <p className="mt-30px mb-4px text-14px text-#62677B">These are your transaction details. Make sure to check if this is correct before submitting.</p>
           <div className="flex flex-col gap-16px p-12px rounded-4px border-1px border-#EAEBEF text-14px text-#303549">
             <div className="flex justify-between">
-              <span>Remaining debt</span>
+              <span>Remaining debt {token?.symbol}</span>
               <div className="text-right">
                 <p>
-                  <BalanceText balance={debt} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
+                  <BalanceText balance={debt} decimals={token?.decimals} placement="top" />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  <BalanceText balance={debtAfterRepay} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
+                  <BalanceText balance={debtAfterRepay} decimals={token?.decimals} placement="top" />
                 </p>
                 <p className="mt-6px text-12px text-#303549">
-                  <span className="mt-2px">$<BalanceText balance={debt?.mul(token?.usdPrice ?? Zero)} decimals={18} symbol="" /></span>
+                  <BalanceText className='mt-2px' balance={debt?.mul(token?.usdPrice ?? Zero)} abbrDecimals={2} symbolPrefix="$" />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  <span className="mt-2px">$<BalanceText balance={debtAfterRepay?.mul(token?.usdPrice ?? Zero)} decimals={18} symbol="" /></span>
+                  <BalanceText className='mt-2px' balance={debtAfterRepay?.mul(token?.usdPrice ?? Zero)} abbrDecimals={2} symbolPrefix="$" />
                 </p>
               </div>
             </div>
@@ -118,10 +119,10 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               <div className="flex justify-between">
                 <span>Health factor</span>
                 <div className="text-right">
-                  <p className="text-#F89F1A">
-                    <span>{userData?.healthFactor ?? ''}</span>
+                  <p>
+                    <HealthFactor value={userData?.healthFactor} />
                     <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                    <span>{estimateHealthFactor}</span>
+                    <HealthFactor value={estimateHealthFactor} />
                   </p>
                   <p className="mt-6px text-12px text-#62677B">{`Liquidation at <1.0`}</p>
                 </div>
@@ -165,7 +166,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You Repaid <span className="font-semibold">{confirmAmountUnit?.toDecimalStandardUnit(2)}</span> {token?.symbol}
+                You Repaid <BalanceText className="font-semibold" balance={confirmAmountUnit} placement="top" symbol={token?.symbol} />
               </>
             )}
             {transactionStatus === 'failed' && error}

@@ -3,6 +3,7 @@ import React from 'react';
 import { useGoledoLockeds } from '@store/index';
 import Card from '@components/Card';
 import Table, { type Columns } from '@components/Table';
+import BalanceText from '@modules/BalanceText';
 import Goledo from '@assets/tokens/goledo.svg';
 
 type Locked = NonNullable<ReturnType<typeof useGoledoLockeds>>[number];
@@ -13,7 +14,7 @@ const columns: Columns<Locked> = [{
   render: ({ balance }) => (
     <div className='flex items-center'>
       <img className="w-18px h-18px mr-4px" src={Goledo} alt="Goledo" />
-      {balance?.toDecimalStandardUnit(2)} Goledo
+      <BalanceText balance={balance} symbol="Goledo" />
     </div>
   )
 }, {

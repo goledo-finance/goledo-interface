@@ -3,10 +3,11 @@ import { useForm } from 'react-hook-form';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { TokenInfo, useTokens, useUserData } from '@store/Tokens';
 import { showModal, hideAllModal } from '@components/showPopup/Modal';
-import BalanceInput from '@components/BalanceInput';
+import BalanceInput from '@modules/BalanceInput';
 import ToolTip from '@components/Tooltip';
 import Button from '@components/Button';
-import BalanceText from '@components/BalanceText';
+import BalanceText from '@modules/BalanceText';
+import HealthFactor from '@modules/HealthFactor';
 import useEstimateHealthFactor from '@hooks/useEstimateHealthFactor';
 import useERC20Token from '@hooks/useERC20Token';
 import useTransaction from '@hooks/useTransaction';
@@ -87,7 +88,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               <span>Amount</span>
               <div className="text-right">
                 <BalanceText balance={confirmAmountUnit} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
-                <p className="mt-2px text-12px text-#62677B">${confirmAmountUnit.mul(token?.usdPrice!).toDecimalStandardUnit(2)}</p>
+                <p className="mt-2px text-12px text-#62677B"><BalanceText balance={confirmAmountUnit.mul(token?.usdPrice!)} abbrDecimals={2} symbolPrefix="$" /></p>
               </div>
             </div>
 
@@ -95,10 +96,10 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               <div className="flex justify-between">
                 <span>Health factor</span>
                 <div className="text-right">
-                  <p className="text-#F89F1A">
-                    <span>{userData?.healthFactor ?? ''}</span>
+                  <p>
+                    <HealthFactor value={userData?.healthFactor} />
                     <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                    <span>{estimateHealthFactor}</span>
+                    <HealthFactor value={estimateHealthFactor} />
                   </p>
                   <p className="mt-6px text-12px text-#62677B">{`Liquidation at <1.0`}</p>
                 </div>
@@ -142,7 +143,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You Borrowed <span className='font-semibold'>{confirmAmountUnit?.toDecimalStandardUnit(2)}</span> {token?.symbol}
+                You Borrowed <BalanceText className='font-semibold' balance={confirmAmountUnit} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
               </>
             )}
             {transactionStatus === 'failed' && error}

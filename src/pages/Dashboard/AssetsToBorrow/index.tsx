@@ -7,17 +7,17 @@ import Card from '@components/Card';
 import Table, { type Columns } from '@components/Table';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
+import BalanceText from '@modules/BalanceText';
+import PercentageText from '@modules/PercentageText';
 import showBorrowModal from '@service/handleBorrow';
 
 const Zero = Unit.fromMinUnit(0);
-const PointZeroOne = Unit.fromMinUnit(0.0001);
-const Hundred = Unit.fromMinUnit(100);
 
 const columns: Columns<TokenInfo> = [
   {
     name: 'Assets',
     width: '16%',
-    renderHeader: () => <div className="w-full h-full flex justify-start items-center pl-4px">Assets</div>,
+    renderHeader: () => <div className="w-full h-full flex justify-start pl-4px">Assets</div>,
     render: ({ symbol }) => (
       <div className="w-full h-full flex justify-start items-center pl-4px font-semibold">
         <img className="w-24px h-24px mr-8px" src={tokensIcon[symbol]} alt={symbol} />
@@ -28,13 +28,13 @@ const columns: Columns<TokenInfo> = [
   {
     name: 'Available',
     width: '29%',
-    render: ({ availableBorrowBalance }) => <div className="font-semibold">{availableBorrowBalance?.toDecimalStandardUnit(2)}</div>,
+    render: ({ availableBorrowBalance, decimals }) => <div className="font-semibold"><BalanceText balance={availableBorrowBalance} decimals={decimals} /></div>,
   },
   {
-    name: 'APY',
+    name: 'Interest Rate',
     width: '25%',
     render: ({ borrowAPY }) => (
-      <div className="font-semibold">{`${borrowAPY?.greaterThan(PointZeroOne) ? `${borrowAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}`}</div>
+      <div className="font-semibold"><PercentageText value={borrowAPY} /></div>
     ),
   },
   {
@@ -66,7 +66,7 @@ const configs: Configs<TokenInfo> = [
     renderContent: columns[1].render,
   },
   {
-    name: 'Borrow APY',
+    name: 'Borrow Interest Rate',
     renderContent: columns[2].render,
   },
   {

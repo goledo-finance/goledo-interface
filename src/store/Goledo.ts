@@ -161,8 +161,7 @@ const calcGoledoPrice = debounce(() => {
     goledoStore.setState({ usdPrice: undefined, stakedBalance: undefined, lockedBalance: undefined });
     return;
   }
-
-  const goledoUsdPrice = reserves[0].div(reserves[1]).mul(cfxUsdPrice);
+  const goledoUsdPrice = reserves[1]?.equalsWith(Unit.fromMinUnit(0)) ? Unit.fromMinUnit(0) : reserves[0].div(reserves[1]).mul(cfxUsdPrice);
   const stakedPrice = stakedBalance.mul(goledoUsdPrice);
   const lockedPrice = lockedBalance.mul(goledoUsdPrice);
   const earnedPrice = earnedBalance.mul(goledoUsdPrice);

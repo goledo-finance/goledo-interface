@@ -5,17 +5,17 @@ import Card from '@components/Card';
 import Table, { type Columns } from '@components/Table';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
+import BalanceText from '@modules/BalanceText';
+import PercentageText from '@modules/PercentageText';
 import GoledoIcon from '@assets/tokens/goledo.svg';
 import handleVestingGoledo from '@service/handleVestingGoledo';
-
-const Hundred = Unit.fromMinUnit(100);
 
 type Goledo = NonNullable<ReturnType<typeof useGoledo>>;
 
 const columns: Columns<Goledo> = [{
   name: 'Assets',
   width: '10%',
-  renderHeader: () => <div className='w-full h-full flex justify-start items-center pl-4px'>Assets</div>,
+  renderHeader: () => <div className='w-full h-full flex justify-start pl-4px'>Assets</div>,
   render: () => (
     <div className='w-full h-full flex justify-start items-center pl-4px font-semibold'>
       <img className="w-24px h-24px mr-8px" src={GoledoIcon} alt="Goledo" />
@@ -27,8 +27,8 @@ const columns: Columns<Goledo> = [{
   width: '19%',
   render: ({ earnedBalance, earnedPrice }) => (
     <div>
-      <p className='font-semibold'>{earnedBalance?.toDecimalStandardUnit(2)}</p>
-      <p className='text-12px text-#62677B'>${earnedPrice?.toDecimalStandardUnit(2)}</p>
+      <p className='font-semibold'><BalanceText balance={earnedBalance} /></p>
+      <p className='text-12px text-#62677B'><BalanceText balance={earnedPrice} abbrDecimals={2} symbolPrefix="$" /></p>
     </div>
   )
 }, {
@@ -41,13 +41,13 @@ const columns: Columns<Goledo> = [{
   render: ({ stakedBalance, stakedPrice, stakeAPR }) => (
     <div>
       <div className='flex items-center'>
-        <p className='font-semibold'>{stakedBalance?.toDecimalStandardUnit(2)}</p>
+        <p className='font-semibold'><BalanceText balance={stakedBalance} /></p>
         <div className='ml-8px px-4px py-2px rounded-4px border-1px border-#EAEBEF'>
           <span className='text-#62677B mr-4px'>APR</span>
-          <span className='font-semibold'>{stakeAPR?.mul(Hundred).toDecimalStandardUnit(2)}%</span>
+          <span className='font-semibold'><PercentageText value={stakeAPR} /></span>
         </div>
       </div>
-      <p className='text-12px text-#62677B'>${stakedPrice?.toDecimalStandardUnit(2)}</p>
+      <p className='text-12px text-#62677B'><BalanceText balance={stakedPrice} abbrDecimals={2} symbolPrefix="$" /></p>
     </div>
   )
 }, {
@@ -56,13 +56,13 @@ const columns: Columns<Goledo> = [{
   render: ({ lockedBalance, lockedPrice, lockAPR }) => (
     <div>
       <div className='flex items-center'>
-      <p className='font-semibold'>{lockedBalance?.toDecimalStandardUnit(2)}</p>
+      <p className='font-semibold'><BalanceText balance={lockedBalance} /></p>
         <div className='ml-8px px-4px py-2px rounded-4px border-1px border-#EAEBEF'>
           <span className='text-#62677B mr-4px'>APR</span>
-          <span className='font-semibold'>{lockAPR?.mul(Hundred).toDecimalStandardUnit(4)}%</span>
+          <span className='font-semibold'><PercentageText value={lockAPR} /></span>
         </div>
       </div>
-      <p className='text-12px text-#62677B'>${lockedPrice?.toDecimalStandardUnit(2)}</p>
+      <p className='text-12px text-#62677B'><BalanceText balance={lockedPrice} abbrDecimals={2} symbolPrefix="$" /></p>
     </div>
   )
 }, {
