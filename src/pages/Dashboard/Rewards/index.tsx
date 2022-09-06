@@ -1,5 +1,4 @@
 import React from 'react';
-import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useGoledo } from '@store/index';
 import Card from '@components/Card';
 import Table, { type Columns } from '@components/Table';
@@ -32,9 +31,9 @@ const columns: Columns<Goledo> = [{
     </div>
   )
 }, {
-  name: 'APY',
+  name: 'APR',
   width: '8%',
-  render: () => <div className='font-semibold'>0%</div>
+  render: ({ APR }) => <PercentageText className='font-semibold' value={APR} />
 }, {
   name: 'Your staked balance',
   width: '24%',
@@ -88,7 +87,7 @@ const configs: Configs<Goledo> = [{
   name: 'Earned',
   renderContent: columns[1].render,
 }, {
-  name: 'APY',
+  name: 'APR',
   renderContent: columns[2].render,
 }, {
   name: 'Your staked balance',
