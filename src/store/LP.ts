@@ -7,6 +7,7 @@ import { debounce } from 'lodash-es';
 import { tokensStore } from './Tokens';
 import { goledoStore } from './Goledo';
 
+const Zero = Unit.fromMinUnit(0);
 const OneDaySeconds = Unit.fromMinUnit(86400);
 const OneWeekSeconds = Unit.fromMinUnit(604800);
 const OneYearSeconds = Unit.fromMinUnit(31536000);
@@ -119,7 +120,10 @@ const calcLPUsdPrice = debounce(() => {
     return;
   }
 
-  const usdPrice = reserve0.mul(Unit.fromMinUnit(2)).mul(cfxUsdPrice).div(totalSupply);
+  let usdPrice = reserve0.mul(Unit.fromMinUnit(2)).mul(cfxUsdPrice).div(totalSupply);
+  if (usdPrice.toDecimalMinUnit() === 'NaN') {
+    usdPrice = Zero
+  }
   const { stakedBalance, totalMarketStakedBalance, earnedGoledoBalance, totalRewardsPerDayBalance, totalRewardsPerWeekBalance } = lpStore.getState();
   lpStore.setState({
     usdPrice,
@@ -145,7 +149,7 @@ const calcStakeAPR = debounce(() => {
   }
 
   const stakeAPR = rewardsPerSecond.mul(OneYearSeconds).mul(goledoUsdPrice).div(totalMarketStakedBalance.mul(usdPrice));
-  lpStore.setState({ stakeAPR });
+  lpStore.setState({ stakeAPR: stakeAPR.toDecimalMinUnit() === 'NaN' ? Zero : stakeAPR });
 }, 50);
 lpStore.subscribe((state) => state.usdPrice, calcStakeAPR, { fireImmediately: true });
 goledoStore.subscribe((state) => state.usdPrice, calcStakeAPR, { fireImmediately: true });

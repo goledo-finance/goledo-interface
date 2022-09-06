@@ -16,7 +16,6 @@ const useTransaction = <T extends (...params: any) => Promise<string>>(transacti
       const txReceipt = await waitTransactionReceipt(txnHash);
       setStatus('success');
       setScanUrl(`${Network.blockExplorerUrls[0]}/tx/${txReceipt?.transactionHash}`);
-      console.log(txReceipt)
     } catch (err: any) {
       setStatus('failed');
       if (err?.code === 4001) {
