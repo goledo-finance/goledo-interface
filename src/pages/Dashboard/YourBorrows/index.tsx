@@ -100,10 +100,9 @@ const YourBorrows: React.FC = () => {
 
   return (
     <Card title="Your Borrows" showHideButton="no-pb" className="w-50% lt-2xl:w-full">
-      {!curUserBorrowTokens?.length && <p className='mt-40px mb-8px text-center'>No Borrows</p>}
+      {!curUserBorrowTokens?.length && <p className='mt-40px mb-24px text-center'>No Borrows</p>}
       {curUserBorrowTokens?.length ? (
         <>
-          {' '}
           <div className="mt-16px flex gap-8px flex-wrap">
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               Balance

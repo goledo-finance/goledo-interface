@@ -115,7 +115,7 @@ const YourSupplies: React.FC = () => {
 
   return (
     <Card title="Your Supplies" showHideButton="no-pb" className="w-50% lt-2xl:w-full">
-      {!curUserSupplyTokens?.length && <p className='mt-40px mb-8px text-center'>No Supplies</p>}
+      {!curUserSupplyTokens?.length && <p className='mt-40px mb-24px text-center'>No Supplies</p>}
       {curUserSupplyTokens?.length ? (
         <>
           <div className="mt-16px flex gap-8px flex-wrap">
