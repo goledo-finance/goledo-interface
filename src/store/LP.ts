@@ -89,10 +89,9 @@ const getData = debounce(() => {
       const stakedBalanceData = MasterChefContract.interface.decodeFunctionResult('userInfo', returnData[1]);
       const stakedBalance = Unit.fromMinUnit(stakedBalanceData?.amount?._hex ?? 0);
 
-      // const userBaseClaimable = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('userBaseClaimable', returnData[2])?.[0]?._hex ?? 0);
+      const userBaseClaimable = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('userBaseClaimable', returnData[2])?.[0]?._hex ?? 0);
       const claimableReward = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('claimableReward', returnData[3])?.[0]?.[0]?._hex ?? 0);
-      // const earnedGoledoBalance = userBaseClaimable.add(claimableReward);
-      const earnedGoledoBalance = claimableReward;
+      const earnedGoledoBalance = userBaseClaimable.add(claimableReward);
 
       const rewardsPerSecond = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('rewardsPerSecond', returnData[4])?.[0]?._hex ?? 0);
       const totalRewardsPerDayBalance = rewardsPerSecond.mul(OneDaySeconds);
