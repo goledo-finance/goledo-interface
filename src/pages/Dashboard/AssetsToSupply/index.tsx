@@ -7,16 +7,16 @@ import Card from '@components/Card';
 import Table, { type Columns } from '@components/Table';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
+import BalanceText from '@modules/BalanceText';
+import PercentageText from '@modules/PercentageText';
 import showSupplyModal from '@service/handleSupply';
 
 const Zero = Unit.fromMinUnit(0);
-const PointZeroOne = Unit.fromMinUnit(0.0001);
-const Hundred = Unit.fromMinUnit(100);
 
 const columns: Columns<TokenInfo> = [{
   name: 'Assets',
   width: '13%',
-  renderHeader: () => <div className='w-full h-full flex justify-start items-center pl-4px'>Assets</div>,
+  renderHeader: () => <div className='w-full h-full flex justify-start pl-4px'>Assets</div>,
   render: ({ symbol }) => (
     <div className='w-full h-full flex justify-start items-center pl-4px font-semibold'>
       <img className="w-24px h-24px mr-8px" src={tokensIcon[symbol]} alt={symbol} />
@@ -26,12 +26,12 @@ const columns: Columns<TokenInfo> = [{
 }, {
   name: 'Balance',
   width: '24%',
-  render: ({ balance }) => <div className='font-semibold'>{balance?.toDecimalStandardUnit(2)}</div>
+  render: ({ balance, decimals }) => <div className='font-semibold'><BalanceText balance={balance} decimals={decimals} /></div>
 
 }, {
   name: 'APY',
   width: '18%',
-  render: ({ supplyAPY }) => <div className='font-semibold'>{`${supplyAPY?.greaterThan(PointZeroOne) ? `${supplyAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}`}</div>
+  render: ({ supplyAPY }) => <div className='font-semibold'><PercentageText value={supplyAPY} /></div>
 }, {
   name: 'Can be collateral',
   width: '17%',

@@ -2,19 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { useLpEarnedGoledoBalance, useGoledoEarnedBalance, useTokens, useGoledoUsdPrice, useGoledoVestingBalance } from '@store/index';
 import { showModal, hideAllModal } from '@components/showPopup/Modal';
 import Button from '@components/Button';
-import BalanceText from '@components/BalanceText';
+import BalanceText from '@modules/BalanceText';
 import useTransaction from '@hooks/useTransaction';
 import Success from '@assets/icons/success.svg';
 import Error from '@assets/icons/error.svg';
 import { handleVestingGoledo } from './index';
 
-const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all'; }> = ({ tokenAddress }) => {
+const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all' }> = ({ tokenAddress }) => {
   const tokens = useTokens();
   const lpEarnedGoledoBalance = useLpEarnedGoledoBalance();
   const gledoEarnedBalance = useGoledoEarnedBalance();
   const goledoUsdPrice = useGoledoUsdPrice();
   const goledoVestingBalance = useGoledoVestingBalance();
-  const amount = tokenAddress === 'lp' ? lpEarnedGoledoBalance : tokenAddress === 'all' ? gledoEarnedBalance : tokens?.find(token => token.address === tokenAddress)?.earnedGoledoBalance;
+  const amount =
+    tokenAddress === 'lp'
+      ? lpEarnedGoledoBalance
+      : tokenAddress === 'all'
+      ? gledoEarnedBalance
+      : tokens?.find((token) => token.address === tokenAddress)?.earnedGoledoBalance;
 
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleVestingGoledo);
 
@@ -30,7 +35,7 @@ const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all'; }> = ({ toke
   const usedVestingBalance = vestingBalanceBefore || goledoVestingBalance;
   if (!goledoUsdPrice || !amount) return null;
   return (
-    <div className='relative'>
+    <div className="relative">
       {transactionStatus !== 'success' && transactionStatus !== 'failed' && (
         <>
           <p className="mt-30px mb-4px text-14px text-#62677B">Transaction overview.</p>
@@ -38,23 +43,25 @@ const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all'; }> = ({ toke
             <div className="flex justify-between">
               <span>Amount</span>
               <div className="text-right">
-                <BalanceText balance={amount} symbol="GOL" decimals={18} placement="top" />
-                <p className="mt-2px text-12px text-#62677B">${amount?.mul(goledoUsdPrice!).toDecimalStandardUnit(2)}</p>
+                <BalanceText balance={amount} symbol="Goledo" placement="top" />
+                <p className="mt-2px text-12px text-#62677B">
+                  <BalanceText balance={amount?.mul(goledoUsdPrice!)} abbrDecimals={2} symbolPrefix="$" />
+                </p>
               </div>
             </div>
 
             <div className="flex justify-between">
-              <span>Vesting GOL</span>
+              <span>Vesting Goledo</span>
               <div className="text-right">
                 <p>
-                  <span>{usedVestingBalance?.toDecimalStandardUnit(2)}</span>
+                  <BalanceText balance={usedVestingBalance} placement="top" />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  <span>{usedVestingBalance?.add(vestingAmount || amount)?.toDecimalStandardUnit(2)}</span>
+                  <BalanceText balance={usedVestingBalance?.add(vestingAmount || amount)} placement="top" />
                 </p>
                 <p className="mt-2px text-12px text-#62677B">
-                  <span>${usedVestingBalance?.mul(goledoUsdPrice!).toDecimalStandardUnit(2)}</span>
+                  <BalanceText balance={usedVestingBalance?.mul(goledoUsdPrice!)} abbrDecimals={2} symbolPrefix="$" />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-10px translate-y-[-1px]" />
-                  <span>${usedVestingBalance?.add(vestingAmount || amount)?.mul(goledoUsdPrice!).toDecimalStandardUnit(2)}</span>
+                  <BalanceText balance={usedVestingBalance?.add(vestingAmount || amount)?.mul(goledoUsdPrice!)} abbrDecimals={2} symbolPrefix="$" />
                 </p>
               </div>
             </div>
@@ -69,7 +76,7 @@ const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all'; }> = ({ toke
             onClick={() => sendTransaction({ tokenAddress })}
           >
             {transactionStatus === 'waiting' && 'Vest'}
-            {transactionStatus === 'sending' && 'Vesting GOL...'}
+            {transactionStatus === 'sending' && 'Vesting Goledo...'}
           </Button>
         </>
       )}
@@ -83,22 +90,22 @@ const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all'; }> = ({ toke
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You Vesting <span className='font-semibold'>{vestingAmount?.toDecimalStandardUnit(2)}</span> GOL
+                You Vesting <BalanceText className="font-semibold" balance={vestingAmount} placement="top" symbol="Goledo" />
               </>
             )}
             {transactionStatus === 'failed' && error}
           </p>
-          {scanUrl &&
+          {scanUrl && (
             <a
-              className='absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline'
+              className="absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline"
               href={scanUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
               Review tx details
-              <span className='i-charm:link-external ml-3px text-10px translate-y-[-.5px]' />
+              <span className="i-charm:link-external ml-3px text-10px translate-y-[-.5px]" />
             </a>
-          }
+          )}
           <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
@@ -108,7 +115,7 @@ const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all'; }> = ({ toke
   );
 };
 
-const showVestingGoledoModal = ({ tokenAddress }: { tokenAddress: string | 'lp' | 'all'; }) =>
+const showVestingGoledoModal = ({ tokenAddress }: { tokenAddress: string | 'lp' | 'all' }) =>
   showModal({ Content: <ModalContent tokenAddress={tokenAddress} />, title: 'Vesting Goledo' });
 
 export default showVestingGoledoModal;

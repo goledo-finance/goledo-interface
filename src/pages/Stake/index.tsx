@@ -7,7 +7,7 @@ import LP from './LP';
 import GoledoClaim from './GoledoClaim';
 import GoledoVest from './GoledoVest';
 import GoledoLock from './GoledoLock';
-import Tmp from './Tmp';
+import ClaimableFees from './ClaimableFees';
 
 const Stake: React.FC = () => {
   return (
@@ -26,7 +26,7 @@ const Stake: React.FC = () => {
           <GoledoClaim />
           <GoledoVest />
           <GoledoLock />
-          <Tmp />
+          <ClaimableFees />
         </div>
       </PageWrapper>
     </>

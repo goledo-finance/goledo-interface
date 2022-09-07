@@ -3,6 +3,8 @@ import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useUserData } from '@store/index';
 import Card from '@components/Card';
 import Button from '@components/Button';
+import BalanceText from '@modules/BalanceText';
+import HealthFactor from '@modules/HealthFactor'
 import showBorrowModal from '@service/handleBorrow';
 import showRepayModal from '@service/handleRepay';
 import { type Token } from '../index';
@@ -40,7 +42,7 @@ const Operate: React.FC<{ address: string; symbol: string; borrowBalance?: Unit;
   );
 };
 
-const Borrows: React.FC<Token> = ({ address, symbol, borrowBalance, availableBorrowBalance }) => {
+const Borrows: React.FC<Token> = ({ address, symbol, decimals, borrowBalance, availableBorrowBalance }) => {
   const userData = useUserData();
 
   return (
@@ -52,14 +54,14 @@ const Borrows: React.FC<Token> = ({ address, symbol, borrowBalance, availableBor
       <div className="mt-4px flex justify-between text-14px text-#303549">
         <span>Borrowed</span>
         <span className="font-semibold">
-          {borrowBalance?.toDecimalStandardUnit(2) ?? '--'}
+          <BalanceText balance={borrowBalance} decimals={decimals} />
           <span className="text-#62677B font-normal"> {symbol}</span>
         </span>
       </div>
 
       <div className="flex justify-between text-14px text-#303549">
         <span>Health Factor</span>
-        <span className="text-#F89F1A font-semibold">{userData?.healthFactor ?? '--'}</span>
+        <span className="font-semibold"><HealthFactor value={userData?.healthFactor} /></span>
       </div>
 
       <div className="flex justify-between text-14px text-#303549">
@@ -70,7 +72,7 @@ const Borrows: React.FC<Token> = ({ address, symbol, borrowBalance, availableBor
       <div className="flex justify-between text-14px text-#303549">
         <span>Available to borrow</span>
         <span className="font-semibold">
-          {availableBorrowBalance?.toDecimalStandardUnit(2) ?? '--'}
+          <BalanceText balance={availableBorrowBalance} decimals={decimals} />
           <span className="text-#62677B font-normal"> {symbol}</span>
         </span>
       </div>

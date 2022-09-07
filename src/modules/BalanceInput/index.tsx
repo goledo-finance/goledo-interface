@@ -3,7 +3,7 @@ import cx from 'clsx';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import composeRef from '@utils/composeRef';
 import Button from '@components/Button';
-import BalanceText from '@components/BalanceText';
+import BalanceText from '@modules/BalanceText';
 import tokensIcon from '@assets/tokens';
 import './index.css';
 

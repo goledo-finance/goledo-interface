@@ -3,15 +3,15 @@ import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useGoledoLockAPR, useGoledoBalance } from '@store/index';
 import Card from '@components/Card';
 import Button from '@components/Button';
+import PercentageText from '@modules/PercentageText';
 import showLockGolModal from '@service/handleStakeAndLockGol';
 
 const Zero = Unit.fromMinUnit(0);
-const Hundred = Unit.fromMinUnit(100);
 
 const LockGoledo: React.FC = () => {
   const lockAPR = useGoledoLockAPR();
   const balance= useGoledoBalance();
-  const APR = useMemo(() => <span className="text-20px text-#3AC170 font-bold">APR {lockAPR?.mul(Hundred).toDecimalStandardUnit(4)}%</span>, [lockAPR]);
+  const APR = useMemo(() => <span className="text-20px text-#3AC170 font-bold">APR <PercentageText value={lockAPR}/></span>, [lockAPR]);
 
   return (
     <Card title="Lock Goledo" titleRight={APR} titleIcon="i-bytesize:lock">

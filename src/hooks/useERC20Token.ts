@@ -34,6 +34,7 @@ const useERC20Token = ({
         setStatus('need-approve');
       }
     } catch (err) {
+      setStatus('need-approve');
       console.log('Check approve err', err);
     }
   }, [amount]);
@@ -48,9 +49,9 @@ const useERC20Token = ({
       });
       const txReceipt = await waitTransactionReceipt(txnHash);
       checkApprove();
-      console.log('TxnHash', txnHash);
-      console.log('txReceipt', txReceipt);
+      return txReceipt;
     } catch (err) {
+      setStatus('need-approve');
       console.log('Handle approve err', err);
     }
   }, [checkApprove]);

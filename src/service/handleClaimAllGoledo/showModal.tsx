@@ -3,7 +3,7 @@ import { type Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useGoledoBalance, useGoledoStakedBalance, useGoledoVestingBalance, useGoledoWithdrawableBalance, useGoledoUsdPrice } from '@store/index';
 import { showModal, hideAllModal } from '@components/showPopup/Modal';
 import Button from '@components/Button';
-import BalanceText from '@components/BalanceText';
+import BalanceText from '@modules/BalanceText';
 import useTransaction from '@hooks/useTransaction';
 import Success from '@assets/icons/success.svg';
 import Error from '@assets/icons/error.svg';
@@ -30,13 +30,12 @@ const ModalContent: React.FC = () => {
     }
   }, [transactionStatus]);
 
-
   if (!balance || !stakedBalance || !vestingBalance || !withdrawableBalance) return null;
 
   const amount = (stakedBalanceBefore || stakedBalance).add(vestingBalanceBefore || vestingBalance);
   const claimable = (stakedBalanceBefore || stakedBalance).add(withdrawableBalanceBefore?.penaltyAmount || withdrawableBalance.penaltyAmount);
   return (
-    <div className='relative'>
+    <div className="relative">
       {transactionStatus !== 'success' && transactionStatus !== 'failed' && (
         <>
           <p className="mt-30px mb-4px text-14px text-#62677B">Transaction overview.</p>
@@ -44,39 +43,49 @@ const ModalContent: React.FC = () => {
             <div className="flex justify-between">
               <span>Amount</span>
               <div className="text-right">
-                <BalanceText balance={amount} symbol="GOL" decimals={18} placement="top" />
-                <p className="mt-2px text-12px text-#62677B">${amount.mul(usdPrice!).toDecimalStandardUnit(2)}</p>
+                <BalanceText balance={amount} symbol="Goledo" placement="top" />
+                <p className="mt-2px text-12px text-#62677B">
+                  <BalanceText balance={amount.mul(usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
+                </p>
               </div>
             </div>
 
             <div className="flex justify-between">
               <span>Penalty</span>
               <div className="text-right">
-                <BalanceText balance={withdrawableBalanceBefore?.penaltyAmount || withdrawableBalance.penaltyAmount} symbol="GOL" decimals={18} placement="top" />
-                <p className="mt-2px text-12px text-#62677B">${(withdrawableBalanceBefore?.penaltyAmount || withdrawableBalance.penaltyAmount).mul(usdPrice!).toDecimalStandardUnit(2)}</p>
+                <BalanceText balance={withdrawableBalanceBefore?.penaltyAmount || withdrawableBalance.penaltyAmount} symbol="Goledo" placement="top" />
+                <p className="mt-2px text-12px text-#62677B">
+                  <BalanceText
+                    balance={(withdrawableBalanceBefore?.penaltyAmount || withdrawableBalance.penaltyAmount).mul(usdPrice!)}
+                    abbrDecimals={2}
+                    symbolPrefix="$"
+                  />
+                </p>
               </div>
             </div>
 
             <div className="flex justify-between">
               <span>Actual claimable</span>
               <div className="text-right">
-                <BalanceText balance={claimable} symbol="GOL" decimals={18} placement="top" />
-                <p className="mt-2px text-12px text-#62677B">${(claimable).mul(usdPrice!).toDecimalStandardUnit(2)}</p>
+                <BalanceText balance={claimable} symbol="Goledo" decimals={18} placement="top" />
+                <p className="mt-2px text-12px text-#62677B">
+                  <BalanceText balance={claimable.mul(usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
+                </p>
               </div>
             </div>
 
             <div className="flex justify-between">
-              <span>Your GOL balance</span>
+              <span>Your Goledo balance</span>
               <div className="text-right">
                 <p>
-                  <span>{(balanceBefore || balance).toDecimalStandardUnit(2)}</span>
+                  <BalanceText balance={balanceBefore || balance} placement="top" />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  <span>{(balanceBefore || balance).add(claimable).toDecimalStandardUnit(2)}</span>
+                  <BalanceText balance={(balanceBefore || balance).add(claimable)} placement="top" />
                 </p>
                 <p className="mt-2px text-12px text-#62677B">
-                  <span>${(balanceBefore || balance).mul(usdPrice!).toDecimalStandardUnit(2)}</span>
+                  <BalanceText balance={(balanceBefore || balance).mul(usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-10px translate-y-[-1px]" />
-                  <span>${(balanceBefore || balance).add(claimable).mul(usdPrice!).toDecimalStandardUnit(2)}</span>
+                  <BalanceText balance={(balanceBefore || balance).add(claimable).mul(usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
                 </p>
               </div>
             </div>
@@ -90,8 +99,8 @@ const ModalContent: React.FC = () => {
             loading={transactionStatus === 'sending' ? 'start' : undefined}
             onClick={sendTransaction}
           >
-            {transactionStatus === 'waiting' && 'Claim All'}
-            {transactionStatus === 'sending' && 'Claiming All GOL...'}
+            {transactionStatus === 'waiting' && 'Claim Anyway'}
+            {transactionStatus === 'sending' && 'Claiming All Goledo...'}
           </Button>
         </>
       )}
@@ -105,22 +114,22 @@ const ModalContent: React.FC = () => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You claimed all of <span className='font-semibold'>{claimable?.toDecimalStandardUnit(2)}</span> GOL
+                You claimed all of <BalanceText className="font-semibold" balance={claimable} placement="top" symbol="Goledo" />
               </>
             )}
             {transactionStatus === 'failed' && error}
           </p>
-          {scanUrl &&
+          {scanUrl && (
             <a
-              className='absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline'
+              className="absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline"
               href={scanUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
               Review tx details
-              <span className='i-charm:link-external ml-3px text-10px translate-y-[-.5px]' />
+              <span className="i-charm:link-external ml-3px text-10px translate-y-[-.5px]" />
             </a>
-          }
+          )}
           <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
@@ -130,7 +139,6 @@ const ModalContent: React.FC = () => {
   );
 };
 
-const showVestingGoledoModal = () =>
-  showModal({ Content: <ModalContent />, title: 'Exit Goledo Staking' });
+const showVestingGoledoModal = () => showModal({ Content: <ModalContent />, title: 'Claim All Goledo' });
 
 export default showVestingGoledoModal;

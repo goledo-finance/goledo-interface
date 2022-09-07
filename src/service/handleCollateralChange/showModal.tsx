@@ -3,7 +3,8 @@ import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { TokenInfo, useTokens, useUserData } from '@store/index';
 import { showModal, hideAllModal } from '@components/showPopup/Modal';
 import Button from '@components/Button';
-import BalanceText from '@components/BalanceText';
+import BalanceText from '@modules/BalanceText';
+import HealthFactor from '@modules/HealthFactor';
 import useEstimateHealthFactor from '@hooks/useEstimateHealthFactor';
 import useTransaction from '@hooks/useTransaction';
 import Success from '@assets/icons/success.svg';
@@ -83,10 +84,10 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
                 <div className="flex justify-between">
                   <span className="text-#303549">Health Factor</span>
                   <div className="text-right">
-                    <p className="text-#F89F1A">
-                      <span>{userData?.healthFactor ?? ''}</span>
+                    <p>
+                      <HealthFactor value={userData?.healthFactor} />
                       <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                      <span>{estimateHealthFactor}</span>
+                      <HealthFactor value={estimateHealthFactor} />
                     </p>
                     <p className="mt-6px text-12px text-#62677B">{`Liquidation at <1.0`}</p>
                   </div>

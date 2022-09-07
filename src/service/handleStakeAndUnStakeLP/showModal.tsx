@@ -3,23 +3,26 @@ import { useForm } from 'react-hook-form';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useLp } from '@store/index';
 import { showModal, hideAllModal } from '@components/showPopup/Modal';
-import BalanceInput from '@components/BalanceInput';
+import BalanceInput from '@modules/BalanceInput';
 import Button from '@components/Button';
-import BalanceText from '@components/BalanceText';
+import BalanceText from '@modules/BalanceText';
 import useERC20Token from '@hooks/useERC20Token';
 import useTransaction from '@hooks/useTransaction';
 import Success from '@assets/icons/success.svg';
 import Error from '@assets/icons/error.svg';
 import { handleStake } from './index';
 
-const ModalContent: React.FC<{ type: 'Stake' | 'Unstake'  }> = ({ type }) => {
+const ModalContent: React.FC<{ type: 'Stake' | 'Unstake' }> = ({ type }) => {
   const { register, handleSubmit: withForm } = useForm();
   const lpToken = useLp();
 
   const [confirmAmount, setConfirmAmount] = useState<string | null>(null);
   const confirmAmountUnit = useMemo(() => (confirmAmount ? Unit.fromStandardUnit(confirmAmount || 0, lpToken?.decimals) : undefined), [confirmAmount]);
 
-  const handleContinue = useCallback(withForm(({ amount }) => setConfirmAmount(amount)),[]);
+  const handleContinue = useCallback(
+    withForm(({ amount }) => setConfirmAmount(amount)),
+    []
+  );
 
   const { status: approveStatus, handleApprove } = useERC20Token({
     tokenAddress: lpToken.address,
@@ -32,7 +35,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Unstake'  }> = ({ type }) => {
   const max = lpToken?.[type === 'Stake' ? 'balance' : 'stakedBalance'];
   if (!lpToken) return null;
   return (
-    <div className='relative'>
+    <div className="relative">
       {!confirmAmount && (
         <form onSubmit={handleContinue} className="mt-10px">
           <BalanceInput
@@ -63,7 +66,9 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Unstake'  }> = ({ type }) => {
               <span>Amount</span>
               <div className="text-right">
                 <BalanceText balance={confirmAmountUnit} symbol={lpToken?.symbol} decimals={lpToken?.decimals} placement="top" />
-                <p className="mt-2px text-12px text-#62677B">${confirmAmountUnit.mul(lpToken?.usdPrice!).toDecimalStandardUnit(2)}</p>
+                <p className="mt-2px text-12px text-#62677B">
+                  <BalanceText balance={confirmAmountUnit.mul(lpToken?.usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
+                </p>
               </div>
             </div>
 
@@ -71,14 +76,18 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Unstake'  }> = ({ type }) => {
               <span>Staked GOLCFX</span>
               <div className="text-right">
                 <p>
-                  <BalanceText balance={lpToken?.stakedBalance} symbol={lpToken?.symbol} decimals={lpToken?.decimals} placement="top" />
+                  <BalanceText balance={lpToken?.stakedBalance} decimals={lpToken?.decimals} placement="top" />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  <BalanceText balance={lpToken?.stakedBalance?.[(type === 'Stake' ? 'add' : 'sub')]?.(confirmAmountUnit)} symbol={lpToken?.symbol} decimals={lpToken?.decimals} placement="top" />
+                  <BalanceText
+                    balance={lpToken?.stakedBalance?.[type === 'Stake' ? 'add' : 'sub']?.(confirmAmountUnit)}
+                    decimals={lpToken?.decimals}
+                    placement="top"
+                  />
                 </p>
                 <p className="mt-2px text-12px text-#62677B">
-                  <span>${lpToken?.stakedBalance?.mul(lpToken?.usdPrice!).toDecimalStandardUnit(2)}</span>
+                  <BalanceText balance={lpToken?.stakedBalance?.mul(lpToken?.usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-10px translate-y-[-1px]" />
-                  <span>${lpToken?.stakedBalance?.[(type === 'Stake' ? 'add' : 'sub')]?.(confirmAmountUnit).mul(lpToken?.usdPrice!).toDecimalStandardUnit(2)}</span>
+                  <BalanceText balance={lpToken?.stakedBalance?.[type === 'Stake' ? 'add' : 'sub']?.(confirmAmountUnit).mul(lpToken?.usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
                 </p>
               </div>
             </div>
@@ -89,7 +98,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Unstake'  }> = ({ type }) => {
             size="large"
             className="mt-48px"
             disabled={approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending'}
-            loading={(approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending') ? 'start' : undefined}
+            loading={approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending' ? 'start' : undefined}
             onClick={() => {
               if (approveStatus === 'approved') {
                 sendTransaction({ amount: confirmAmountUnit, type });
@@ -120,22 +129,22 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Unstake'  }> = ({ type }) => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You {type == 'Stake' ? 'staked' : 'Unstaked'} <span className='font-semibold'>{confirmAmountUnit?.toDecimalStandardUnit(2)}</span> {lpToken?.symbol}
+                You {type == 'Stake' ? 'staked' : 'Unstaked'} <BalanceText className="font-semibold" balance={confirmAmountUnit} placement="top" symbol={lpToken?.symbol} />
               </>
             )}
             {transactionStatus === 'failed' && error}
           </p>
-          {scanUrl &&
+          {scanUrl && (
             <a
-              className='absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline'
+              className="absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline"
               href={scanUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
               Review tx details
-              <span className='i-charm:link-external ml-3px text-10px translate-y-[-.5px]' />
+              <span className="i-charm:link-external ml-3px text-10px translate-y-[-.5px]" />
             </a>
-          }
+          )}
           <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
@@ -145,7 +154,6 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Unstake'  }> = ({ type }) => {
   );
 };
 
-const showWithdrawModal = ({ type }: { type: 'Stake' | 'Unstake'; }) =>
-  showModal({ Content: <ModalContent type={type} />, title: `${type} GOLCFX` });
+const showWithdrawModal = ({ type }: { type: 'Stake' | 'Unstake' }) => showModal({ Content: <ModalContent type={type} />, title: `${type} GOLCFX` });
 
 export default showWithdrawModal;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useGoledoBalance, useGoledoStakedBalance, useGoledoUsdPrice } from '@store/index';
 import { showModal, hideAllModal } from '@components/showPopup/Modal';
 import Button from '@components/Button';
-import BalanceText from '@components/BalanceText';
+import BalanceText from '@modules/BalanceText';
 import useTransaction from '@hooks/useTransaction';
 import Success from '@assets/icons/success.svg';
 import Error from '@assets/icons/error.svg';
@@ -34,23 +34,23 @@ const ModalContent: React.FC = () => {
             <div className="flex justify-between">
               <span>Amount</span>
               <div className="text-right">
-                <BalanceText balance={stakedBalanceBefore || stakedBalance} symbol="GOL" decimals={18} placement="top" />
+                <BalanceText balance={stakedBalanceBefore || stakedBalance} symbol="Goledo" placement="top" />
                 <p className="mt-2px text-12px text-#62677B">${(stakedBalanceBefore || stakedBalance)?.mul(usdPrice!).toDecimalStandardUnit(2)}</p>
               </div>
             </div>
 
             <div className="flex justify-between">
-              <span>Your GOL balance</span>
+              <span>Your Goledo balance</span>
               <div className="text-right">
                 <p>
-                  <span>{(balanceBefore || balance)?.toDecimalStandardUnit(2)}</span>
+                  <BalanceText balance={balanceBefore || balance} placement="top" />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  <span>{(balanceBefore || balance)?.add(stakedBalanceBefore || stakedBalance)?.toDecimalStandardUnit(2)}</span>
+                  <BalanceText balance={(balanceBefore || balance)?.add(stakedBalanceBefore || stakedBalance)} placement="top" />
                 </p>
                 <p className="mt-2px text-12px text-#62677B">
-                  <span>${(balanceBefore || balance)?.mul(usdPrice!).toDecimalStandardUnit(2)}</span>
+                  <BalanceText balance={(balanceBefore || balance)?.mul(usdPrice!)} abbrDecimals={2} symbolPrefix='$' placement="top" />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-10px translate-y-[-1px]" />
-                  <span>${(balanceBefore || balance)?.add(stakedBalanceBefore || stakedBalance)?.mul(usdPrice!).toDecimalStandardUnit(2)}</span>
+                  <BalanceText balance={(balanceBefore || balance)?.add(stakedBalanceBefore || stakedBalance)?.mul(usdPrice!)} abbrDecimals={2} symbolPrefix='$' placement="top" />
                 </p>
               </div>
             </div>
@@ -65,7 +65,7 @@ const ModalContent: React.FC = () => {
             onClick={sendTransaction}
           >
             {transactionStatus === 'waiting' && 'Claim'}
-            {transactionStatus === 'sending' && 'Claiming GOL...'}
+            {transactionStatus === 'sending' && 'Claiming Goledo...'}
           </Button>
         </>
       )}
@@ -79,7 +79,7 @@ const ModalContent: React.FC = () => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You claimed <span className='font-semibold'>{stakedBalanceBefore?.toDecimalStandardUnit(2)}</span> GOL
+                You claimed <BalanceText className="font-semibold" balance={stakedBalanceBefore} placement="top" symbol="Goledo" />
               </>
             )}
             {transactionStatus === 'failed' && error}
