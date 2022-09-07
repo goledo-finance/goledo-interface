@@ -5,6 +5,7 @@ import { TokenInfo, useTokens, useUserData } from '@store/Tokens';
 import { showModal, hideAllModal } from '@components/showPopup/Modal';
 import BalanceInput from '@components/BalanceInput';
 import Button from '@components/Button';
+import Toggle from '@components/Toggle';
 import BalanceText from '@components/BalanceText';
 import useEstimateHealthFactor from '@hooks/useEstimateHealthFactor';
 import useERC20Token from '@hooks/useERC20Token';
@@ -23,6 +24,9 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const userData = useUserData();
 
   const [confirmAmount, setConfirmAmount] = useState<string | null>(null);
+  const [repayAllAmount, setRepayAllAmount] = useState<string | null>(null);
+  const [showError, setShowError] = useState<boolean>(false);
+  const [repayAll, setRepayAll] = useState<boolean>(false);
   const confirmAmountUnit = useMemo(() => (confirmAmount ? Unit.fromStandardUnit(confirmAmount || 0, token?.decimals) : undefined), [confirmAmount]);
 
   const estimateToken = useMemo(() => {
@@ -43,10 +47,19 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
     isCFX: token?.symbol === 'CFX',
   });
 
-  const handleContinue = useCallback(
-    withForm(({ amount }) => setConfirmAmount(amount)),
-    []
-  );
+  const handleContinue = useCallback(() => {
+    if (!repayAll) {
+      withForm(({ amount }) => {
+        setConfirmAmount(amount);
+      });
+    } else {
+      if (repayAllAmount && token?.balance && Unit.fromStandardUnit(repayAllAmount)?.greaterThan(token?.balance)) {
+        setShowError(true);
+      } else {
+        setConfirmAmount(repayAllAmount);
+      }
+    }
+  }, [repayAll, repayAllAmount, token?.balance]);
 
   const { status: approveStatus, handleApprove } = useERC20Token({
     needApprove: token?.symbol !== 'CFX',
@@ -66,28 +79,60 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
         : Zero
       : undefined;
   const debt = token?.borrowBalance;
+  const safeAmountToRepayAll = debt?.mul(Unit.fromMinUnit(1.0025));
   const max = debt && maxBalance ? Unit.min(debt, maxBalance) : undefined;
   const debtAfterRepay = confirmAmount ? debt?.sub(Unit.fromStandardUnit(confirmAmount)) : undefined;
-  
+
   if (!token) return null;
   return (
     <div className="relative">
       {!confirmAmount && (
         <form onSubmit={handleContinue} className="mt-10px">
-          <BalanceInput
-            {...register('amount', {
-              required: true,
-              min: Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals),
-              max: max?.toDecimalStandardUnit(),
-            })}
-            title={<span>How much do you want to repay?</span>}
-            step={String(`1e-${token?.decimals}`)}
-            symbol={token?.symbol}
-            decimals={token?.decimals}
-            usdPrice={token?.usdPrice!}
-            min={Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals)}
-            max={max}
-          />
+          <span className="flex items-center justify-between mb-4px text-14px text-#62677B">
+            How much do you want to repay?
+            <Toggle
+              name="repayAll"
+              checked={repayAll}
+              onToggle={(e) => {
+                e.stopPropagation();
+                setRepayAll(!repayAll);
+                safeAmountToRepayAll && setRepayAllAmount(safeAmountToRepayAll?.toDecimalStandardUnit(undefined, token.decimals));
+              }}
+              // onLeft={() => setShowError(false)}
+            />
+          </span>
+          {!repayAll && (
+            <BalanceInput
+              {...register('amount', {
+                required: true,
+                min: Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals),
+                max: max?.toDecimalStandardUnit(),
+              })}
+              step={String(`1e-${token?.decimals}`)}
+              symbol={token?.symbol}
+              decimals={token?.decimals}
+              usdPrice={token?.usdPrice!}
+              min={Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals)}
+              max={max}
+            />
+          )}
+          {repayAll && (
+            <>
+              <div className="flex flex-col mt-16px gap-8px text-14px text-#62677B">
+                <span>
+                  Debt: <BalanceText balance={debt} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
+                </span>
+                <span className={`${showError ? 'text-#FE6060' : 'text-#62677B'}`}>
+                  Required Balance:{' '}
+                  <BalanceText balance={Unit.fromStandardUnit(repayAllAmount!)} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
+                </span>
+              </div>
+              {!showError && (
+                <span className="text-14px text-#F89F1A inline-block mt-16px">According to the actual deduction, the remainder will be refunded.</span>
+              )}
+              {showError && <span className="text-14px text-#FE6060 inline-block mt-16px">Insufficient balance</span>}
+            </>
+          )}
 
           <Button fullWidth size="large" className="mt-48px">
             Continue
@@ -107,9 +152,13 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
                   <BalanceText balance={debtAfterRepay} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
                 </p>
                 <p className="mt-6px text-12px text-#303549">
-                  <span className="mt-2px">$<BalanceText balance={debt?.mul(token?.usdPrice ?? Zero)} decimals={18} symbol="" /></span>
+                  <span className="mt-2px">
+                    $<BalanceText balance={debt?.mul(token?.usdPrice ?? Zero)} decimals={18} symbol="" />
+                  </span>
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  <span className="mt-2px">$<BalanceText balance={debtAfterRepay?.mul(token?.usdPrice ?? Zero)} decimals={18} symbol="" /></span>
+                  <span className="mt-2px">
+                    $<BalanceText balance={debtAfterRepay?.mul(token?.usdPrice ?? Zero)} decimals={18} symbol="" />
+                  </span>
                 </p>
               </div>
             </div>
