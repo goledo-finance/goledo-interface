@@ -83,6 +83,7 @@ export interface TokensStore {
   tokensBalance?: Record<
     string,
     {
+      name?: string;
       balance?: Unit;
       supplyBalance?: Unit;
       borrowBalance?: Unit;
@@ -252,12 +253,18 @@ const calcUserBalance = debounce(() => {
     const tokenContract = createERC20Contract(borrowTokenAddress);
     return [borrowTokenAddress, tokenContract.interface.encodeFunctionData('totalSupply')];
   });
+  const getNamePromises = tokens.map(({ address }) => {
+    const tokenContract = createERC20Contract(address);
+    return [address, tokenContract.interface.encodeFunctionData('name')];
+  });
 
   const promises = getBalancePromises
     .concat(getSupplyBalancePromises)
     .concat(getBrrowBalancePromises)
     .concat(getTotalSupplyBalancePromises)
-    .concat(getTotalBrrowBalancePromises);
+    .concat(getTotalBrrowBalancePromises)
+    .concat(getNamePromises);
+
   promises.push([
     import.meta.env.VITE_ChefIncentivesControllerContractAddress,
     ChefIncentivesControllerContract.interface.encodeFunctionData('claimableReward', [account, tokens.map(token => token.borrowTokenAddress).concat(tokens.map(token => token.supplyTokenAddress))])
@@ -272,9 +279,13 @@ const calcUserBalance = debounce(() => {
       
       tokens.forEach((token, index) => {
         if (token.symbol === 'CFX') {
+          tokensBalance[token.address].name = 'CFX';
           tokensBalance[token.address].balance = walletStore.getState().balance;
         } else {
           tokensBalance[token.address].balance = Unit.fromMinUnit(result?.['returnData']?.[index] ?? 0);
+          const tokenContract = createERC20Contract(token.address);
+          tokensBalance[token.address].name = tokenContract.interface.decodeFunctionResult('name', result?.['returnData']?.[index + tokens.length * 5])?.[0];
+  
         }
 
         tokensBalance[token.address].supplyBalance = Unit.fromMinUnit(result?.['returnData']?.[index + tokens.length] ?? 0);
@@ -448,7 +459,7 @@ const convertOriginTokenData = (originData: any, availableBorrowsUSD: Unit) => {
     reserveLiquidationBonus: Unit.fromMinUnit(originData.reserveLiquidationBonus._hex),
     maxLTV: Number(originData.baseLTVasCollateral._hex) / 100,
   } as TokenData;
-  res.availableBorrowBalance = availableBorrowsUSD.div(res.usdPrice);
+  res.availableBorrowBalance = Unit.fromStandardUnit(availableBorrowsUSD.div(res.usdPrice).toDecimalStandardUnit(res.decimals, res.decimals), res.decimals);
   if (res.availableBorrowBalance.lessThan(Unit.fromStandardUnit(0.000001, res.decimals))) {
     res.availableBorrowBalance = Zero;
   }
