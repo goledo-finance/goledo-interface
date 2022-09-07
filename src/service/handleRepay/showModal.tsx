@@ -48,19 +48,20 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
     isCFX: token?.symbol === 'CFX',
   });
 
-  const handleContinue = useCallback(() => {
-    if (!repayAll) {
-      withForm(({ amount }) => {
+  const handleContinue = useCallback(
+    withForm(({ amount }) => {
+      if (!repayAll) {
         setConfirmAmount(amount);
-      });
-    } else {
-      if (repayAllAmount && token?.balance && Unit.fromStandardUnit(repayAllAmount)?.greaterThan(token?.balance)) {
-        setShowError(true);
       } else {
-        setConfirmAmount(repayAllAmount);
+        if (repayAllAmount && token?.balance && Unit.fromStandardUnit(repayAllAmount)?.greaterThan(token?.balance)) {
+          setShowError(true);
+        } else {
+          setConfirmAmount(repayAllAmount);
+        }
       }
-    }
-  }, [repayAll, repayAllAmount, token?.balance]);
+    }),
+    [repayAll]
+  );
 
   const { status: approveStatus, handleApprove } = useERC20Token({
     needApprove: token?.symbol !== 'CFX',
@@ -99,7 +100,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
                 setRepayAll(!repayAll);
                 safeAmountToRepayAll && setRepayAllAmount(safeAmountToRepayAll?.toDecimalStandardUnit(undefined, token.decimals));
               }}
-              // onLeft={() => setShowError(false)}
+              onLeft={() => setShowError(false)}
             />
           </span>
           {!repayAll && (
@@ -148,14 +149,20 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               <span>Remaining debt {token?.symbol}</span>
               <div className="text-right">
                 <p>
-                  <BalanceText className="mt-2px" balance={debt?.mul(token?.usdPrice ?? Zero)} abbrDecimals={2} symbolPrefix="$" />
+                  <BalanceText className="mt-2px" balance={debt} abbrDecimals={2} decimals={token?.decimals} />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  <BalanceText className="mt-2px" balance={debtAfterRepay?.mul(token?.usdPrice ?? Zero)} abbrDecimals={2} symbolPrefix="$" />
+                  <BalanceText className="mt-2px" balance={debtAfterRepay} abbrDecimals={2} decimals={token?.decimals} />
                 </p>
                 <p className="mt-6px text-12px text-#303549">
-                  $<BalanceText className="mt-2px" balance={debt?.mul(token?.usdPrice ?? Zero)} decimals={18} symbol="" />
+                  <BalanceText className="mt-2px" balance={debt?.mul(token?.usdPrice ?? Zero)} abbrDecimals={2} symbolPrefix="$" decimals={token?.decimals} />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  $<BalanceText className="mt-2px" balance={debtAfterRepay?.mul(token?.usdPrice ?? Zero)} abbrDecimals={2} symbolPrefix="$" />
+                  <BalanceText
+                    className="mt-2px"
+                    balance={debtAfterRepay?.mul(token?.usdPrice ?? Zero)}
+                    abbrDecimals={2}
+                    symbolPrefix="$"
+                    decimals={token?.decimals}
+                  />
                 </p>
               </div>
             </div>
