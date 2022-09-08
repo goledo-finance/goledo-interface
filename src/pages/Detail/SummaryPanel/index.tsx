@@ -9,6 +9,8 @@ import PercentageText from '@modules/PercentageText';
 import tokensIcon from '@assets/tokens';
 import { type Token } from '../index';
 
+const Zero = Unit.fromMinUnit(0);
+
 const SummaryPanelItem: React.FC<{ iconUrl?: string; iconName?: string; title: string; titleTip?: string; children: React.ReactNode; className?: string; }> = ({
   className,
   iconUrl,
@@ -61,7 +63,7 @@ const SummaryPanel: React.FC<Token> = ({
   const navigate = useNavigate();
 
   const utilizationRate = useMemo(
-    () => (totalMarketSupplyBalance && totalMarketBorrowBalance ? totalMarketBorrowBalance.div(totalMarketSupplyBalance) : undefined),
+    () => (totalMarketSupplyBalance && totalMarketBorrowBalance ? (totalMarketSupplyBalance.equalsWith(Zero) ? Zero : totalMarketBorrowBalance.div(totalMarketSupplyBalance)) : undefined),
     [totalMarketSupplyBalance, totalMarketBorrowBalance]
   );
 

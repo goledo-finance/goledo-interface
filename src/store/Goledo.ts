@@ -97,7 +97,7 @@ const getData = debounce(() => {
   const tokensRewardsPromises = tokens.map(token =>
     [
       import.meta.env.VITE_MultiFeeDistributionAddress,
-      MultiFeeDistributionContract.interface.encodeFunctionData('rewardData', [token.address])
+      MultiFeeDistributionContract.interface.encodeFunctionData('rewardData', [token.supplyTokenAddress])
     ]);
 
   
@@ -185,9 +185,9 @@ const calcGoledoAPR = debounce(() => {
   let lockAPR  = stakeAPR.add((rewardRates[import.meta.env.VITE_GoledoTokenAddress] ?? Zero).mul(OneYearSeconds).mul(goledoUsdPrice).div(totalMarketLockedBalance.mul(goledoUsdPrice)));
   
   goledoStore.setState({
-    stakeAPR: stakeAPR.toDecimalMinUnit() === 'NaN' ? Zero : stakeAPR,
-    lockAPR: lockAPR.toDecimalMinUnit() === 'NaN' ? Zero : lockAPR,
-    APR: APR.toDecimalMinUnit() === 'NaN' ? Zero : APR
+    stakeAPR: stakeAPR.toDecimalMinUnit() === 'NaN' ? Zero : stakeAPR.div(Unit.fromMinUnit(1e12)),
+    lockAPR: lockAPR.toDecimalMinUnit() === 'NaN' ? Zero : lockAPR.div(Unit.fromMinUnit(1e12)),
+    APR: APR.toDecimalMinUnit() === 'NaN' ? Zero : APR.div(Unit.fromMinUnit(1e12))
   });
 }, 10);
 
