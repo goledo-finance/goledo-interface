@@ -43,7 +43,7 @@ const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all' }> = ({ token
             <div className="flex justify-between">
               <span>Amount</span>
               <div className="text-right">
-                <BalanceText balance={amount} symbol="Goledo" placement="top" />
+                <BalanceText balance={amount} symbol="Goledo" />
                 <p className="mt-2px text-12px text-#62677B">
                   <BalanceText balance={amount?.mul(goledoUsdPrice!)} abbrDecimals={2} symbolPrefix="$" />
                 </p>
@@ -54,9 +54,9 @@ const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all' }> = ({ token
               <span>Vesting Goledo</span>
               <div className="text-right">
                 <p>
-                  <BalanceText balance={usedVestingBalance} placement="top" />
+                  <BalanceText balance={usedVestingBalance} />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  <BalanceText balance={usedVestingBalance?.add(vestingAmount || amount)} placement="top" />
+                  <BalanceText balance={usedVestingBalance?.add(vestingAmount || amount)} />
                 </p>
                 <p className="mt-2px text-12px text-#62677B">
                   <BalanceText balance={usedVestingBalance?.mul(goledoUsdPrice!)} abbrDecimals={2} symbolPrefix="$" />
@@ -90,7 +90,7 @@ const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all' }> = ({ token
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You Vesting <BalanceText className="font-semibold" balance={vestingAmount} placement="top" symbol="Goledo" />
+                You Vesting <BalanceText className="font-semibold" balance={vestingAmount} symbol="Goledo" />
               </>
             )}
             {transactionStatus === 'failed' && error}

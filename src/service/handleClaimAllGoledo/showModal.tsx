@@ -43,7 +43,7 @@ const ModalContent: React.FC = () => {
             <div className="flex justify-between">
               <span>Amount</span>
               <div className="text-right">
-                <BalanceText balance={amount} symbol="Goledo" placement="top" />
+                <BalanceText balance={amount} symbol="Goledo" />
                 <p className="mt-2px text-12px text-#62677B">
                   <BalanceText balance={amount.mul(usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
                 </p>
@@ -53,7 +53,7 @@ const ModalContent: React.FC = () => {
             <div className="flex justify-between">
               <span>Penalty</span>
               <div className="text-right">
-                <BalanceText balance={withdrawableBalanceBefore?.penaltyAmount || withdrawableBalance.penaltyAmount} symbol="Goledo" placement="top" />
+                <BalanceText balance={withdrawableBalanceBefore?.penaltyAmount || withdrawableBalance.penaltyAmount} symbol="Goledo" />
                 <p className="mt-2px text-12px text-#62677B">
                   <BalanceText
                     balance={(withdrawableBalanceBefore?.penaltyAmount || withdrawableBalance.penaltyAmount).mul(usdPrice!)}
@@ -67,7 +67,7 @@ const ModalContent: React.FC = () => {
             <div className="flex justify-between">
               <span>Actual claimable</span>
               <div className="text-right">
-                <BalanceText balance={claimable} symbol="Goledo" decimals={18} placement="top" />
+                <BalanceText balance={claimable} symbol="Goledo" decimals={18} />
                 <p className="mt-2px text-12px text-#62677B">
                   <BalanceText balance={claimable.mul(usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
                 </p>
@@ -78,9 +78,9 @@ const ModalContent: React.FC = () => {
               <span>Your Goledo balance</span>
               <div className="text-right">
                 <p>
-                  <BalanceText balance={balanceBefore || balance} placement="top" />
+                  <BalanceText balance={balanceBefore || balance} />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  <BalanceText balance={(balanceBefore || balance).add(claimable)} placement="top" />
+                  <BalanceText balance={(balanceBefore || balance).add(claimable)} />
                 </p>
                 <p className="mt-2px text-12px text-#62677B">
                   <BalanceText balance={(balanceBefore || balance).mul(usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
@@ -114,7 +114,7 @@ const ModalContent: React.FC = () => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You claimed all of <BalanceText className="font-semibold" balance={claimable} placement="top" symbol="Goledo" />
+                You claimed all of <BalanceText className="font-semibold" balance={claimable} symbol="Goledo" />
               </>
             )}
             {transactionStatus === 'failed' && error}

@@ -461,7 +461,7 @@ const convertOriginTokenData = (originData: any, availableBorrowsUSD: Unit) => {
     reserveLiquidationBonus: Unit.fromMinUnit(originData.reserveLiquidationBonus._hex),
     maxLTV: Number(originData.baseLTVasCollateral._hex) / 100,
   } as TokenData;
-  res.availableBorrowBalance = Unit.fromStandardUnit(availableBorrowsUSD.div(res.usdPrice).toDecimalStandardUnit(res.decimals, res.decimals), res.decimals);
+  res.availableBorrowBalance = Unit.fromStandardUnit(availableBorrowsUSD.sub(Unit.fromStandardUnit(0.1)).div(res.usdPrice).toDecimalStandardUnit(res.decimals, res.decimals), res.decimals);
   if (res.availableBorrowBalance.lessThan(Unit.fromStandardUnit(0.000001, res.decimals))) {
     res.availableBorrowBalance = Zero;
   }

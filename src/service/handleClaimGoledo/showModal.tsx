@@ -34,7 +34,7 @@ const ModalContent: React.FC = () => {
             <div className="flex justify-between">
               <span>Amount</span>
               <div className="text-right">
-                <BalanceText balance={stakedBalanceBefore || stakedBalance} symbol="Goledo" placement="top" />
+                <BalanceText balance={stakedBalanceBefore || stakedBalance} symbol="Goledo" />
                 <p className="mt-2px text-12px text-#62677B">${(stakedBalanceBefore || stakedBalance)?.mul(usdPrice!).toDecimalStandardUnit(2)}</p>
               </div>
             </div>
@@ -43,14 +43,14 @@ const ModalContent: React.FC = () => {
               <span>Your Goledo balance</span>
               <div className="text-right">
                 <p>
-                  <BalanceText balance={balanceBefore || balance} placement="top" />
+                  <BalanceText balance={balanceBefore || balance} />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  <BalanceText balance={(balanceBefore || balance)?.add(stakedBalanceBefore || stakedBalance)} placement="top" />
+                  <BalanceText balance={(balanceBefore || balance)?.add(stakedBalanceBefore || stakedBalance)} />
                 </p>
                 <p className="mt-2px text-12px text-#62677B">
-                  <BalanceText balance={(balanceBefore || balance)?.mul(usdPrice!)} abbrDecimals={2} symbolPrefix='$' placement="top" />
+                  <BalanceText balance={(balanceBefore || balance)?.mul(usdPrice!)} abbrDecimals={2} symbolPrefix='$' />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-10px translate-y-[-1px]" />
-                  <BalanceText balance={(balanceBefore || balance)?.add(stakedBalanceBefore || stakedBalance)?.mul(usdPrice!)} abbrDecimals={2} symbolPrefix='$' placement="top" />
+                  <BalanceText balance={(balanceBefore || balance)?.add(stakedBalanceBefore || stakedBalance)?.mul(usdPrice!)} abbrDecimals={2} symbolPrefix='$' />
                 </p>
               </div>
             </div>
@@ -79,7 +79,7 @@ const ModalContent: React.FC = () => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You claimed <BalanceText className="font-semibold" balance={stakedBalanceBefore} placement="top" symbol="Goledo" />
+                You claimed <BalanceText className="font-semibold" balance={stakedBalanceBefore} symbol="Goledo" />
               </>
             )}
             {transactionStatus === 'failed' && error}

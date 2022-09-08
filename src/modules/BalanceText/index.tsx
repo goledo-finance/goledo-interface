@@ -4,6 +4,8 @@ import Tooltip from '@components/Tooltip';
 import { type Props as PopperProps } from '@components/Popper';
 import numFormat from '@utils/numFormat';
 
+const Zero = Unit.fromMinUnit(0);
+
 interface Props {
   className?: string;
   balance?: Unit;
@@ -23,6 +25,7 @@ const abbrStr = {
 }
 
 const BalanceText: React.FC<Props> = ({ className, balance, status, id, symbolPrefix, symbol, decimals = 18, abbrDecimals = 4, showEllipsis = false,  placement }) => {
+  const usedPlacement = placement || (abbrDecimals === 4 ? 'top' : 'bottom');
   if (!balance) {
     return (
       <span className={className} id={id}>
@@ -33,8 +36,9 @@ const BalanceText: React.FC<Props> = ({ className, balance, status, id, symbolPr
 
   const decimalStandardUnit = balance.toDecimalStandardUnit(undefined, decimals);
   if (decimalStandardUnit !== '0' && Unit.lessThan(balance, Unit.fromStandardUnit(abbrStr[abbrDecimals], Number(decimals)))) {
+    const isGreaterThanZero = balance.greaterThan(Zero);
     return (
-      <Tooltip text={`${numFormat(decimalStandardUnit)}${symbol ? ` ${symbol}` : ''}`} placement={placement} interactive delay={0}>
+      <Tooltip text={`${isGreaterThanZero ? numFormat(decimalStandardUnit) : Zero}${symbol ? ` ${symbol}` : ''}`} placement={usedPlacement} interactive delay={1000}>
         <span className={className} id={id}>
           {symbolPrefix ?? ''}＜{abbrStr[abbrDecimals]}{symbol ? ` ${symbol}` : ''}
         </span>
@@ -45,7 +49,7 @@ const BalanceText: React.FC<Props> = ({ className, balance, status, id, symbolPr
   const nought = decimalStandardUnit.split('.')[1];
   const noughtLen = nought ? nought.length : 0;
   return (
-    <Tooltip text={`${numFormat(decimalStandardUnit)}${symbol ? ` ${symbol}` : ''}`} placement={placement} disabled={noughtLen < abbrDecimals} interactive delay={0}>
+    <Tooltip text={`${numFormat(decimalStandardUnit)}${symbol ? ` ${symbol}` : ''}`} placement={usedPlacement} disabled={noughtLen < abbrDecimals} interactive delay={1000}>
       <span className={className} id={id}>
         { noughtLen >= abbrDecimals
           ? `${symbolPrefix ?? ''}${numFormat(balance.toDecimalStandardUnit(abbrDecimals, decimals))}${showEllipsis ? '...' : ''}${symbol ? ` ${symbol}` : ''}`

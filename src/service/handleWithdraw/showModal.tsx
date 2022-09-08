@@ -85,7 +85,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             <div className="flex justify-between">
               <span>Amount</span>
               <div className="text-right">
-                <BalanceText balance={confirmAmountUnit} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
+                <BalanceText balance={confirmAmountUnit} symbol={token?.symbol} decimals={token?.decimals} />
                 <p className="mt-2px text-12px text-#62677B">
                   <BalanceText balance={confirmAmountUnit.mul(token?.usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
                 </p>
@@ -95,7 +95,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             <div className="flex justify-between">
               <span>Remaining supply</span>
               <div className="text-right">
-                <BalanceText balance={token?.supplyBalance?.sub(confirmAmountUnit)} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
+                <BalanceText balance={token?.supplyBalance?.sub(confirmAmountUnit)} symbol={token?.symbol} decimals={token?.decimals} />
               </div>
             </div>
 
@@ -166,7 +166,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You withdrew <BalanceText className="font-semibold" balance={confirmAmountUnit} placement="top" symbol={token?.symbol} />
+                You withdrew <BalanceText className="font-semibold" balance={confirmAmountUnit} symbol={token?.symbol} />
               </>
             )}
             {transactionStatus === 'failed' && error}

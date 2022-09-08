@@ -34,7 +34,7 @@ const ModalContent: React.FC = () => {
             <div className="flex justify-between">
               <span>Amount</span>
               <div className="text-right">
-                <BalanceText balance={unlockedableBalanceBefore || unlockedableBalance} symbol="Goledo" placement="top" />
+                <BalanceText balance={unlockedableBalanceBefore || unlockedableBalance} symbol="Goledo" />
                 <p className="mt-2px text-12px text-#62677B">
                   <BalanceText balance={(unlockedableBalanceBefore || unlockedableBalance)?.mul(usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
                 </p>
@@ -45,9 +45,9 @@ const ModalContent: React.FC = () => {
               <span>Your Goledo balance</span>
               <div className="text-right">
                 <p>
-                  <BalanceText balance={balanceBefore || balance} placement="top" />
+                  <BalanceText balance={balanceBefore || balance} />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  <BalanceText balance={(balanceBefore || balance)?.add(unlockedableBalanceBefore || unlockedableBalance)} placement="top" />
+                  <BalanceText balance={(balanceBefore || balance)?.add(unlockedableBalanceBefore || unlockedableBalance)} />
                 </p>
                 <p className="mt-2px text-12px text-#62677B">
                   <BalanceText balance={(balanceBefore || balance)?.mul(usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
@@ -85,7 +85,7 @@ const ModalContent: React.FC = () => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You Withdrew <BalanceText className="font-semibold" balance={unlockedableBalanceBefore} placement="top" symbol="Goledo" />
+                You Withdrew <BalanceText className="font-semibold" balance={unlockedableBalanceBefore} symbol="Goledo" />
               </>
             )}
             {transactionStatus === 'failed' && error}

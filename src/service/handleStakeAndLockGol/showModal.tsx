@@ -65,7 +65,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Lock' }> = ({ type }) => {
             <div className="flex justify-between">
               <span>Amount</span>
               <div className="text-right">
-                <BalanceText balance={confirmAmountUnit} symbol="Goledo" placement="top" />
+                <BalanceText balance={confirmAmountUnit} symbol="Goledo" />
                 <p className="mt-2px text-12px text-#62677B">
                   <BalanceText balance={confirmAmountUnit.mul(goledo?.usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
                 </p>
@@ -76,9 +76,9 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Lock' }> = ({ type }) => {
               <span>{type === 'Stake' ? 'Staked' : 'Locked'} Goledo</span>
               <div className="text-right">
                 <p>
-                  <BalanceText balance={type === 'Stake' ? goledo?.stakedBalance : goledo?.lockedBalance} placement="top" />
+                  <BalanceText balance={type === 'Stake' ? goledo?.stakedBalance : goledo?.lockedBalance} />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                  <BalanceText balance={(type === 'Stake' ? goledo?.stakedBalance : goledo?.lockedBalance)?.add(confirmAmountUnit)} placement="top" />
+                  <BalanceText balance={(type === 'Stake' ? goledo?.stakedBalance : goledo?.lockedBalance)?.add(confirmAmountUnit)} />
                 </p>
                 <p className="mt-2px text-12px text-#62677B">
                   <BalanceText
@@ -134,7 +134,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Lock' }> = ({ type }) => {
             {transactionStatus === 'success' && (
               <>
                 You {type == 'Stake' ? 'staked' : 'locked'}{' '}
-                <BalanceText className="font-semibold" balance={confirmAmountUnit} placement="top" symbol="Goledo" />
+                <BalanceText className="font-semibold" balance={confirmAmountUnit} symbol="Goledo" />
               </>
             )}
             {transactionStatus === 'failed' && error}
