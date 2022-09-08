@@ -17,7 +17,7 @@ const ModalContent: React.FC = () => {
           <p className='font-semibold mb-1'>Health Factor</p>
           <p className='text-xs'>Safety of your deposited collateral against the borrow assets and its underlying value. If the health factor goes below 1, the liquidation of your collateral might be triggered.</p>
         </div>
-        <div className={`w-[84px] h-84px rounded-full border-solid border flex justify-center items-center`} style={{ borderColor: healthColor }}>//TODO: 1. No inline style 2. lack of backgroundColor
+        <div className={`w-[84px] h-84px rounded-full border-solid border flex justify-center items-center`} style={{ borderColor: healthColor }}>
           <HealthFactor value={userData?.healthFactor} />
         </div>
       </div>
