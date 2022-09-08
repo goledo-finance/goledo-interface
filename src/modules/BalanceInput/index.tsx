@@ -16,6 +16,7 @@ export type Props = OverWrite<
     decimals: number;
     usdPrice: Unit;
     max?: Unit;
+    maxPrefix?: React.ReactNode;
     title?: string | React.ReactNode;
     error?: string;
     inputClassName?: string;

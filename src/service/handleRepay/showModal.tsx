@@ -25,9 +25,9 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const userData = useUserData();
 
   const [confirmAmount, setConfirmAmount] = useState<string | null>(null);
-  const [repayAllAmount, setRepayAllAmount] = useState<string | null>(null);
   const [showError, setShowError] = useState<boolean>(false);
   const [repayAll, setRepayAll] = useState<boolean>(false);
+  const [repayAllAmount, setRepayAllAmount] = useState<string | null>(null);
   const confirmAmountUnit = useMemo(() => (confirmAmount ? Unit.fromStandardUnit(confirmAmount || 0, token?.decimals) : undefined), [confirmAmount]);
 
   const estimateToken = useMemo(() => {
@@ -91,8 +91,11 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
       {!confirmAmount && (
         <form onSubmit={handleContinue} className="mt-10px">
           <span className="flex items-center justify-between mb-4px text-14px text-#62677B">
-            How much do you want to repay?
+            <span className='mr-auto'>How much do you want to repay?</span>
+
+            Repay All
             <Toggle
+              className='ml-8px'
               name="repayAll"
               checked={repayAll}
               onToggle={(e) => {

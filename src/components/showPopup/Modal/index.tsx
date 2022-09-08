@@ -4,15 +4,14 @@ import { useChainId, useAccount } from '@cfxjs/use-wallet-react/ethereum';
 import { PopupClass } from '@components/Popup';
 import Button from '@components/Button';
 import renderReactNode from '@utils/renderReactNode';
+import './index.css';
 
 const ModalPopup = new PopupClass();
-ModalPopup.setListStyle({
-  top: '300px',
-});
+ModalPopup.setListClassName('modal-wrapper');
 ModalPopup.setItemWrapperClassName('toast-item-wrapper');
 ModalPopup.setAnimatedSize(false);
 
-const Modal: React.FC<{ Content: ReactNode | Function; title: string; className: string; }> = memo(
+const Modal: React.FC<{ Content: ReactNode | Function; title: string; className?: string; }> = memo(
   ({ Content, title, className }) => {
     const hasInit = useRef(false);
     const chainId = useChainId();

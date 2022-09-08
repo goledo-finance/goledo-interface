@@ -8,7 +8,7 @@ const Zero = Unit.fromMinUnit(0);
 
 const SummaryPanelItem: React.FC<{ title: string; value?: React.ReactNode; }> = ({ title, value }) => {
   return (
-    <div className=''>
+    <div>
       <p className="text-14px lt-sm:text-12px text-#ccc whitespace-nowrap">{title}</p>
       <p className="text-22px lt-sm:text-18px text-#F1F1F3 font-bold">{value}</p>
     </div>

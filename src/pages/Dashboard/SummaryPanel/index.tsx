@@ -58,7 +58,7 @@ const SummaryPanel: React.FC = () => {
         : undefined,
     [curUserSupplyPrice, curUserSupplyAPY, curUserBorrowPrice, curUserBorrowAPY]
   );
-
+  
   return (
     <ConfluxEspaceMarket>
       <div className="flex w-full xl:w-fit justify-center gap-56px lt-xl:mt-8px lt-sm:mt-24px lt-sm:gap-24px">

@@ -1,9 +1,10 @@
 import React, { CSSProperties, forwardRef, isValidElement, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import cx from 'clsx';
 import { uniqueId } from 'lodash-es';
-import classNames from 'clsx';
 import runAsync from '@utils/runAsync';
 import Mask from '@components/Mask';
 import List, { type ItemProps } from '../List';
+import './index.css';
 
 export interface PopupProps extends ItemProps {
   Content: React.ReactNode | Function;
@@ -18,7 +19,7 @@ export interface PopupProps extends ItemProps {
 }
 
 export interface PopupMethods {
-  show(props: PartialOptional<PopupProps, 'key'>): string | number;
+  show(props: PartialOmit<PopupProps, 'key'>): string | number;
   hide(key: string | number): void;
   hideAll(): void;
   setMaskStyle(style?: CSSProperties): void;
@@ -150,12 +151,12 @@ const PopupContainer = forwardRef<PopupMethods>((_, ref) => {
     <div>
       <Mask open={openMask} className={maskClassName} style={maskStyle} onClick={maskClickHandler} />
       <List
-        className={classNames('fixed flex flex-col items-center w-fit left-[50%] top-[30%] translate-x-[-50%] z-[201]', listClassName)}
+        className={cx('fixed flex flex-col items-center w-fit left-[50%] top-[30%] translate-x-[-50%] z-[201]', listClassName)}
         list={popupList}
         animatedSize={animatedSize}
         style={listStyle}
-        ItemWrapperClassName={itemWrapperClassName}
-        ItemWrapperStyle={{ marginBottom: 12, ...itemWrapperStyle }}
+        ItemWrapperClassName={cx('itemWrapperClassName', itemWrapperClassName)}
+        ItemWrapperStyle={itemWrapperStyle}
       >
         {(popup) => (
           <PopupItem

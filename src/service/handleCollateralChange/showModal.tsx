@@ -68,7 +68,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
         <>
           <p className="px-12px py-8px mb-12px bg-#FEF5E8 text-#63400A text-12px leading=16px">
             {collateralAfterSwitch
-              ? 'Enabling this asset as collateral increases your borrowing power and Health Factor. <br/>However, it can get liquidated if your health factor drops below 1.'
+              ? <>Enabling this asset as collateral increases your borrowing power and Health Factor. <br/>However, it can get liquidated if your health factor drops below 1.</>
               : 'Disabling this asset as collateral affects your borrowing power and Health Factor.'}
           </p>
           <div className="flex flex-col pt-20px">

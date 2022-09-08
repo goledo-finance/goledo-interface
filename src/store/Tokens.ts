@@ -337,7 +337,8 @@ tokensStore.subscribe((state) => state.tokensData, calcSupplyTokenPrice, { fireI
 
 const aggregateData = debounce(() => {
   const { tokensInPool, tokensData, userTokensData, tokensBalance, tokensPrice } = tokensStore.getState();
-  if (!tokensInPool?.length) {
+  const account = walletStore.getState().accounts?.[0];
+  if (!account || !tokensInPool?.length) {
     tokensStore.setState({
       tokens: undefined,
       curUserSupplyPrice: undefined,
@@ -406,6 +407,7 @@ tokensStore.subscribe((state) => state.tokensData, aggregateData, { fireImmediat
 tokensStore.subscribe((state) => state.tokensBalance, aggregateData, { fireImmediately: true });
 tokensStore.subscribe((state) => state.userTokensData, aggregateData, { fireImmediately: true });
 tokensStore.subscribe((state) => state.tokensPrice, aggregateData, { fireImmediately: true });
+walletStore.subscribe((state) => state.accounts, aggregateData, { fireImmediately: true });
 
 
 
