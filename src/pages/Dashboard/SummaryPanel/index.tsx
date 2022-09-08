@@ -8,6 +8,7 @@ import BalanceText from '@modules/BalanceText';
 import PercentageText from '@modules/PercentageText';
 import HealthFactor from '@modules/HealthFactor';
 import { useCurUserSupplyPrice, useCurUserSupplyAPY, useCurUserBorrowPrice, useCurUserBorrowAPY, useUserData } from '@store/index';
+import showRiskDetails from './RiskDetails';
 
 const Zero = Unit.fromMinUnit(0);
 
@@ -54,16 +55,16 @@ const SummaryPanel: React.FC = () => {
       curUserSupplyPrice?.equalsWith(Zero)
         ? Zero
         : curUserSupplyPrice && curUserSupplyAPY && curUserBorrowPrice && curUserBorrowAPY
-        ? curUserSupplyPrice.mul(curUserSupplyAPY).sub(curUserBorrowPrice.mul(curUserBorrowAPY)).div(curUserSupplyPrice.sub(curUserBorrowPrice))
-        : undefined,
+          ? curUserSupplyPrice.mul(curUserSupplyAPY).sub(curUserBorrowPrice.mul(curUserBorrowAPY)).div(curUserSupplyPrice.sub(curUserBorrowPrice))
+          : undefined,
     [curUserSupplyPrice, curUserSupplyAPY, curUserBorrowPrice, curUserBorrowAPY]
   );
-  
+
   return (
     <ConfluxEspaceMarket>
       <div className="flex w-full xl:w-fit justify-center gap-56px lt-xl:mt-8px lt-sm:mt-24px lt-sm:gap-24px">
         <SummaryPanelItem iconName="i-iconoir:wallet" title="Net worth">
-          <BalanceText balance={NetWorth} abbrDecimals={2} symbolPrefix="$"/>
+          <BalanceText balance={NetWorth} abbrDecimals={2} symbolPrefix="$" />
         </SummaryPanelItem>
 
         <SummaryPanelItem
@@ -77,7 +78,7 @@ const SummaryPanel: React.FC = () => {
         <SummaryPanelItem iconName="i-codicon:heart" title="Health Factor">
           <div className="flex items-center">
             <HealthFactor value={userData?.healthFactor} />
-            <Button variant="outlined" size="mini" color="green" className="!rounded-6px ml-8px translate-y-1px">
+            <Button variant="outlined" size="mini" color="green" className="!rounded-6px ml-8px translate-y-1px" onClick={showRiskDetails}>
               <span className="lt-sm:display-none">RISK</span>
               <span> DETAILS</span>
             </Button>
