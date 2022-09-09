@@ -5,6 +5,12 @@ import HealthFactor from '@modules/HealthFactor';
 import { useHealthFactorColor } from '@modules/HealthFactor';
 import { useUserData } from '@store/Tokens';
 
+const colorBgDic = {
+  '#3AC170': 'bg-green-100',
+  '#FE6060': 'bg-red-100',
+  '#F89F1A': 'bg-yellow-100'
+}
+
 const ModalContent: React.FC = () => {
   const userData = useUserData();
   const healthColor = useHealthFactorColor(userData?.healthFactor);
@@ -17,7 +23,7 @@ const ModalContent: React.FC = () => {
           <p className='font-semibold mb-1'>Health Factor</p>
           <p className='text-xs'>Safety of your deposited collateral against the borrow assets and its underlying value. If the health factor goes below 1, the liquidation of your collateral might be triggered.</p>
         </div>
-        <div className={`w-[84px] h-84px rounded-full border-solid border flex justify-center items-center`} style={{ borderColor: healthColor }}>
+        <div className={`w-[84px] h-84px rounded-full border-solid border flex justify-center items-center ${colorBgDic[healthColor]}`} style={{ borderColor: healthColor }}>
           <HealthFactor value={userData?.healthFactor} />
         </div>
       </div>
@@ -26,7 +32,7 @@ const ModalContent: React.FC = () => {
           <p className='font-semibold mb-1'>Current LTV</p>
           <p className='text-xs'>Safety of your deposited collateral against the borrow assets and its underlying value. If the health factor goes below 1, the liquidation of your collateral might be triggered.</p>
         </div>
-        <div className='w-[84px] h-84px rounded-full border-solid border flex justify-center items-center' style={{ borderColor: healthColor }}>
+        <div className={`w-[84px] h-84px rounded-full border-solid border flex justify-center items-center ${colorBgDic[healthColor]}`} style={{ borderColor: healthColor }}>
           <span>{userData?.loanToValue}</span>
         </div>
       </div>
