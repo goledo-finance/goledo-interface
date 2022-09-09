@@ -18,22 +18,22 @@ const ModalContent: React.FC = () => {
   return (
     <div className='text-sm'>
       <p className='my-6'>Your health factor an loan to value determine the assurance of your collateral. To avoid liquidations you can supply more collateral or repay borrow positions.</p>
-      <div className='flex flex-row mb-6'>
-        <div className='flex flex-col max-w-sm mr-auto'>
+      <div className='flex flex-row items-center mb-6'>
+        <div className='flex flex-col max-w-xs mr-auto'>
           <p className='font-semibold mb-1'>Health Factor</p>
           <p className='text-xs'>Safety of your deposited collateral against the borrow assets and its underlying value. If the health factor goes below 1, the liquidation of your collateral might be triggered.</p>
         </div>
-        <div className={`w-[84px] h-84px rounded-full border-solid border flex justify-center items-center ${colorBgDic[healthColor]}`} style={{ borderColor: healthColor }}>
+        <div className={`w-[84px] h-[84px] min-w-[84px] rounded-full border-solid border flex justify-center items-center ${colorBgDic[healthColor]}`} style={{ borderColor: healthColor }}>
           <HealthFactor value={userData?.healthFactor} />
         </div>
       </div>
-      <div className='flex flex-row'>
-        <div className='flex flex-col max-w-sm mr-auto'>
+      <div className='flex flex-row items-center'>
+        <div className='flex flex-col max-w-xs mr-auto'>
           <p className='font-semibold mb-1'>Current LTV</p>
-          <p className='text-xs'>Safety of your deposited collateral against the borrow assets and its underlying value. If the health factor goes below 1, the liquidation of your collateral might be triggered.</p>
+          <p className='text-xs'>Your current loan to value based on your collateral supplied. If your loan to value goes above the liquidation threshold your collateral supplied may be liquidated.</p>
         </div>
-        <div className={`w-[84px] h-84px rounded-full border-solid border flex justify-center items-center ${colorBgDic[healthColor]}`} style={{ borderColor: healthColor }}>
-          <span>{userData?.loanToValue}</span>
+        <div className={`w-[84px] h-84px min-w-[84px] rounded-full border-solid border flex justify-center items-center ${colorBgDic[healthColor]}`} style={{ borderColor: healthColor }}>
+          <span className={`text-${healthColor}`}>{userData?.loanToValue}%</span>
         </div>
       </div>
     </div>
