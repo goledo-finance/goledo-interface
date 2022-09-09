@@ -148,7 +148,7 @@ const calcStakeAPR = debounce(() => {
   }
 
   const stakeAPR = rewardsPerSecond.mul(OneYearSeconds).mul(goledoUsdPrice).div(totalMarketStakedBalance.mul(usdPrice));
-  lpStore.setState({ stakeAPR: stakeAPR.toDecimalMinUnit() === 'NaN' ? Zero : stakeAPR });
+  lpStore.setState({ stakeAPR: (stakeAPR.toDecimalMinUnit() === 'NaN' || stakeAPR.toDecimalMinUnit() === 'Infinity') ? Zero : stakeAPR });
 }, 50);
 lpStore.subscribe((state) => state.usdPrice, calcStakeAPR, { fireImmediately: true });
 goledoStore.subscribe((state) => state.usdPrice, calcStakeAPR, { fireImmediately: true });
