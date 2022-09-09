@@ -5,7 +5,7 @@ import HealthFactor from '@modules/HealthFactor';
 import { useHealthFactorColor } from '@modules/HealthFactor';
 import { useUserData } from '@store/Tokens';
 
-const colorBgDic = {
+const colorBgDic: { [key: string]: string } = {
   '#3AC170': 'bg-green-100',
   '#FE6060': 'bg-red-100',
   '#F89F1A': 'bg-yellow-100'
