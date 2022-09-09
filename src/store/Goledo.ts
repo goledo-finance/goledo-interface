@@ -180,13 +180,13 @@ const calcGoledoAPR = debounce(() => {
   }
 
   const APR = (rewardRates[import.meta.env.VITE_GoledoTokenAddress] ?? 0).mul(OneYearSeconds).mul(goledoUsdPrice).div(totalMarketLockedBalance);
-  let stakeAPR = tokens.reduce((acc, token) => acc.add((rewardRates[token.address] ?? Zero).mul(OneYearSeconds).mul(token.usdPrice!).div(token.totalMarketSupplyBalance!.mul(goledoUsdPrice))), Unit.fromMinUnit(0));
-  let lockAPR  = stakeAPR.add((rewardRates[import.meta.env.VITE_GoledoTokenAddress] ?? Zero).mul(OneYearSeconds).mul(goledoUsdPrice).div(totalMarketLockedBalance.mul(goledoUsdPrice)));
+  const stakeAPR = tokens.reduce((acc, token) => acc.add((rewardRates[token.address] ?? Zero).mul(OneYearSeconds).mul(token.usdPrice!).div(token.totalMarketSupplyBalance!.mul(goledoUsdPrice))), Unit.fromMinUnit(0));
+  const lockAPR  = stakeAPR.add((rewardRates[import.meta.env.VITE_GoledoTokenAddress] ?? Zero).mul(OneYearSeconds).mul(goledoUsdPrice).div(totalMarketLockedBalance.mul(goledoUsdPrice)));
 
   goledoStore.setState({
-    stakeAPR: (stakeAPR.toDecimalMinUnit() === 'NaN' || stakeAPR.toDecimalMinUnit() === 'Infinity') ? Zero : stakeAPR.div(Unit.fromMinUnit(1e12)),
-    lockAPR: (lockAPR.toDecimalMinUnit() === 'NaN' || lockAPR.toDecimalMinUnit() === 'Infinity') ? Zero : lockAPR.div(Unit.fromMinUnit(1e12)),
-    APR: (APR.toDecimalMinUnit() === 'NaN' || APR.toDecimalMinUnit() === 'Infinity')  ? Zero : APR.div(Unit.fromMinUnit(1e12))
+    stakeAPR: stakeAPR.toDecimalMinUnit() === 'NaN' ? Zero : stakeAPR.div(Unit.fromMinUnit(1e12)),
+    lockAPR: lockAPR.toDecimalMinUnit() === 'NaN' ? Zero : lockAPR.div(Unit.fromMinUnit(1e12)),
+    APR: APR.toDecimalMinUnit() === 'NaN' ? Zero : APR.div(Unit.fromMinUnit(1e12))
   });
 }, 10);
 
