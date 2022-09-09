@@ -23,7 +23,7 @@ const ModalContent: React.FC = () => {
           <p className='font-semibold mb-1'>Health Factor</p>
           <p className='text-xs'>Safety of your deposited collateral against the borrow assets and its underlying value. If the health factor goes below 1, the liquidation of your collateral might be triggered.</p>
         </div>
-        <div className={`w-[84px] h-[84px] min-w-[84px] rounded-full border-solid border flex justify-center items-center ${colorBgDic[healthColor]}`} style={{ borderColor: healthColor }}>
+        <div className={`w-[84px] h-[84px] min-w-[84px] rounded-full border-solid border flex justify-center items-center ${colorBgDic[healthColor]} ml-1`} style={{ borderColor: healthColor }}>
           <HealthFactor value={userData?.healthFactor} />
         </div>
       </div>
@@ -32,7 +32,7 @@ const ModalContent: React.FC = () => {
           <p className='font-semibold mb-1'>Current LTV</p>
           <p className='text-xs'>Your current loan to value based on your collateral supplied. If your loan to value goes above the liquidation threshold your collateral supplied may be liquidated.</p>
         </div>
-        <div className={`w-[84px] h-84px min-w-[84px] rounded-full border-solid border flex justify-center items-center ${colorBgDic[healthColor]}`} style={{ borderColor: healthColor }}>
+        <div className={`w-[84px] h-84px min-w-[84px] rounded-full border-solid border flex justify-center items-center ${colorBgDic[healthColor]} ml-1`} style={{ borderColor: healthColor }}>
           <span className={`text-${healthColor}`}>{userData?.loanToValue}%</span>
         </div>
       </div>
