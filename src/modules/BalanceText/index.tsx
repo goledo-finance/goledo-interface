@@ -38,7 +38,7 @@ const BalanceText: React.FC<Props> = ({ className, balance, status, id, symbolPr
   if (decimalStandardUnit !== '0' && Unit.lessThan(balance, Unit.fromStandardUnit(abbrStr[abbrDecimals], Number(decimals)))) {
     const isGreaterThanZero = balance.greaterThan(Zero);
     return (
-      <Tooltip text={`${isGreaterThanZero ? numFormat(decimalStandardUnit) : Zero}${symbol ? ` ${symbol}` : ''}`} placement={usedPlacement} interactive delay={1000}>
+      <Tooltip text={`${isGreaterThanZero ? numFormat(decimalStandardUnit) : Zero}${symbol ? ` ${symbol}` : ''}`} placement={usedPlacement} interactive delay={[888, 333]}>
         <span className={className} id={id}>
           {symbolPrefix ?? ''}＜{abbrStr[abbrDecimals]}{symbol ? ` ${symbol}` : ''}
         </span>
@@ -49,7 +49,7 @@ const BalanceText: React.FC<Props> = ({ className, balance, status, id, symbolPr
   const nought = decimalStandardUnit.split('.')[1];
   const noughtLen = nought ? nought.length : 0;
   return (
-    <Tooltip text={`${numFormat(decimalStandardUnit)}${symbol ? ` ${symbol}` : ''}`} placement={usedPlacement} disabled={noughtLen < abbrDecimals} interactive delay={1000}>
+    <Tooltip text={`${numFormat(decimalStandardUnit)}${symbol ? ` ${symbol}` : ''}`} placement={usedPlacement} disabled={noughtLen < abbrDecimals} interactive delay={[888, 333]}>
       <span className={className} id={id}>
         { noughtLen >= abbrDecimals
           ? `${symbolPrefix ?? ''}${numFormat(balance.toDecimalStandardUnit(abbrDecimals, decimals))}${showEllipsis ? '...' : ''}${symbol ? ` ${symbol}` : ''}`

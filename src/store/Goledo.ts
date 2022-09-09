@@ -111,7 +111,6 @@ const getData = debounce(() => {
       const lockedBalancesData = MultiFeeDistributionContract.interface.decodeFunctionResult('lockedBalances', returnData[1]);
       const lockedBalance = Unit.fromMinUnit(lockedBalancesData?.locked?._hex ?? 0);
       const lockeds = lockedBalancesData?.lockData?.map((data: any) => ({ balance: Unit.fromMinUnit(data?.amount?._hex ?? 0), unlockTime: Number(data?.unlockTime?._hex ?? 0) * 1000 }));
-      const unlockedableBalance = Unit.fromMinUnit(lockedBalancesData?.unlockable?._hex ?? 0);
 
       const stakedBalance = Unit.fromMinUnit(returnData[2] ?? 0);
       
@@ -128,6 +127,7 @@ const getData = debounce(() => {
         amount: Unit.fromMinUnit(withdrawableBalanceData?.amount?._hex ?? 0),
         penaltyAmount: Unit.fromMinUnit(withdrawableBalanceData?.penaltyAmount?._hex ?? 0),
       }
+      const unlockedableBalance = withdrawableBalance.amount;
 
       const reservesData = SwappiPaiContract.interface.decodeFunctionResult('getReserves', returnData[7]);
       const reserves: GoledoStore['reserves'] = [Unit.fromMinUnit(reservesData?.[0]?._hex ?? 0), Unit.fromMinUnit(reservesData?.[1]?._hex ?? 0)];
