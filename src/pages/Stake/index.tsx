@@ -16,36 +16,30 @@ const Stake: React.FC = () => {
 
   return (
     <>
-      <PageHeader className='pt-36px'>
-        <p className='text-68px text-#F1F1F3 font-bold lt-lg:text-center'>Stake</p>
+      <PageHeader className="pt-36px">
+        <p className="text-68px text-#F1F1F3 font-bold lt-lg:text-center">Stake</p>
       </PageHeader>
-      <PageWrapper className='stake flex gap-24px lt-lg:flex-col lt-lg:gap-18px'>
-        {!isAuthed && (
-          <AuthConnectPage>
-            <p className="text-14px text-#62677B">
-              We couldn’t detect a wallet.<br className="lt-sm:display-none" />Connect a wallet to stake.
-            </p>
-          </AuthConnectPage>
-        )}
-        {isAuthed &&
+      <PageWrapper className="stake flex gap-24px lt-lg:flex-col lt-lg:gap-18px">
+        {!isAuthed && <AuthConnectPage>{(action) => <p className="text-14px text-#62677B">{action} to stake.</p>}</AuthConnectPage>}
+        {isAuthed && (
           <>
-            <div className='w-470px flex flex-col flex-auto gap-10px lt-lg:w-full lt-lg:gap-18px'>
+            <div className="w-470px flex flex-col flex-auto gap-10px lt-lg:w-full lt-lg:gap-18px">
               <StakeGoledo />
               <LockGoledo />
               <LP />
             </div>
 
-            <div className='w-750px flex flex-col flex-auto	gap-10px lt-lg:w-full lt-lg:gap-18px'>
+            <div className="w-750px flex flex-col flex-auto	gap-10px lt-lg:w-full lt-lg:gap-18px">
               <GoledoClaim />
               <GoledoVest />
               <GoledoLock />
               <ClaimableFees />
             </div>
           </>
-        }
+        )}
       </PageWrapper>
     </>
-  )
+  );
 };
 
 export default Stake;

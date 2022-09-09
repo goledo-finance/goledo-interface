@@ -15,13 +15,7 @@ const Markets: React.FC = () => {
         <SummaryPanel />
       </PageHeader>
       <PageWrapper>
-        {!isAuthed && (
-          <AuthConnectPage>
-            <p className="text-14px text-#62677B">
-              Conncet your wallet to see your market details.
-            </p>
-          </AuthConnectPage>
-        )}
+        {!isAuthed && <AuthConnectPage>{(action) => <p className="text-14px text-#62677B">{action} to see market details.</p>}</AuthConnectPage>}
         {isAuthed && <Assets />}
       </PageWrapper>
     </>
