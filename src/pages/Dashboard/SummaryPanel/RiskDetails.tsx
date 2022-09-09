@@ -1,6 +1,5 @@
 import React from 'react';
-import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { showModal, hideAllModal } from '@components/showPopup/Modal';
+import { showModal } from '@components/showPopup/Modal';
 import HealthFactor from '@modules/HealthFactor';
 import { useHealthFactorColor } from '@modules/HealthFactor';
 import { useUserData } from '@store/Tokens';
@@ -16,7 +15,7 @@ const ModalContent: React.FC = () => {
   const healthColor = useHealthFactorColor(userData?.healthFactor);
 
   return (
-    <div className='text-sm'>
+    <div className='text-sm text-#303549'>
       <p className='my-6'>Your health factor an loan to value determine the assurance of your collateral. To avoid liquidations you can supply more collateral or repay borrow positions.</p>
       <div className='flex flex-row items-center mb-6'>
         <div className='flex flex-col max-w-xs mr-auto'>
@@ -33,7 +32,7 @@ const ModalContent: React.FC = () => {
           <p className='text-xs'>Your current loan to value based on your collateral supplied. If your loan to value goes above the liquidation threshold your collateral supplied may be liquidated.</p>
         </div>
         <div className={`w-[84px] h-84px min-w-[84px] rounded-full border-solid border flex justify-center items-center ${colorBgDic[healthColor]} ml-1`} style={{ borderColor: healthColor }}>
-          <span className={`text-${healthColor}`}>{userData?.loanToValue}%</span>
+          <span className={`text-${healthColor}`}>{userData?.loanToValue}</span>
         </div>
       </div>
     </div>
