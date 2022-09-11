@@ -53,7 +53,7 @@ const ModalContent: React.FC = () => {
   const ltvColor = useLtvColor(MaxLTV, userData?.loanToValue);
 
   return (
-    <div className='text-sm'>
+    <div className='text-sm text-#303549'>
       <p className='my-6'>Your health factor an loan to value determine the assurance of your collateral. To avoid liquidations you can supply more collateral or repay borrow positions.</p>
       <div className='flex flex-row items-center mb-6'>
         <div className='flex flex-col max-w-xs mr-auto'>

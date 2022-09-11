@@ -360,18 +360,25 @@ const aggregateData = debounce(() => {
     token.supplyAPY = tokensData?.[token.address]?.supplyAPY;
     token.borrowAPY = tokensData?.[token.address]?.borrowAPY;
     token.reserveLiquidationThreshold = tokensData?.[token.address]?.reserveLiquidationThreshold;
-    token.availableLiquidity = tokensData?.[token.address]?.availableLiquidity;
     token.usdPrice = tokensData?.[token.address]?.usdPrice;
     token.collateral = userTokensData?.[token.address]?.collateral;
     token.maxLTV = tokensData?.[token.address]?.maxLTV?.toFixed(2);
     token.canBeCollateral = tokensData?.[token.address]?.canBeCollateral;
+    token.availableLiquidity = tokensData?.[token.address]?.availableLiquidity;
     token.availableBorrowBalance = tokensData?.[token.address]?.availableBorrowBalance;
-
     if (tokensData?.[token.address]?.reserveLiquidationThreshold) {
       token.liquidationThreshold = tokensData[token.address].reserveLiquidationThreshold.div(Hundred).toDecimalMinUnit(2);
     }
     if (tokensData?.[token.address]?.reserveLiquidationBonus) {
       token.liquidationPenalty = tokensData[token.address].reserveLiquidationBonus.div(Hundred).sub(Hundred).toDecimalMinUnit();
+    }
+  });
+
+  const hasBorrowed = tokens.some((token) => token.borrowBalance?.greaterThan(Zero));
+  tokens.forEach(token => {
+    if (token.availableLiquidity && token.availableBorrowBalance && (hasBorrowed || token.availableBorrowBalance.greaterThan(token.availableLiquidity))) {
+      token.availableBorrowBalance = Unit.min(token.availableBorrowBalance, token.availableLiquidity).mul(Unit.fromMinUnit(.99));
+      token.availableBorrowBalance = Unit.fromStandardUnit(token.availableBorrowBalance.toDecimalStandardUnit(token.decimals, token.decimals), token.decimals);
     }
   });
 
@@ -461,6 +468,7 @@ const convertOriginTokenData = (originData: any, availableBorrowsUSD: Unit) => {
     reserveLiquidationBonus: Unit.fromMinUnit(originData.reserveLiquidationBonus._hex),
     maxLTV: Number(originData.baseLTVasCollateral._hex) / 100,
   } as TokenData;
+  
   res.availableBorrowBalance = Unit.fromStandardUnit(availableBorrowsUSD.div(res.usdPrice).toDecimalStandardUnit(res.decimals, res.decimals), res.decimals);
   if (res.availableBorrowBalance.lessThan(Unit.fromStandardUnit(0.000001, res.decimals))) {
     res.availableBorrowBalance = Zero;

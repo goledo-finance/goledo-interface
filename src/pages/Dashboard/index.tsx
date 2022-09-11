@@ -35,11 +35,13 @@ const DashBoard: React.FC = () => {
       <PageWrapper className="relative">
         {!isAuthed && (
           <AuthConnectPage>
-            <p className="text-14px text-#62677B">
-              Conncet your wallet to see your supplies,
-              <br className="lt-sm:display-none" />
-              borrowings and open positions.
-            </p>
+            {(action) =>
+              <p className="text-14px text-#62677B">
+                {action} to see your supplies,
+                <br className="lt-sm:display-none" />
+                borrowings and open positions.
+              </p>
+            }
           </AuthConnectPage>
         )}
         {isAuthed && (
