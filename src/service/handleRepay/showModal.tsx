@@ -60,7 +60,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
         }
       }
     }),
-    [repayAll]
+    [repayAll, repayAllAmount]
   );
 
   const { status: approveStatus, handleApprove } = useERC20Token({
@@ -101,7 +101,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               onToggle={(e) => {
                 e.stopPropagation();
                 setRepayAll(!repayAll);
-                safeAmountToRepayAll && setRepayAllAmount(safeAmountToRepayAll?.toDecimalStandardUnit(undefined, token.decimals));
+                safeAmountToRepayAll && setRepayAllAmount(safeAmountToRepayAll?.toDecimalStandardUnit(token.decimals, token.decimals));
               }}
               onLeft={() => setShowError(false)}
             />
@@ -119,17 +119,27 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               usdPrice={token?.usdPrice!}
               min={Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals)}
               max={max}
+              maxPrefix={
+                <div className='text-12px'>
+                  <p className={debt && maxBalance?.lessThan(debt) ? 'text-#303549 font-semibold underline' : 'text-#62677B'}>
+                    Balance <BalanceText balance={maxBalance} decimals={token?.decimals!} />
+                  </p>
+                  <p className={maxBalance && debt?.lessThan(maxBalance) ? 'text-#303549 font-semibold underline' : 'text-#62677B'}>
+                    Debt <BalanceText balance={debt} decimals={token?.decimals!} placement="bottom" />
+                  </p>
+                </div>
+              }
             />
           )}
           {repayAll && (
             <>
               <div className="flex flex-col mt-16px gap-8px text-14px text-#62677B">
                 <span>
-                  Debt: <BalanceText balance={debt} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
+                  Debt: <BalanceText balance={debt} symbol={token?.symbol} decimals={token?.decimals} />
                 </span>
                 <span className={`${showError ? 'text-#FE6060' : 'text-#62677B'}`}>
                   Required Balance:{' '}
-                  <BalanceText balance={Unit.fromStandardUnit(repayAllAmount!)} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
+                  <BalanceText balance={Unit.fromStandardUnit(repayAllAmount!)} symbol={token?.symbol} decimals={token?.decimals} />
                 </span>
               </div>
               {!showError && (
@@ -221,7 +231,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You Repaid <BalanceText className="font-semibold" balance={confirmAmountUnit} placement="top" symbol={token?.symbol} />
+                You Repaid <BalanceText className="font-semibold" balance={confirmAmountUnit} symbol={token?.symbol} />
               </>
             )}
             {transactionStatus === 'failed' && error}

@@ -65,7 +65,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Unstake' }> = ({ type }) => {
             <div className="flex justify-between">
               <span>Amount</span>
               <div className="text-right">
-                <BalanceText balance={confirmAmountUnit} symbol={lpToken?.symbol} decimals={lpToken?.decimals} placement="top" />
+                <BalanceText balance={confirmAmountUnit} symbol={lpToken?.symbol} decimals={lpToken?.decimals} />
                 <p className="mt-2px text-12px text-#62677B">
                   <BalanceText balance={confirmAmountUnit.mul(lpToken?.usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
                 </p>
@@ -76,12 +76,11 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Unstake' }> = ({ type }) => {
               <span>Staked GOLCFX</span>
               <div className="text-right">
                 <p>
-                  <BalanceText balance={lpToken?.stakedBalance} decimals={lpToken?.decimals} placement="top" />
+                  <BalanceText balance={lpToken?.stakedBalance} decimals={lpToken?.decimals} />
                   <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
                   <BalanceText
                     balance={lpToken?.stakedBalance?.[type === 'Stake' ? 'add' : 'sub']?.(confirmAmountUnit)}
                     decimals={lpToken?.decimals}
-                    placement="top"
                   />
                 </p>
                 <p className="mt-2px text-12px text-#62677B">
@@ -129,7 +128,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Unstake' }> = ({ type }) => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You {type == 'Stake' ? 'staked' : 'Unstaked'} <BalanceText className="font-semibold" balance={confirmAmountUnit} placement="top" symbol={lpToken?.symbol} />
+                You {type == 'Stake' ? 'staked' : 'Unstaked'} <BalanceText className="font-semibold" balance={confirmAmountUnit} symbol={lpToken?.symbol} />
               </>
             )}
             {transactionStatus === 'failed' && error}

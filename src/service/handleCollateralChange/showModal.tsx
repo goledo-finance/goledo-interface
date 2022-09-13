@@ -77,7 +77,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               <div className="flex justify-between">
                 <span className="text-#303549">Supply Balance</span>
                 <div className="text-right">
-                  <BalanceText balance={token?.supplyBalance} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
+                  <BalanceText balance={token?.supplyBalance} symbol={token?.symbol} decimals={token?.decimals} />
                 </div>
               </div>
               {hasBorrowed &&

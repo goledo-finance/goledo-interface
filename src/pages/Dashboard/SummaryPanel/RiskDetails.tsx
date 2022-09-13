@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { showModal, hideAllModal } from '@components/showPopup/Modal';
+import { showModal } from '@components/showPopup/Modal';
 import HealthFactor from '@modules/HealthFactor';
 import { useHealthFactorColor } from '@modules/HealthFactor';
 import { useUserData } from '@store/Tokens';
