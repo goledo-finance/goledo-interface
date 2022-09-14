@@ -52,27 +52,29 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleWithdraw);
 
   const isEstimateHealthFactorUnsafe = estimateHealthFactor && Number(estimateHealthFactor) < 1;
-  const max = token?.supplyBalance;
+  const max = Unit.min(token?.supplyBalance ?? Zero, token?.availableLiquidity ?? Zero)
+  const availabeWithdrawAll = token?.supplyBalance?.lessThanOrEqualTo(token?.availableLiquidity ?? Zero);
   if (!token) return null;
   return (
     <div className="relative">
       {!confirmAmountUnit && (
-        <form onSubmit={handleContinue} className="mt-10px">
+        <form onSubmit={handleContinue} className="mt-14px">
           <BalanceInput
             {...register('amount', {
               required: true,
               min: Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals),
               max: max?.toDecimalStandardUnit(),
             })}
-            title="Available to withdraw"
+            title="How much do you want to withdraw?"
             step={String(`1e-${token?.decimals}`)}
             symbol={token?.symbol}
             decimals={token?.decimals}
             usdPrice={token?.usdPrice!}
             min={Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals)}
             max={max}
+            amountPrefix={'Available'}
           />
-
+          {!availabeWithdrawAll && <p className='mt-14px text-10px sm:text-14px text-#FCCF23 absolute'>After the borrowers repays, you can withdraw all your assets</p>}
           <Button fullWidth size="large" className="mt-48px" disabled={Number(estimateHealthFactor) < 1}>
             Continue
           </Button>

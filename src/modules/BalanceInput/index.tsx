@@ -22,11 +22,12 @@ export type Props = OverWrite<
     error?: string;
     inputClassName?: string;
     bindAccout?: string;
+    amountPrefix?: string;
   }
 >;
 
 const BalanceInput = forwardRef<HTMLInputElement, Props>(
-  ({ className, inputClassName, title, error, bindAccout, defaultValue, max, symbol, decimals = 18, usdPrice, maxPrefix, maxText, onChange, ...props }, ref) => {
+  ({ className, inputClassName, title, error, bindAccout, defaultValue, max, symbol, decimals = 18, usdPrice, maxPrefix, maxText, amountPrefix, onChange, ...props }, ref) => {
     const curInputPrice = useRef<HTMLSpanElement>(null!);
     const domRef = useRef<HTMLInputElement>(null!);
     useEffect(() => {
@@ -75,17 +76,15 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
             </div>
             <div className="balanceInput-errorBorder" />
           </div>
-
-          <div className="mt-2px flex justify-between items-center text-14px">
+          <div className="mt-2px flex justify-between items-center text-14px ">
             <span className="text-#D2D4DC" ref={curInputPrice} />
             <div className="relative flex items-center pr-42px">
               {!maxPrefix &&
                 <span className="text-#62677B">
-                  Balance <BalanceText balance={max} decimals={decimals} placement="bottom"/>
+                  {amountPrefix ? amountPrefix : 'Balance'} <BalanceText balance={max} decimals={decimals} placement="bottom" />
                 </span>
               }
               {maxPrefix}
-
               <Button className="absolute -right-6px top-1/2 -translate-y-1/2 !text-#62677B font-normal" variant="text" size="mini" type="button" disabled={!max} onClick={handleClickMax}>
                 {maxText ?? 'MAX'}
               </Button>
