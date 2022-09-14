@@ -52,7 +52,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleWithdraw);
 
   const isEstimateHealthFactorUnsafe = estimateHealthFactor && Number(estimateHealthFactor) < 1;
-  const max = token?.supplyBalance?.lessThanOrEqualTo(token?.availableLiquidity ?? Zero) ? token?.supplyBalance : Zero;
+  const max = Unit.min(token?.supplyBalance ?? Zero, token?.availableLiquidity ?? Zero)
   const availabeWithdrawAll = (token?.supplyBalance ?? Zero).lessThanOrEqualTo(token?.availableLiquidity ?? Zero);
   if (!token) return null;
   return (
@@ -72,8 +72,9 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             usdPrice={token?.usdPrice!}
             min={Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals)}
             max={max}
-            availabeWithdrawAll={availabeWithdrawAll}
+            amountPrefix={'Available'}
           />
+          {!availabeWithdrawAll && <p className='mt-14px text-10px sm:text-14px text-#FCCF23'>After the borrowers repays, you can withdraw all your assets</p>}
           <Button fullWidth size="large" className="mt-14px" disabled={Number(estimateHealthFactor) < 1}>
             Continue
           </Button>

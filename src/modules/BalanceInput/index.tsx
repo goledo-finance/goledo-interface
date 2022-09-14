@@ -22,12 +22,12 @@ export type Props = OverWrite<
     error?: string;
     inputClassName?: string;
     bindAccout?: string;
-    availabeWithdrawAll: boolean;
+    amountPrefix?: string;
   }
 >;
 
 const BalanceInput = forwardRef<HTMLInputElement, Props>(
-  ({ className, inputClassName, title, error, bindAccout, defaultValue, max, symbol, decimals = 18, usdPrice, maxPrefix, maxText, availabeWithdrawAll, onChange, ...props }, ref) => {
+  ({ className, inputClassName, title, error, bindAccout, defaultValue, max, symbol, decimals = 18, usdPrice, maxPrefix, maxText, amountPrefix, onChange, ...props }, ref) => {
     const curInputPrice = useRef<HTMLSpanElement>(null!);
     const domRef = useRef<HTMLInputElement>(null!);
     useEffect(() => {
@@ -55,7 +55,7 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
 
     return (
       <>
-        {title && <p className="mb-14px text-14px text-#62677B">{title}</p>}
+        {title && <p className="mb-4px text-14px text-#62677B">{title}</p>}
         <div className={cx('balanceInput-wrapper', className)}>
           <div className="flex justify-between items-center">
             <input
@@ -76,24 +76,21 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
             </div>
             <div className="balanceInput-errorBorder" />
           </div>
-
           <div className="mt-2px flex justify-between items-center text-14px ">
             <span className="text-#D2D4DC" ref={curInputPrice} />
             <div className="relative flex items-center pr-42px">
               {!maxPrefix &&
                 <span className="text-#62677B">
-                  Available <BalanceText balance={max} decimals={decimals} placement="bottom" />
+                  {amountPrefix ? <span className='mr-2'>{amountPrefix}</span> : 'Balance'} <BalanceText balance={max} decimals={decimals} placement="bottom" />
                 </span>
               }
               {maxPrefix}
-
               <Button className="absolute -right-6px top-1/2 -translate-y-1/2 !text-#62677B font-normal" variant="text" size="mini" type="button" disabled={!max} onClick={handleClickMax}>
                 {maxText ?? 'MAX'}
               </Button>
             </div>
           </div>
         </div>
-        {!availabeWithdrawAll && <p className='mt-14px text-10px sm:text-14px text-#FCCF23'>After the borrowers repays, you can withdraw all your assets</p>}
       </>
     );
   }
