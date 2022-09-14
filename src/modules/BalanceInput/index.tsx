@@ -81,7 +81,7 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
             <div className="relative flex items-center pr-42px">
               {!maxPrefix &&
                 <span className="text-#62677B">
-                  {amountPrefix ? <span className='mr-2'>{amountPrefix}</span> : 'Balance'} <BalanceText balance={max} decimals={decimals} placement="bottom" />
+                  {amountPrefix ? amountPrefix : 'Balance'} <BalanceText balance={max} decimals={decimals} placement="bottom" />
                 </span>
               }
               {maxPrefix}
