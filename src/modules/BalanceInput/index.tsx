@@ -22,11 +22,12 @@ export type Props = OverWrite<
     error?: string;
     inputClassName?: string;
     bindAccout?: string;
+    availabeWithdrawAll: boolean;
   }
 >;
 
 const BalanceInput = forwardRef<HTMLInputElement, Props>(
-  ({ className, inputClassName, title, error, bindAccout, defaultValue, max, symbol, decimals = 18, usdPrice, maxPrefix, maxText, onChange, ...props }, ref) => {
+  ({ className, inputClassName, title, error, bindAccout, defaultValue, max, symbol, decimals = 18, usdPrice, maxPrefix, maxText, availabeWithdrawAll, onChange, ...props }, ref) => {
     const curInputPrice = useRef<HTMLSpanElement>(null!);
     const domRef = useRef<HTMLInputElement>(null!);
     useEffect(() => {
@@ -54,7 +55,7 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
 
     return (
       <>
-        {title && <p className="mb-4px text-14px text-#62677B">{title}</p>}
+        {title && <p className="mb-14px text-14px text-#62677B">{title}</p>}
         <div className={cx('balanceInput-wrapper', className)}>
           <div className="flex justify-between items-center">
             <input
@@ -76,12 +77,12 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
             <div className="balanceInput-errorBorder" />
           </div>
 
-          <div className="mt-2px flex justify-between items-center text-14px">
+          <div className="mt-2px flex justify-between items-center text-14px ">
             <span className="text-#D2D4DC" ref={curInputPrice} />
             <div className="relative flex items-center pr-42px">
               {!maxPrefix &&
                 <span className="text-#62677B">
-                  Balance <BalanceText balance={max} decimals={decimals} placement="bottom"/>
+                  Available <BalanceText balance={max} decimals={decimals} placement="bottom" />
                 </span>
               }
               {maxPrefix}
@@ -92,6 +93,7 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
             </div>
           </div>
         </div>
+        {!availabeWithdrawAll && <p className='mt-14px text-10px sm:text-14px text-#FCCF23'>After the borrowers repays, you can withdraw all your assets</p>}
       </>
     );
   }
