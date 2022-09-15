@@ -40,7 +40,7 @@ const useEstimateCfxGasFee = ({ createData, to, isCFX, amount }: { isCFX?: boole
           if (fetchCount !== count.current) return;
           const gasFee = Unit.mul(Unit.mul(Unit.fromMinUnit(estimateGas), Unit.fromMinUnit(gasPrice)), Unit.fromMinUnit('1.5'));
           setCfxGasFee(gasFee);
-        }).catch(_ => {console.log('123', _)})
+        }).catch(() => {})
     };
 
     fetcher();

@@ -6,7 +6,6 @@ export const createCFXData = ({ amount, account }: { amount: string; account: st
 
 export const handleRepay = async ({ amount, symbol, tokenAddress }: { amount: Unit; symbol:string; tokenAddress: string;}) => {
     const account = walletStore.getState().accounts?.[0];
-    console.log(amount?.toDecimalStandardUnit())
     try {
         let data: string;
         if (symbol === 'CFX') {

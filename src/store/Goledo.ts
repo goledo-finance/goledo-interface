@@ -125,7 +125,7 @@ const getData = debounce(() => {
         amount: Unit.fromMinUnit(withdrawableBalanceData?.amount?._hex ?? 0),
         penaltyAmount: Unit.fromMinUnit(withdrawableBalanceData?.penaltyAmount?._hex ?? 0),
       }
-      const stakedBalance = withdrawableBalance.amount;
+      const stakedBalance = withdrawableBalance.amount.add(withdrawableBalance.penaltyAmount).sub(vestingBalance);
 
       const reservesData = SwappiPaiContract.interface.decodeFunctionResult('getReserves', returnData[6]);
       const reserves: GoledoStore['reserves'] = [Unit.fromMinUnit(reservesData?.[0]?._hex ?? 0), Unit.fromMinUnit(reservesData?.[1]?._hex ?? 0)];
