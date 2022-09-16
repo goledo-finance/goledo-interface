@@ -5,6 +5,7 @@ import { TokenInfo, useTokens, useUserData } from '@store/Tokens';
 import { showModal, hideAllModal } from '@components/showPopup/Modal';
 import BalanceInput from '@modules/BalanceInput';
 import Button from '@components/Button';
+import Toggle from '@components/Toggle';
 import BalanceText from '@modules/BalanceText';
 import HealthFactor from '@modules/HealthFactor';
 import useEstimateHealthFactor from '@hooks/useEstimateHealthFactor';
@@ -23,11 +24,13 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const hasBorrowed = !!tokens?.find((token) => token.borrowBalance?.greaterThan(Zero));
   const userData = useUserData();
 
+  const [useWCFX, setUseWCFX] = useState(false);
+
   const [confirmAmount, setConfirmAmount] = useState<string | null>(null);
   const confirmAmountUnit = useMemo(() => (confirmAmount ? Unit.fromStandardUnit(confirmAmount || 0, token?.decimals) : undefined), [confirmAmount]);
 
   const estimateToken = useMemo(() => {
-    const res: PartialOmit<TokenInfo, 'symbol'> = { symbol: token.symbol };
+    const res: PartialOmit<TokenInfo, 'symbol'> = { symbol: token?.symbol };
     if (!confirmAmountUnit || !token.supplyBalance || !token.usdPrice) return res;
     const supplyBalance = token.supplyBalance.sub(confirmAmountUnit);
     const supplyPrice = token.usdPrice.mul(supplyBalance);
@@ -43,7 +46,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   );
 
   const { status: approveStatus, handleApprove } = useERC20Token({
-    needApprove: token?.symbol === 'CFX',
+    needApprove: token?.symbol !== 'CFX' || useWCFX,
     tokenAddress: token?.supplyTokenAddress,
     contractAddress: import.meta.env.VITE_WETHGatewayAddress,
     amount: confirmAmountUnit,
@@ -54,6 +57,8 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const isEstimateHealthFactorUnsafe = estimateHealthFactor && Number(estimateHealthFactor) < 1;
   const max = Unit.min(token?.supplyBalance ?? Zero, token?.availableLiquidity ?? Zero)
   const availabeWithdrawAll = token?.supplyBalance?.lessThanOrEqualTo(token?.availableLiquidity ?? Zero);
+
+  const symbol = token?.symbol !== 'CFX' ? token?.symbol : useWCFX ? 'WCFX' : 'CFX';
   if (!token) return null;
   return (
     <div className="relative">
@@ -65,9 +70,19 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               min: Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals),
               max: max?.toDecimalStandardUnit(),
             })}
-            title="How much do you want to withdraw?"
+            title={
+              <div className="flex items-center justify-between">
+                <span>How much do you want to withdraw?</span>
+                {token?.symbol === 'CFX' && (
+                  <div className="flex items-center">
+                    Supply WCFX
+                    <Toggle className="ml-8px" checked={useWCFX} onClick={() => setUseWCFX((pre) => !pre)} />
+                  </div>
+                )}
+              </div>
+            }
             step={String(`1e-${token?.decimals}`)}
-            symbol={token?.symbol}
+            symbol={symbol}
             decimals={token?.decimals}
             usdPrice={token?.usdPrice!}
             min={Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals)}
@@ -87,7 +102,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             <div className="flex justify-between">
               <span>Amount</span>
               <div className="text-right">
-                <BalanceText balance={confirmAmountUnit} symbol={token?.symbol} decimals={token?.decimals} />
+                <BalanceText balance={confirmAmountUnit} symbol={symbol} decimals={token?.decimals} />
                 <p className="mt-2px text-12px text-#62677B">
                   <BalanceText balance={confirmAmountUnit.mul(token?.usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
                 </p>
@@ -97,7 +112,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             <div className="flex justify-between">
               <span>Remaining supply</span>
               <div className="text-right">
-                <BalanceText balance={token?.supplyBalance?.sub(confirmAmountUnit)} symbol={token?.symbol} decimals={token?.decimals} />
+                <BalanceText balance={token?.supplyBalance?.sub(confirmAmountUnit)} symbol={symbol} decimals={token?.decimals} />
               </div>
             </div>
 
@@ -134,7 +149,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
                 return;
               }
               if (approveStatus === 'approved') {
-                sendTransaction({ amount: confirmAmountUnit, tokenAddress: token.address, symbol: token.symbol });
+                sendTransaction({ amount: confirmAmountUnit, tokenAddress: token.address, symbol });
               } else if (approveStatus === 'need-approve') {
                 handleApprove();
               }
@@ -148,11 +163,11 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
                   <>
                     {approveStatus === 'checking-approve' && 'Checking Approve...'}
                     {approveStatus === 'approving' && 'Approving...'}
-                    {approveStatus === 'need-approve' && `Approve ${token?.symbol}`}
-                    {approveStatus === 'approved' && `Withdraw ${token?.symbol}`}
+                    {approveStatus === 'need-approve' && `Approve ${symbol}`}
+                    {approveStatus === 'approved' && `Withdraw ${symbol}`}
                   </>
                 )}
-                {transactionStatus === 'sending' && `Withdrawing ${token?.symbol}...`}
+                {transactionStatus === 'sending' && `Withdrawing ${symbol}...`}
               </>
             )}
           </Button>
@@ -168,7 +183,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You withdrew <BalanceText className="font-semibold" balance={confirmAmountUnit} symbol={token?.symbol} />
+                You withdrew <BalanceText className="font-semibold" balance={confirmAmountUnit} symbol={symbol} />
               </>
             )}
             {transactionStatus === 'failed' && error}

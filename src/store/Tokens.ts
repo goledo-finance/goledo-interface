@@ -60,6 +60,7 @@ export interface TokenInfo {
   canBeCollateral?: boolean;
 
   balance?: Unit;
+  wcfxBalance?: Unit;
   supplyBalance?: Unit;
   supplyPrice?: Unit;
   supplyAPY?: Unit;
@@ -85,6 +86,7 @@ export interface TokensStore {
     {
       name?: string;
       balance?: Unit;
+      wcfxBalance?: Unit;
       supplyBalance?: Unit;
       borrowBalance?: Unit;
       totalMarketSupplyBalance?: Unit;
@@ -281,6 +283,7 @@ const calcUserBalance = debounce(() => {
         if (token.symbol === 'CFX') {
           tokensBalance[token.address].name = 'CFX';
           tokensBalance[token.address].balance = walletStore.getState().balance;
+          tokensBalance[token.address].wcfxBalance = Unit.fromMinUnit(result?.['returnData']?.[index] ?? 0);
         } else {
           tokensBalance[token.address].balance = Unit.fromMinUnit(result?.['returnData']?.[index] ?? 0);
           const tokenContract = createERC20Contract(token.address);
