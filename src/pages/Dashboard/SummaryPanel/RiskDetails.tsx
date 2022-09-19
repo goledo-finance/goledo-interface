@@ -13,6 +13,7 @@ const colorBgDic: { [key: string]: string } = {
   '#F89F1A': 'bg-yellow-100'
 }
 const Zero = Unit.fromMinUnit(0);
+const One = Unit.fromMinUnit(1);
 const Red = Unit.fromMinUnit(0.85);
 const Yellow = Unit.fromMinUnit(0.5);
 
@@ -21,7 +22,9 @@ const useLtvColor = (maxLTV?: Unit, ltv?: string) => {
   let ltvUnit = Unit.fromMinUnit(ltv ?? 0);
   let value = ltvUnit.div(maxLTV);
   let color = '#3AC170';
-  if (value.greaterThanOrEqualTo(Red)) {
+  if (value.equalsWith(Zero) || value.greaterThan(One)) {
+    color = '#3AC170';
+  } else if (value.greaterThanOrEqualTo(Red)) {
     color = '#FE6060';
   } else if (value.greaterThanOrEqualTo(Yellow)) {
     color = '#F89F1A';
