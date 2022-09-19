@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { showModal } from '@components/showPopup/Modal';
 import HealthFactor from '@modules/HealthFactor';
+import PercentageText from '@modules/PercentageText'
 import { useHealthFactorColor } from '@modules/HealthFactor';
 import { useUserData } from '@store/Tokens';
 import { useTokens } from '@store/Tokens';
@@ -32,25 +33,27 @@ const ModalContent: React.FC = () => {
   const userData = useUserData();
   const userTokens = useTokens();
 
-  const MaxLTV = useMemo(
-    () => {
-      let numerator = userTokens?.reduce((pre, token) => {
-        let item = token.borrowPrice?.mul(Unit.fromMinUnit(token.maxLTV ?? 0));
-        return pre.add(item ?? Zero);
-      }, Zero);
-      let demoniator = userTokens?.reduce((pre, token) => {
-        return pre ? pre.add(token.borrowPrice ?? Zero) : Zero
-      }, Zero)
-      if (!demoniator) { return Zero }
-      if (demoniator?.equals(Zero)) { return Zero }
-      return numerator?.div(demoniator);
+  const userMaxLTV = useMemo(() => {
+    let numerator = userTokens?.reduce((pre, token) => {
+      let item = token.borrowPrice?.mul(Unit.fromMinUnit(token.maxLTV ?? 0));
+      return pre.add(item ?? Zero);
+    }, Zero);
+    let demoniator = userTokens?.reduce((pre, token) => {
+      return pre ? pre.add(token.borrowPrice ?? Zero) : Zero
+    }, Zero)
+    if (!demoniator || demoniator?.equals(Zero)) {
+      return Zero
     }
-    ,
-    [userTokens]
-  )
+    return numerator?.div(demoniator);
+  }, [userTokens]);
+
+  const ltvRate = useMemo(() => {
+    if (!userData?.loanToValue || !userMaxLTV || userMaxLTV.equalsWith(Zero)) return Zero;
+    return Unit.fromMinUnit(userData.loanToValue).div(userMaxLTV);
+  }, [userData?.loanToValue, userMaxLTV]);
 
   const healthColor = useHealthFactorColor(userData?.healthFactor);
-  const ltvColor = useLtvColor(MaxLTV, userData?.loanToValue);
+  const ltvColor = useLtvColor(userMaxLTV, userData?.loanToValue);
 
   return (
     <div className='text-sm text-#303549'>
@@ -70,7 +73,7 @@ const ModalContent: React.FC = () => {
           <p className='text-xs'>Your current loan to value based on your collateral supplied. If your loan to value goes above the liquidation threshold your collateral supplied may be liquidated.</p>
         </div>
         <div className={`w-[84px] h-84px min-w-[84px] rounded-full border-solid border flex justify-center items-center ${colorBgDic[ltvColor]} ml-1`} style={{ borderColor: ltvColor }}>
-          <span className={`text-${ltvColor}`}>{userData?.loanToValue ?? 0}%</span>
+          <PercentageText className={`text-${ltvColor}`} value={ltvRate} />
         </div>
       </div>
     </div>
