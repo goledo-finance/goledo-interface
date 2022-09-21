@@ -46,7 +46,6 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   );
 
   const { status: approveStatus, handleApprove } = useERC20Token({
-    needApprove: token?.symbol !== 'CFX' || useWCFX,
     tokenAddress: token?.supplyTokenAddress,
     contractAddress: import.meta.env.VITE_WETHGatewayAddress,
     amount: confirmAmountUnit,
