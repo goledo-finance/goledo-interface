@@ -1,5 +1,5 @@
 import React from 'react';
-import { Unit, type useStatus } from '@cfxjs/use-wallet-react/conflux/Fluent';
+import { Unit, type useStatus } from '@cfxjs/use-wallet-react/ethereum';
 import Tooltip from '@components/Tooltip';
 import { type Props as PopperProps } from '@components/Popper';
 import numFormat from '@utils/numFormat';
