@@ -3,6 +3,7 @@ import PageHeader from '@modules/Layout/PageHeader';
 import PageWrapper from '@modules/Layout/PageWrapper';
 import AuthConnectPage from '@modules/AuthConnectPage';
 import useIsAuthed from '@hooks/useIsAuthed';
+import { useIsInVestingLockTime } from '@store/index';
 import StakeGoledo from './StakeGoledo';
 import LockGoledo from './LockGoledo';
 import LP from './LP';
@@ -13,6 +14,7 @@ import ClaimableFees from './ClaimableFees';
 
 const Stake: React.FC = () => {
   const isAuthed = useIsAuthed();
+  const isInVestingLockTime = useIsInVestingLockTime();
 
   return (
     <>
@@ -26,7 +28,7 @@ const Stake: React.FC = () => {
             <div className="w-470px flex flex-col flex-auto gap-10px lt-lg:w-full lt-lg:gap-18px">
               <StakeGoledo />
               <LockGoledo />
-              <LP />
+              {!isInVestingLockTime && <LP />}
             </div>
 
             <div className="w-750px flex flex-col flex-auto	gap-10px lt-lg:w-full lt-lg:gap-18px">

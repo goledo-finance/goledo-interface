@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useRef, useLayoutEffect } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { useGoledoStakedBalance, useGoledoVestingBalance, useGoledoWithdrawableBalance, useGoledoUnlockedableBalance } from '@store/index';
+import { useGoledoStakedBalance, useGoledoVestingBalance, useGoledoWithdrawableBalance, useGoledoUnlockedableBalance, useIsInVestingLockTime, useVestingLockTimestamp, checkVestingLockTime } from '@store/index';
 import Card from '@components/Card';
 import Button from '@components/Button';
 import BalanceText from '@modules/BalanceText';
+import timerNotifier from '@utils/timerNotifier';
 import Goledo from '@assets/tokens/goledo.svg';
 import handleClaimGoledo from '@service/handleClaimGoledo';
 import handleClaimAllGoledo from '@service/handleClaimAllGoledo';
@@ -16,6 +17,33 @@ const GoledoClaim: React.FC = () => {
   const vestingBalance = useGoledoVestingBalance();
   const withdrawableBalance = useGoledoWithdrawableBalance();
   const unlockedableBalance = useGoledoUnlockedableBalance();
+  const isInVestingLockTime = useIsInVestingLockTime();
+  const vestingLockTimestamp = useVestingLockTimestamp();
+
+  const openingDOM = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    if (!isInVestingLockTime || !vestingLockTimestamp || !openingDOM.current) return;
+    const timerUnit: Parameters<typeof timerNotifier.addUnit>[0] = {
+      key: 'openning-timer',
+      type: 'second',
+      update: (remainTime) => {
+        if (!openingDOM.current) return;
+        openingDOM.current.innerText = `${+remainTime.days * 24 + +remainTime.hours}h:${remainTime.minutes}m:${remainTime.seconds}s`;
+      },
+      endDate: new Date(vestingLockTimestamp),
+      onEnd: () => {
+        checkVestingLockTime();
+        setTimeout(checkVestingLockTime, 1000);
+        setTimeout(checkVestingLockTime, 5000);
+        setTimeout(checkVestingLockTime, 10000);
+      },
+    };
+    timerNotifier.addUnit(timerUnit);
+
+    return () => {
+      timerNotifier.deleteUnit('openning-timer');
+    };
+  }, [isInVestingLockTime, vestingLockTimestamp]);
 
   return (
     <Card>
@@ -54,7 +82,13 @@ const GoledoClaim: React.FC = () => {
           Early exit penalty <BalanceText className="text-#FF0000" balance={withdrawableBalance?.penaltyAmount} /> Goledo
         </div>
 
-        <Button size="large" className="lt-md:w-full" loading={!stakedBalance || !withdrawableBalance} disabled={!withdrawableBalance || withdrawableBalance.penaltyAmount.equalsWith(Zero)} onClick={handleClaimAllGoledo}>
+        {isInVestingLockTime && vestingLockTimestamp &&
+          <div className="absolute right-162px text-right text-16px text-#303549 font-semibold lt-md:relative lt-md:right-none">
+            <div className='mb-3px text-14px font-normal text-#62677B'>Opening at:</div>
+            <div ref={openingDOM}>:</div>
+          </div>
+        }
+        <Button size="large" className="lt-md:w-full" loading={!stakedBalance || !withdrawableBalance} disabled={isInVestingLockTime || !withdrawableBalance || withdrawableBalance.penaltyAmount.equalsWith(Zero)} onClick={handleClaimAllGoledo}>
           Claim All
         </Button>
       </div>
