@@ -57,7 +57,7 @@ const ReserveOverview: React.FC<Token> = ({
           </div>
 
           <div className="flex justify-between items-center">
-            <span>Available Liquidit</span>
+            <span>Available Liquidity</span>
             <span>
               <span><BalanceText balance={availableBalance} decimals={decimals} /></span>
               <span className="text-#62677B">(<BalanceText balance={availablePrice} abbrDecimals={2} symbolPrefix="$" />)</span>
@@ -80,7 +80,7 @@ const ReserveOverview: React.FC<Token> = ({
           </div>
 
           <div className="flex justify-between items-center">
-            <span>Used Colloteral</span>
+            <span>Used Collateral</span>
             <span className="text-#3AC170 font-normal">
               {canBeCollateral ? (
                 <>

@@ -55,7 +55,7 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
 
     return (
       <>
-        {title && <p className="mb-4px text-14px text-#62677B">{title}</p>}
+        {title && <div className="mb-4px text-14px text-#62677B">{title}</div>}
         <div className={cx('balanceInput-wrapper', className)}>
           <div className="flex justify-between items-center">
             <input
@@ -68,6 +68,14 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
               type="number"
               disabled={!max}
               autoFocus
+              onInvalid={(evt) => {
+                const target = evt.target as HTMLInputElement;
+                if (target?.validity?.rangeUnderflow) {
+                  target.setCustomValidity(navigator.language === 'zh-CN' ? '值必须大于 0' : 'Value must be greater than 0.');
+                } else {
+                  target.setCustomValidity('');
+                }
+              }}
               {...props}
             />
             <div className="ml-16px flex items-center text-18px text-#303549 font-semibold">

@@ -5,6 +5,7 @@ import tokensIcon from '@assets/tokens';
 import Card from '@components/Card';
 import Table, { type Columns } from '@components/Table';
 import Toggle from '@components/Toggle';
+import ToolTip from '@components/Tooltip';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
 import BalanceText from '@modules/BalanceText';
@@ -52,7 +53,14 @@ const columns: Columns<TokenInfo> = [
   {
     name: 'Collateral',
     width: '17%',
-    renderHeader: () => <div className="flex justify-center items-center">Collateral</div>,
+    renderHeader: () => (
+      <div className="flex justify-center items-center">
+        Collateral
+        <ToolTip text="Allows you to decide whether to use a supplied asset as collateral. An asset used as collateral will affect your borrowing power and health factor.">
+          <span className="i-bi:info-circle ml-4px cursor-pointer" />
+        </ToolTip>
+      </div>
+    ),
     render: ({ collateral, canBeCollateral, address, symbol }) => (
       <div className="flex items-center">
         <Toggle checked={collateral && canBeCollateral} disabled={!canBeCollateral} onClick={() => showCollateralChangeModal({ address, symbol })} />
@@ -115,7 +123,7 @@ const YourSupplies: React.FC = () => {
 
   return (
     <Card title="Your Supplies" showHideButton="no-pb" className="w-50% lt-2xl:w-full">
-      {!curUserSupplyTokens?.length && <p className='mt-40px mb-24px text-center'>No Supplies</p>}
+      {!curUserSupplyTokens?.length && <p className="mt-40px mb-24px text-center">No Supplies</p>}
       {curUserSupplyTokens?.length ? (
         <>
           <div className="mt-16px flex gap-8px flex-wrap">
@@ -130,12 +138,18 @@ const YourSupplies: React.FC = () => {
               <span className="ml-6px text-#303549 font-semibold">
                 <PercentageText value={curUserSupplyAPY} />
               </span>
+              <ToolTip text="The weighted average of APY for all supplied assets, including incentives.">
+                <span className="i-bi:info-circle ml-4px cursor-pointer" />
+              </ToolTip>
             </div>
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               Collateral
               <span className="ml-6px text-#303549 font-semibold">
                 <BalanceText balance={totalCollateralPrice} abbrDecimals={2} symbolPrefix="$" />
               </span>
+              <ToolTip text="The total amount of your assets denominated in USD that can be used as collateral for borrowing assets.">
+                <span className="i-bi:info-circle ml-4px cursor-pointer" />
+              </ToolTip>
             </div>
           </div>
           <Table className="mt-20px" columns={columns} data={curUserSupplyTokens} />

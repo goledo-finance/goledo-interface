@@ -54,7 +54,7 @@ const Supplies: React.FC<Token> = ({ address, symbol, decimals, balance, supplyB
       </div>
 
       <div className="flex justify-between text-14px text-#303549">
-        <span>Use as coliateral</span>
+        <span>Use as Collateral</span>
         <Toggle checked={collateral && canBeCollateral} disabled={!canBeCollateral} onClick={() => showCollateralChangeModal({ address, symbol })} />
       </div>
     </Card>

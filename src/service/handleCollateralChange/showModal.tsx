@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo, useEffect} from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { TokenInfo, useTokens, useUserData } from '@store/index';
 import { showModal, hideAllModal } from '@components/showPopup/Modal';
@@ -28,6 +28,13 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleCollateralChange);
 
   const { collateral, canBeCollateral } = token;
+  const [collateralAfterSwitch, setCollateralAfterSwitch] = useState(!collateral);
+  useEffect(() => {
+    if (transactionStatus === 'sending') {
+      setCollateralAfterSwitch(!collateral);
+    }
+  }, [transactionStatus]);
+
   const estimateToken = useMemo(() => {
     const res: PartialOmit<TokenInfo, 'symbol'> = { symbol: token.symbol };
     if (token.collateral === undefined) return res;
@@ -60,7 +67,6 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
     }
   };
   
-  const collateralAfterSwitch = !collateral;
   if (!token) return null;
   return (
     <div className="relative">

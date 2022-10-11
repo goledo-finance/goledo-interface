@@ -47,7 +47,7 @@ const Mobile: React.FC<{ open: boolean; curPath: string }> = ({ open, curPath })
         </a>
         <a
           className="relative flex items-center h-44px px-50px text-#F1F1F3 no-underline"
-          href="https://goledo.gitbook.io/goledo/"
+          href="https://t.me/GoledoFinance"
           target="_blank"
           rel="noopener noreferrer"
         >

@@ -16,27 +16,22 @@ export const checkVestingLockTime = (vestingLockTimestamp?: number) => {
   store.setState({ isInVestingLockTime: Date.now() <= timestap });
 }
 
-if (!vestingLockTimestamp) {
-  MultiFeeDistributionContract.callStatic.vestingLockTimestamp().then((res) => {
-    const vestingLockTimestamp = Number(res?._hex) * 1000;
-    LocalStorage.setItem({ data: vestingLockTimestamp, key: 'vestingLockTimestamp' });
-    store.setState({ vestingLockTimestamp });
+MultiFeeDistributionContract.callStatic.vestingLockTimestamp().then((res) => {
+  const vestingLockTimestampNew = Number(res?._hex) * 1000;
+  if (vestingLockTimestampNew === vestingLockTimestamp) {
+    return;
+  }
   
-    const isInVestingLockTime = Date.now() <= vestingLockTimestamp;
-    if (isInVestingLockTime) {
-      setTimeout(() => {
-        store.setState({ isInVestingLockTime: false });
-      }, vestingLockTimestamp - Date.now() + 1000);
-    }
-  });
-} else {
-  const isInVestingLockTime = Date.now() <= vestingLockTimestamp;
+  LocalStorage.setItem({ data: vestingLockTimestampNew, key: 'vestingLockTimestamp' });
+  store.setState({ vestingLockTimestamp: vestingLockTimestampNew });
+
+  const isInVestingLockTime = Date.now() <= vestingLockTimestampNew;
   if (isInVestingLockTime) {
     setTimeout(() => {
       store.setState({ isInVestingLockTime: false });
-    }, vestingLockTimestamp - Date.now() + 1000);
+    }, vestingLockTimestampNew - Date.now() + 1000);
   }
-}
+});
 
 
 const selectors = {

@@ -19,7 +19,7 @@ const LockGoledo: React.FC = () => {
   return (
     <Card title="Lock Goledo" titleRight={APR} titleIcon="i-bytesize:lock">
       <p className="mt-16px">Lock Goledo and earn platform fees and penalty fees in unlocked Goledo.</p>
-      <p className="my-16px">Locked Goledo is subjext to a three month lock and will continue to earn fees after the locks expire if you do not withdraw.</p>
+      <p className="my-16px">Locked Goledo is subject to a three-month lock period and will continue to earn fees after the locks expire if you do not withdraw.</p>
       <Button fullWidth size="large" loading={!balance} disabled={balance?.equalsWith(Zero)} onClick={() => showLockGolModal({ type: 'Lock' })}>
         Lock
       </Button>

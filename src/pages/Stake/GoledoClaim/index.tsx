@@ -48,9 +48,9 @@ const GoledoClaim: React.FC = () => {
   return (
     <Card>
       <div className="relative flex justify-between items-center mb-10px lt-md:flex-col lt-md:items-start lt-md:text-left lt-md:gap-12px lt-md:mb-20px">
-        <div className="max-w-42.5%">
-          <p className="text-18px text-#303549 font-semibold">Unlocked Goledo</p>
-          <p>Staked Goledo and expried Goledo vests</p>
+        <div className="md:max-w-42.5%">
+          <p className="mb-2px text-18px text-#303549 font-semibold">Unlocked Goledo</p>
+          <p>Staked Goledo and expired Goledo vests</p>
         </div>
 
         <p className="absolute right-162px flex items-center text-16px text-#303549 font-semibold lt-md:relative lt-md:right-none">
@@ -63,8 +63,8 @@ const GoledoClaim: React.FC = () => {
       </div>
 
       <div className="relative flex justify-between items-center py-10px border-b-1px border-t-1px border-#EAEBEF lt-md:flex-col lt-md:items-start lt-md:text-left lt-md:gap-12px lt-md:py-20px">
-        <div className="max-w-40%">
-          <p className="text-18px text-#303549 font-semibold">Vesting Goledo</p>
+        <div className="md:max-w-40%">
+          <p className="mb-2px text-18px text-#303549 font-semibold">Vesting Goledo</p>
           <p>
             Goledo that can be claimed with a <span className="text-#FF0000">50% penalty</span>
           </p>
@@ -77,13 +77,13 @@ const GoledoClaim: React.FC = () => {
       </div>
 
       <div className="relative flex justify-between items-center py-10px border-b-1px border-#EAEBEF lt-md:flex-col lt-md:items-start lt-md:text-left lt-md:gap-12px lt-md:py-20px">
-        <div className="max-w-60%">
-          <p className="text-18px text-#303549 font-semibold">Claim all of the above</p>
+        <div className="md:max-w-60%">
+          <p className="mb-2px text-18px text-#303549 font-semibold">Claim all of the above</p>
           Early exit penalty <BalanceText className="text-#FF0000" balance={withdrawableBalance?.penaltyAmount} /> Goledo
         </div>
 
         {isInVestingLockTime && vestingLockTimestamp &&
-          <div className="absolute right-162px text-right text-16px text-#303549 font-semibold lt-md:relative lt-md:right-none">
+          <div className="absolute right-162px md:text-right text-16px text-#303549 font-semibold lt-md:relative lt-md:right-none">
             <div className='mb-3px text-14px font-normal text-#62677B'>Opening at:</div>
             <div ref={openingDOM}>:</div>
           </div>
@@ -94,8 +94,8 @@ const GoledoClaim: React.FC = () => {
       </div>
 
       <div className="relative flex justify-between items-center pt-10px lt-md:flex-col lt-md:items-start lt-md:text-left lt-md:gap-12px lt-md:pt-20px">
-        <div className="max-w-47.5%">
-          <p className="text-18px text-#303549 font-semibold">Expired locked Goledo</p>
+        <div className="md:max-w-47.5%">
+          <p className="mb-2px text-18px text-#303549 font-semibold">Expired locked Goledo</p>
           <p>Goledo locks that have exceeded the 3 month lock period and are now withdrawable</p>
         </div>
 

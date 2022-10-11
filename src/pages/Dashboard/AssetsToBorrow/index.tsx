@@ -4,6 +4,7 @@ import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useTokens, TokenInfo } from '@store/index';
 import tokensIcon from '@assets/tokens';
 import Card from '@components/Card';
+import ToolTip from '@components/Tooltip';
 import Table, { type Columns } from '@components/Table';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
@@ -28,11 +29,27 @@ const columns: Columns<TokenInfo> = [
   {
     name: 'Available',
     width: '29%',
+    renderHeader: () => (
+      <div className="flex justify-center items-center">
+        Available
+        <ToolTip text="This is the total amount available for you to borrow. You can borrow based on your collateral and until the borrow cap is reached.">
+          <span className="i-bi:info-circle ml-4px cursor-pointer" />
+        </ToolTip>
+      </div>
+    ),
     render: ({ availableBorrowBalance, decimals }) => <div className="font-semibold"><BalanceText balance={availableBorrowBalance} decimals={decimals} /></div>,
   },
   {
     name: 'Interest Rate',
     width: '25%',
+    renderHeader: () => (
+      <div className="flex justify-center items-center">
+        Interest Rate
+        <ToolTip text="Interest rate will fluctuate based on the market conditions. Recommended for short-term loans.">
+          <span className="i-bi:info-circle ml-4px cursor-pointer" />
+        </ToolTip>
+      </div>
+    ),
     render: ({ borrowAPY }) => (
       <div className="font-semibold"><PercentageText value={borrowAPY} /></div>
     ),

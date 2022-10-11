@@ -20,7 +20,7 @@ const Table = <T extends object, U extends any = undefined>({ columns, data, oth
       {columns.map(({ name, renderHeader }) => (
         <div
           key={name}
-          className="h-26px text-12px text-#62677B"
+          className="h-26px text-12px text-#62677B whitespace-nowrap"
         >
           {renderHeader ? renderHeader() : name}
         </div>

@@ -73,7 +73,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               <div className="flex items-center justify-between">
                 <span>How much do you want to withdraw?</span>
                 {token?.symbol === 'CFX' && (
-                  <div className="flex items-center">
+                  <div className="flex items-center whitespace-nowrap">
                     Supply WCFX
                     <Toggle className="ml-8px" checked={useWCFX} onClick={() => setUseWCFX((pre) => !pre)} />
                   </div>

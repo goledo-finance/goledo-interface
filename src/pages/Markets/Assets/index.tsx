@@ -4,6 +4,7 @@ import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useTokens, TokenInfo } from '@store/index';
 import tokensIcon from '@assets/tokens';
 import Card from '@components/Card';
+import ToolTip from '@components/Tooltip';
 import Table, { type Columns } from '@components/Table';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
@@ -49,6 +50,14 @@ const columns: Columns<TokenInfo> = [{
 }, {
   name: 'Borrow APY',
   width: '12%',
+  renderHeader: () => (
+    <div className="flex justify-center items-center">
+      Borrow APY
+      <ToolTip text="Interest rate will fluctuate based on the market conditions. Recommended for short-term loans.">
+        <span className="i-bi:info-circle ml-4px cursor-pointer" />
+      </ToolTip>
+    </div>
+  ),
   render: ({ borrowAPY }) => <div className='font-semibold'><PercentageText value={borrowAPY} /></div>
 }, {
   name: '',

@@ -3,6 +3,7 @@ import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useTokens, TokenInfo, useCurUserBorrowPrice, useCurUserBorrowAPY, useUserData } from '@store/index';
 import tokensIcon from '@assets/tokens';
 import Card from '@components/Card';
+import ToolTip from '@components/Tooltip';
 import Table, { type Columns } from '@components/Table';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
@@ -100,7 +101,7 @@ const YourBorrows: React.FC = () => {
 
   return (
     <Card title="Your Borrows" showHideButton="no-pb" className="w-50% lt-2xl:w-full">
-      {!curUserBorrowTokens?.length && <p className='mt-40px mb-24px text-center'>No Borrows</p>}
+      {!curUserBorrowTokens?.length && <p className="mt-40px mb-24px text-center">No Borrows</p>}
       {curUserBorrowTokens?.length ? (
         <>
           <div className="mt-16px flex gap-8px flex-wrap">
@@ -115,12 +116,18 @@ const YourBorrows: React.FC = () => {
               <span className="ml-6px text-#303549 font-semibold">
                 <PercentageText value={curUserBorrowAPY} />
               </span>
+              <ToolTip text="The weighted average of Interest Rate for all borrowed assets, including incentives.">
+                <span className="i-bi:info-circle ml-4px cursor-pointer" />
+              </ToolTip>
             </div>
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               Borrow power used
               <span className="ml-6px text-#303549 font-semibold">
                 <PercentageText value={userData?.borrowPowerUsed} />
               </span>
+              <ToolTip text="The % of your total borrowing power used. This is based on the amount of your collateral supplied and the total amount that you can borrow.">
+                <span className="i-bi:info-circle ml-4px cursor-pointer" />
+              </ToolTip>
             </div>
           </div>
           <Table className="mt-20px" columns={columns} data={curUserBorrowTokens} />
