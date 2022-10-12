@@ -8,7 +8,7 @@ export const handleBorrow = async ({ amount, symbol, tokenAddress }: { amount: U
     try {
         let data: string;
         if (symbol === 'CFX') {
-            data = WETHGatewayContract.interface.encodeFunctionData('borrowETH', [import.meta.env.VITE_LendingPoolAddress, amount.toHexMinUnit(), 2, 0]);
+            data = WETHGatewayContract.interface.encodeFunctionData('borrowCFX', [import.meta.env.VITE_LendingPoolAddress, amount.toHexMinUnit(), 2, 0]);
         } else {
             data = LendingPoolContract.interface.encodeFunctionData('borrow', [tokenAddress, amount.toHexMinUnit(), 2, 0, account]);
         }
