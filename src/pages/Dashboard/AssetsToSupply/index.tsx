@@ -49,7 +49,7 @@ const columns: Columns<TokenInfo> = [{
       <Button
         size='small'
         className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none'
-        id='dashboard-assets-to-supply-btn'
+        id={`dashboard-assets-to-supply-${symbol}-btn`}
         loading={!balance}
         disabled={balance?.equalsWith(Zero)}
         onClick={() => showSupplyModal({ address, symbol })}
@@ -57,7 +57,7 @@ const columns: Columns<TokenInfo> = [{
         Supply
       </Button>
 
-      <Link to={`/detail/${address}`} className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none no-underline' id='dashboard-assets-to-supply-link'>
+      <Link to={`/detail/${address}`} className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none no-underline' id={`dashboard-assets-to-supply-${symbol}-link`}>
         <Button size='small' variant='outlined' fullWidth>Details</Button>
       </Link>
     </div>

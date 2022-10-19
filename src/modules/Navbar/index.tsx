@@ -9,9 +9,9 @@ import GoledoWhite from '@assets/tokens/goledo-white.svg';
 import Mobile from './Mobile';
 import './index.css';
 
-const NavLink: React.FC<ComponentProps<typeof Link> & { curPath: string }> = ({ to, children, curPath }) => (
+const NavLink: React.FC<ComponentProps<typeof Link> & { curPath: string }> = ({ to, children, curPath, id }) => (
   <li className={cx('navbar-link relative flex items-center px-14px h-full overflow-hidden', { ['navbar-link--active']: curPath?.startsWith(to as string) })}>
-    <Link className="flex items-center h-full text-#F1F1F3 decoration-none select-none" to={to}>
+    <Link className="flex items-center h-full text-#F1F1F3 decoration-none select-none" to={to} id={id}>
       {children}
     </Link>
   </li>
