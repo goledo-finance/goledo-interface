@@ -18,8 +18,8 @@ const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all' }> = ({ token
     tokenAddress === 'lp'
       ? lpEarnedGoledoBalance
       : tokenAddress === 'all'
-      ? gledoEarnedBalance
-      : tokens?.find((token) => token.address === tokenAddress)?.earnedGoledoBalance;
+        ? gledoEarnedBalance
+        : tokens?.find((token) => token.address === tokenAddress)?.earnedGoledoBalance;
 
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleVestingGoledo);
 
@@ -68,6 +68,7 @@ const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all' }> = ({ token
           </div>
 
           <Button
+            id='handle-vesting-goledo'
             fullWidth
             size="large"
             className="mt-48px"
@@ -97,6 +98,7 @@ const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all' }> = ({ token
           </p>
           {scanUrl && (
             <a
+              id='handle-vesting-goledo-reviewTx-link'
               className="absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline"
               href={scanUrl}
               target="_blank"
@@ -106,7 +108,7 @@ const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all' }> = ({ token
               <span className="i-charm:link-external ml-3px text-10px translate-y-[-.5px]" />
             </a>
           )}
-          <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
+          <Button id='handle-vesting-goledo-ok-btn' fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
         </>

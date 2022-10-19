@@ -57,7 +57,7 @@ const GoledoClaim: React.FC = () => {
           <img className="w-20px h-20px mr-8px" src={Goledo} alt="Goledo" />
           <BalanceText balance={stakedBalance} symbol="Goledo" />
         </p>
-        <Button size="large" className="lt-md:w-full" loading={!stakedBalance} disabled={stakedBalance?.equalsWith(Zero)} onClick={handleClaimGoledo}>
+        <Button id='stake-goledo-claim-claim-btn' size="large" className="lt-md:w-full" loading={!stakedBalance} disabled={stakedBalance?.equalsWith(Zero)} onClick={handleClaimGoledo}>
           Claim Goledo
         </Button>
       </div>
@@ -88,7 +88,7 @@ const GoledoClaim: React.FC = () => {
             <div ref={openingDOM}>:</div>
           </div>
         }
-        <Button size="large" className="lt-md:w-full" loading={!stakedBalance || !withdrawableBalance} disabled={isInVestingLockTime || !withdrawableBalance || withdrawableBalance.penaltyAmount.equalsWith(Zero)} onClick={handleClaimAllGoledo}>
+        <Button id='stake-goledo-claim-claim-all-btn' size="large" className="lt-md:w-full" loading={!stakedBalance || !withdrawableBalance} disabled={isInVestingLockTime || !withdrawableBalance || withdrawableBalance.penaltyAmount.equalsWith(Zero)} onClick={handleClaimAllGoledo}>
           Claim All
         </Button>
       </div>
@@ -103,7 +103,7 @@ const GoledoClaim: React.FC = () => {
           <img className="w-20px h-20px mr-8px" src={Goledo} alt="Goledo" />
           <BalanceText balance={unlockedableBalance} symbol="Goledo" />
         </p>
-        <Button size="large" className="lt-md:w-full" loading={!unlockedableBalance} disabled={!unlockedableBalance?.greaterThan(Zero)} onClick={handleWithdrawGoledo}>
+        <Button id='stake-goledo-claim-withdraw-btn' size="large" className="lt-md:w-full" loading={!unlockedableBalance} disabled={!unlockedableBalance?.greaterThan(Zero)} onClick={handleWithdrawGoledo}>
           Withdraw
         </Button>
       </div>

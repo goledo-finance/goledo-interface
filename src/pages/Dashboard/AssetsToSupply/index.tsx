@@ -37,7 +37,7 @@ const columns: Columns<TokenInfo> = [{
   width: '17%',
   render: ({ canBeCollateral }) => (
     <div className='flex items-center'>
-      {canBeCollateral && <span className='i-charm:circle-tick text-18px text-#3AC170'/>}
+      {canBeCollateral && <span className='i-charm:circle-tick text-18px text-#3AC170' />}
       {canBeCollateral === false && '--'}
     </div>
   )
@@ -49,6 +49,7 @@ const columns: Columns<TokenInfo> = [{
       <Button
         size='small'
         className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none'
+        id='dashboard-assets-to-supply-btn'
         loading={!balance}
         disabled={balance?.equalsWith(Zero)}
         onClick={() => showSupplyModal({ address, symbol })}
@@ -56,7 +57,7 @@ const columns: Columns<TokenInfo> = [{
         Supply
       </Button>
 
-      <Link to={`/detail/${address}`} className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none no-underline'>
+      <Link to={`/detail/${address}`} className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none no-underline' id='dashboard-assets-to-supply-link'>
         <Button size='small' variant='outlined' fullWidth>Details</Button>
       </Link>
     </div>

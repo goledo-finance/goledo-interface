@@ -13,7 +13,7 @@ const ToolTip: React.FC<Omit<Props, 'Content'> & { text?: string; }> = ({
   ...props
 }) => {
   return (
-    <Popper placement={placement} animationType={animationType} arrow={arrow} Content={text} delay={delay} trigger={trigger} interactiveDebounce={interactiveDebounce} {...props}>
+    <Popper id='tooltip-popper' placement={placement} animationType={animationType} arrow={arrow} Content={text} delay={delay} trigger={trigger} interactiveDebounce={interactiveDebounce} {...props}>
       {children}
     </Popper>
   );

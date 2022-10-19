@@ -73,6 +73,7 @@ const columns: Columns<TokenInfo> = [
     render: ({ address, symbol, supplyBalance }) => (
       <div className="w-full h-full flex justify-end items-center">
         <Button
+          id='dashboard-your-supplies-withdraw-btn'
           size="small"
           fullWidth
           className="max-w-164px lt-md:max-w-none"

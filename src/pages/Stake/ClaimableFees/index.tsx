@@ -61,6 +61,7 @@ const ClaimableFees: React.FC = () => {
         <BalanceText className="ml-4px" balance={totalClaimablePrice} symbolPrefix="$" decimals={18} />
       </p>
       <Button
+        id='stake-claim-all-btn'
         fullWidth
         size="large"
         loading={!claimableFees || !goledoUsdPrice}

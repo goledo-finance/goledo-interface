@@ -15,6 +15,7 @@ const ModalContent: React.FC = () => {
         <>
           <p className="mt-30px mb-4px text-14px text-#62677B">Sure to claim all rewards fees?</p>
           <Button
+            id='handle-claim-rewards-fees-btn'
             fullWidth
             size="large"
             className="mt-48px"
@@ -44,6 +45,7 @@ const ModalContent: React.FC = () => {
           </p>
           {scanUrl &&
             <a
+              id='handle-claim-rewards-fees-reviewTx-link'
               className='absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline'
               href={scanUrl}
               target="_blank"
@@ -53,7 +55,7 @@ const ModalContent: React.FC = () => {
               <span className='i-charm:link-external ml-3px text-10px translate-y-[-.5px]' />
             </a>
           }
-          <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
+          <Button id='handle-claim-rewards-fees-ok-btn' fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
         </>

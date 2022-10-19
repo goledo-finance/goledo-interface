@@ -64,20 +64,21 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
     token?.symbol !== 'CFX'
       ? token?.balance
       : useWCFX
-      ? token?.wcfxBalance
-      : cfxGasFee && token?.balance
-      ? token.balance.greaterThan(cfxGasFee)
-        ? token.balance.sub(cfxGasFee)
-        : Zero
-      : undefined;
+        ? token?.wcfxBalance
+        : cfxGasFee && token?.balance
+          ? token.balance.greaterThan(cfxGasFee)
+            ? token.balance.sub(cfxGasFee)
+            : Zero
+          : undefined;
 
   const symbol = token?.symbol !== 'CFX' ? token?.symbol : useWCFX ? 'WCFX' : 'CFX';
   if (!token) return null;
   return (
     <div className="relative">
       {!confirmAmount && (
-        <form onSubmit={handleContinue} className="mt-10px">
+        <form id='handle-supply-form' onSubmit={handleContinue} className="mt-10px">
           <BalanceInput
+            id='handle-supply-amount-input'
             {...register('amount', {
               required: true,
               min: Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals),
@@ -94,7 +95,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
                 {token?.symbol === 'CFX' && (
                   <div className="flex items-center">
                     Supply WCFX
-                    <Toggle className="ml-8px" checked={useWCFX} onClick={() => setUseWCFX((pre) => !pre)} />
+                    <Toggle id='handle-supply-toggle' className="ml-8px" checked={useWCFX} onClick={() => setUseWCFX((pre) => !pre)} />
                   </div>
                 )}
               </div>
@@ -107,7 +108,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             max={max}
           />
 
-          <Button fullWidth size="large" className="mt-48px" disabled={!max} loading={!max ? 'start' : undefined}>
+          <Button id='handle-supply-max-btn' fullWidth size="large" className="mt-48px" disabled={!max} loading={!max ? 'start' : undefined}>
             {max ? 'Continue' : 'Checking Gas Fee...'}
           </Button>
         </form>
@@ -168,6 +169,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           </div>
 
           <Button
+            id='handle-supply-confirm-btn'
             fullWidth
             size="large"
             className="mt-48px"
@@ -210,6 +212,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           </p>
           {scanUrl && (
             <a
+              id='handle-supply-reviewTx-link'
               className="absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline"
               href={scanUrl}
               target="_blank"
@@ -219,7 +222,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               <span className="i-charm:link-external ml-3px text-10px translate-y-[-.5px]" />
             </a>
           )}
-          <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
+          <Button id='handle-supply-ok-btn' fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
         </>

@@ -89,6 +89,7 @@ const columns: Columns<Goledo, { isInVestingLockTime: boolean }> = [
     render: ({ earnedBalance }) => (
       <div className="w-full h-full flex justify-end items-center">
         <Button
+          id='dashboard-rewards-vesting-btn'
           size="small"
           fullWidth
           className="max-w-164px lt-md:max-w-none"

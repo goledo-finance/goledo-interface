@@ -13,6 +13,7 @@ const Dropdown: React.FC<Props> = ({
 }) => {
   return (
     <Popper
+      id='dropdown-popper'
       placement={placement}
       animationType={animationType}
       offset={offset}

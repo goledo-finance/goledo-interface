@@ -78,7 +78,7 @@ const SummaryPanel: React.FC = () => {
         <SummaryPanelItem iconName="i-codicon:heart" title="Health Factor">
           <div className="flex items-center">
             <HealthFactor value={userData?.healthFactor} />
-            <Button variant="outlined" size="mini" color="green" className="!rounded-6px ml-8px translate-y-1px" onClick={showRiskDetails}>
+            <Button id='dashboard-summary-panel-risk-btn' variant="outlined" size="mini" color="green" className="!rounded-6px ml-8px translate-y-1px" onClick={showRiskDetails}>
               <span className="lt-sm:display-none">RISK</span>
               <span> DETAILS</span>
             </Button>
