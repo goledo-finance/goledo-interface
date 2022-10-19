@@ -76,10 +76,10 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
     token?.symbol !== 'CFX'
       ? token?.balance
       : cfxGasFee && token?.balance
-      ? token.balance.greaterThan(cfxGasFee)
-        ? token.balance.sub(cfxGasFee)
-        : Zero
-      : undefined;
+        ? token.balance.greaterThan(cfxGasFee)
+          ? token.balance.sub(cfxGasFee)
+          : Zero
+        : undefined;
   const debt = token?.borrowBalance;
   const safeAmountToRepayAll = debt?.mul(Unit.fromMinUnit(1.0025));
   const max = debt && maxBalance ? Unit.min(debt, maxBalance) : undefined;
@@ -89,12 +89,13 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   return (
     <div className="relative">
       {!confirmAmount && (
-        <form onSubmit={handleContinue} className="mt-10px">
+        <form id='handle-repay-form' onSubmit={handleContinue} className="mt-10px">
           <span className="flex items-center justify-between mb-4px text-14px text-#62677B">
             <span className='mr-auto'>How much do you want to repay?</span>
 
             Repay All
             <Toggle
+              id='handle-repay-toggle'
               className='ml-8px'
               name="repayAll"
               checked={repayAll}
@@ -108,6 +109,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           </span>
           {!repayAll && (
             <BalanceInput
+              id='handle-repay-amount-input'
               {...register('amount', {
                 required: true,
                 min: Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals),
@@ -149,7 +151,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             </>
           )}
 
-          <Button fullWidth size="large" className="mt-48px">
+          <Button id='handle-repay-continue-btn' fullWidth size="large" className="mt-48px">
             Continue
           </Button>
         </form>
@@ -196,6 +198,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           </div>
 
           <Button
+            id='handle-repay-confirm-btn'
             fullWidth
             size="large"
             className="mt-48px"
@@ -238,6 +241,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           </p>
           {scanUrl && (
             <a
+              id='handle-repay-reviewTx-link'
               className="absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline"
               href={scanUrl}
               target="_blank"
@@ -247,7 +251,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               <span className="i-charm:link-external ml-3px text-10px translate-y-[-.5px]" />
             </a>
           )}
-          <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
+          <Button id='handle-repay-ok-btn' fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
         </>

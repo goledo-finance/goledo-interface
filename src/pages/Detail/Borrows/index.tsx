@@ -20,6 +20,7 @@ const Operate: React.FC<{ address: string; symbol: string; borrowBalance?: Unit;
   return (
     <div className="flex items-center gap-8px">
       <Button
+        id='detail-borrows-borrows-btn'
         size="small"
         className="w-80px"
         loading={!availableBorrowBalance}
@@ -29,6 +30,7 @@ const Operate: React.FC<{ address: string; symbol: string; borrowBalance?: Unit;
         Borrow
       </Button>
       <Button
+        id='detail-borrows-repay-btn'
         size="small"
         variant="outlined"
         className="w-80px"

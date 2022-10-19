@@ -13,10 +13,11 @@ const Zero = Unit.fromMinUnit(0);
 const Operate: React.FC<{ address: string; symbol: string; balance?: Unit; supplyBalance?: Unit }> = ({ address, symbol, balance, supplyBalance }) => {
   return (
     <div className="flex items-center gap-8px">
-      <Button size="small" className="w-80px" loading={!balance} disabled={balance?.equalsWith(Zero)} onClick={() => showSupplyModal({ address, symbol })}>
+      <Button id='detail-supplies-supply-btn' size="small" className="w-80px" loading={!balance} disabled={balance?.equalsWith(Zero)} onClick={() => showSupplyModal({ address, symbol })}>
         Supply
       </Button>
       <Button
+        id='detail-supplies-withdraw-btn'
         size="small"
         variant="outlined"
         className="w-80px"
@@ -55,7 +56,7 @@ const Supplies: React.FC<Token> = ({ address, symbol, decimals, balance, supplyB
 
       <div className="flex justify-between text-14px text-#303549">
         <span>Use as Collateral</span>
-        <Toggle checked={collateral && canBeCollateral} disabled={!canBeCollateral} onClick={() => showCollateralChangeModal({ address, symbol })} />
+        <Toggle id='detail-supplies-toggle' checked={collateral && canBeCollateral} disabled={!canBeCollateral} onClick={() => showCollateralChangeModal({ address, symbol })} />
       </div>
     </Card>
   );

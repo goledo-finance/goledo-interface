@@ -36,7 +36,7 @@ const SummaryPanelItem: React.FC<{ iconUrl?: string; iconName?: string; title: s
       <div className='lt-sm:text-center'>
         <p className="flex items-center text-14px lt-sm:text-12px text-#ccc whitespace-nowrap">
           {title}
-          {titleTip && 
+          {titleTip &&
             <ToolTip text={titleTip}>
               <span className="i-bi:info-circle ml-4px cursor-pointer" />
             </ToolTip>
@@ -71,6 +71,7 @@ const SummaryPanel: React.FC<Token> = ({
     <>
       <div className='flex items-center gap-16px lt-md:justify-center lt-md:flex-col lt-md:items-start lt-md:gap-8px'>
         <Button
+          id='detail-summary-panel-go-back-btn'
           variant='outlined'
           color='white'
           onClick={() => navigate(-1)}
@@ -79,7 +80,7 @@ const SummaryPanel: React.FC<Token> = ({
         >
           Go Back
         </Button>
-        
+
         <p className='text-36px text-#F1F1F3 font-semibold lt-md:text-32px lt-md:leading-30px lt-md:self-center'>Overview</p>
       </div>
 

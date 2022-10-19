@@ -35,7 +35,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   }, [token, confirmAmountUnit]);
   const estimateHealthFactor = useEstimateHealthFactor(estimateToken);
 
-  const handleContinue = useCallback(withForm(({ amount }) => setConfirmAmount(amount)),[]);
+  const handleContinue = useCallback(withForm(({ amount }) => setConfirmAmount(amount)), []);
 
   const { status: approveStatus, handleApprove } = useERC20Token({
     needApprove: token?.symbol === 'CFX',
@@ -52,8 +52,9 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   return (
     <div className='relative'>
       {!confirmAmount && (
-        <form onSubmit={handleContinue} className="mt-10px">
+        <form id='handle-borrow-form' onSubmit={handleContinue} className="mt-10px">
           <BalanceInput
+            id='handle-borrow-amount-input'
             {...register('amount', {
               required: true,
               min: Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals),
@@ -75,7 +76,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             max={max}
           />
 
-          <Button fullWidth size="large" className="mt-48px">
+          <Button id='handle-borrow-continue-btn' fullWidth size="large" className="mt-48px">
             Continue
           </Button>
         </form>
@@ -108,6 +109,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           </div>
 
           <Button
+            id='handle-borrow-confirm-btn'
             fullWidth
             size="large"
             className="mt-48px"
@@ -150,6 +152,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           </p>
           {scanUrl &&
             <a
+              id='handle-borrow-reviewTx-link'
               className='absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline'
               href={scanUrl}
               target="_blank"
@@ -159,7 +162,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               <span className='i-charm:link-external ml-3px text-10px translate-y-[-.5px]' />
             </a>
           }
-          <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
+          <Button id='handle-borrow-ok-btn' fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
         </>

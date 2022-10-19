@@ -37,8 +37,9 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Lock' }> = ({ type }) => {
   return (
     <div className="relative">
       {!confirmAmount && (
-        <form onSubmit={handleContinue} className="mt-10px">
+        <form id='handle-stake-lockGol-form' onSubmit={handleContinue} className="mt-10px">
           <BalanceInput
+            id='handle-stake-lock-amount-input'
             {...register('amount', {
               required: true,
               min: Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, goledo.decimals),
@@ -53,7 +54,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Lock' }> = ({ type }) => {
             max={max}
           />
 
-          <Button fullWidth size="large" className="mt-48px">
+          <Button id='handle-stake-lockGol-continue-btn' fullWidth size="large" className="mt-48px">
             Continue
           </Button>
         </form>
@@ -98,6 +99,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Lock' }> = ({ type }) => {
           </div>
 
           <Button
+            id='handle-stake-lock-confirm-button'
             fullWidth
             size="large"
             className="mt-48px"
@@ -141,6 +143,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Lock' }> = ({ type }) => {
           </p>
           {scanUrl && (
             <a
+              id='handle-stake-lock-reviewTx-link'
               className="absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline"
               href={scanUrl}
               target="_blank"
@@ -150,7 +153,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Lock' }> = ({ type }) => {
               <span className="i-charm:link-external ml-3px text-10px translate-y-[-.5px]" />
             </a>
           )}
-          <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
+          <Button id='handle-stake-lock-ok-btn' fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
         </>

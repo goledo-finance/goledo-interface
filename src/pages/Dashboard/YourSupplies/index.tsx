@@ -63,7 +63,7 @@ const columns: Columns<TokenInfo> = [
     ),
     render: ({ collateral, canBeCollateral, address, symbol }) => (
       <div className="flex items-center">
-        <Toggle checked={collateral && canBeCollateral} disabled={!canBeCollateral} onClick={() => showCollateralChangeModal({ address, symbol })} />
+        <Toggle id='dashboard-your-supplies-toggle' checked={collateral && canBeCollateral} disabled={!canBeCollateral} onClick={() => showCollateralChangeModal({ address, symbol })} />
       </div>
     ),
   },
@@ -73,6 +73,7 @@ const columns: Columns<TokenInfo> = [
     render: ({ address, symbol, supplyBalance }) => (
       <div className="w-full h-full flex justify-end items-center">
         <Button
+          id='dashboard-your-supplies-withdraw-btn'
           size="small"
           fullWidth
           className="max-w-164px lt-md:max-w-none"

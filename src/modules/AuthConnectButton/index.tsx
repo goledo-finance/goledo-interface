@@ -8,18 +8,19 @@ const AuthConnectButton: React.FC<ComponentProps<typeof Button>> = ({ children, 
     const status = useStatus();
     const chainId = useChainId();
     const chainMatch = chainId === Network.chainId;
-    
-	const handleClick = useCallback<React.MouseEventHandler<HTMLButtonElement>>((evt) => {
+
+    const handleClick = useCallback<React.MouseEventHandler<HTMLButtonElement>>((evt) => {
         if (status === 'not-active') {
             connectToWallet();
         } else if (status === 'active' && !chainMatch) {
             switchToChain();
         }
-	}, [status, chainMatch]);
-    
+    }, [status, chainMatch]);
+
     if (status === 'active' && chainMatch) return children as React.ReactElement;
     return (
         <Button
+            id='auth-connect-btn'
             {...props}
             color="green"
             disabled={status !== 'active' && status !== 'not-active'}

@@ -59,6 +59,7 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
         <div className={cx('balanceInput-wrapper', className)}>
           <div className="flex justify-between items-center">
             <input
+              id='balance-input-amount-input'
               ref={composeRef(ref, domRef)}
               className={cx('balanceInput', inputClassName)}
               autoComplete="off"
@@ -93,7 +94,7 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
                 </span>
               }
               {maxPrefix}
-              <Button className="absolute -right-6px top-1/2 -translate-y-1/2 !text-#62677B font-normal" variant="text" size="mini" type="button" disabled={!max} onClick={handleClickMax}>
+              <Button id="balance-input-max-btn" className="absolute -right-6px top-1/2 -translate-y-1/2 !text-#62677B font-normal" variant="text" size="mini" type="button" disabled={!max} onClick={handleClickMax}>
                 {maxText ?? 'MAX'}
               </Button>
             </div>
