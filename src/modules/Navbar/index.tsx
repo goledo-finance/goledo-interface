@@ -11,7 +11,7 @@ import './index.css';
 
 const NavLink: React.FC<ComponentProps<typeof Link> & { curPath: string }> = ({ to, children, curPath }) => (
   <li className={cx('navbar-link relative flex items-center px-14px h-full overflow-hidden', { ['navbar-link--active']: curPath?.startsWith(to as string) })}>
-    <Link id='nav-bar-item-link' className="flex items-center h-full text-#F1F1F3 decoration-none select-none" to={to}>
+    <Link className="flex items-center h-full text-#F1F1F3 decoration-none select-none" to={to}>
       {children}
     </Link>
   </li>
