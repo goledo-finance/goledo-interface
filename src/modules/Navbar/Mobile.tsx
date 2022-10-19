@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const NavLink: React.FC<ComponentProps<typeof Link> & { curPath: string }> = ({ to, children, curPath }) => (
   <li className={cx('relative flex items-center h-48px', { ['nav-link-mobile--active']: curPath?.startsWith(to as string) })}>
-    <Link className="flex items-center h-full text-#F1F1F3 decoration-none select-none" to={to} id='nav-bar-mobile-item-link'>
+    <Link className="flex items-center h-full text-#F1F1F3 decoration-none select-none" to={to}>
       {children}
     </Link>
   </li>
