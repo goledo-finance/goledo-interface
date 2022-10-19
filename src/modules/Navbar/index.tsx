@@ -98,7 +98,7 @@ const MoreContent: React.FC = () => {
 
 const More: React.FC = () => {
   return (
-    <Dropdown id='nav-bar-more-dropdown' placement="bottom-start" trigger="mouseenter click" interactiveDebounce={100} Content={<MoreContent />}>
+    <Dropdown placement="bottom-start" trigger="mouseenter click" interactiveDebounce={100} Content={<MoreContent />}>
       <div className="display-none sm:flex mr-auto relative items-center px-14px h-full rounded-6px text-14px text-#F1F1F3 font-semibold hover:bg-#fafbfc14 transition-colors select-none cursor-pointer">
         More
         <span className='i-ci:more-horizontal text-28px ml-2px translate-y-1px' />
