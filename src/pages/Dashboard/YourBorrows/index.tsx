@@ -65,6 +65,7 @@ const columns: Columns<TokenInfo> = [
           Repay
         </Button>
         <Button
+          id='dashboard-your-borrows-borrow-btn'
           size="small"
           variant="outlined"
           className="max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none"

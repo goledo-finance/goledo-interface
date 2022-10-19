@@ -54,7 +54,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Lock' }> = ({ type }) => {
             max={max}
           />
 
-          <Button fullWidth size="large" className="mt-48px">
+          <Button id='handle-stake-lockGol-continue-btn' fullWidth size="large" className="mt-48px">
             Continue
           </Button>
         </form>

@@ -63,7 +63,7 @@ const columns: Columns<TokenInfo> = [
     ),
     render: ({ collateral, canBeCollateral, address, symbol }) => (
       <div className="flex items-center">
-        <Toggle checked={collateral && canBeCollateral} disabled={!canBeCollateral} onClick={() => showCollateralChangeModal({ address, symbol })} />
+        <Toggle id='dashboard-your-supplies-toggle' checked={collateral && canBeCollateral} disabled={!canBeCollateral} onClick={() => showCollateralChangeModal({ address, symbol })} />
       </div>
     ),
   },
