@@ -30,13 +30,13 @@ const columns: Columns<TokenInfo> = [
   {
     name: 'Balance',
     width: '24%',
-    render: ({ supplyBalance, supplyPrice, decimals }) => (
+    render: ({ supplyBalance, supplyPrice, decimals, symbol }) => (
       <div>
         <p className="font-semibold">
-          <BalanceText balance={supplyBalance} decimals={decimals} />
+          <BalanceText balance={supplyBalance} decimals={decimals} id={`dashboard-your-supplies-supply-balance-${symbol}`} />
         </p>
         <p className="text-12px text-#62677B">
-          <BalanceText balance={supplyPrice} abbrDecimals={2} symbolPrefix="$" />
+          <BalanceText balance={supplyPrice} abbrDecimals={2} symbolPrefix="$" id={`dashboard-your-supplies-supply-price-${symbol}`} />
         </p>
       </div>
     ),
@@ -44,9 +44,9 @@ const columns: Columns<TokenInfo> = [
   {
     name: 'APY',
     width: '18%',
-    render: ({ supplyAPY }) => (
+    render: ({ supplyAPY, symbol }) => (
       <div className="font-semibold">
-        <PercentageText value={supplyAPY} />
+        <PercentageText value={supplyAPY} id={`dashboard-your-supplies-supply-apy-${symbol}`} />
       </div>
     ),
   },
@@ -63,7 +63,7 @@ const columns: Columns<TokenInfo> = [
     ),
     render: ({ collateral, canBeCollateral, address, symbol }) => (
       <div className="flex items-center">
-        <Toggle id='dashboard-your-supplies-toggle' checked={collateral && canBeCollateral} disabled={!canBeCollateral} onClick={() => showCollateralChangeModal({ address, symbol })} />
+        <Toggle id={`dashboard-your-supplies-toggle-${symbol}`} checked={collateral && canBeCollateral} disabled={!canBeCollateral} onClick={() => showCollateralChangeModal({ address, symbol })} />
       </div>
     ),
   },
@@ -73,7 +73,7 @@ const columns: Columns<TokenInfo> = [
     render: ({ address, symbol, supplyBalance }) => (
       <div className="w-full h-full flex justify-end items-center">
         <Button
-          id='dashboard-your-supplies-withdraw-btn'
+          id={`dashboard-your-supplies-withdraw-btn-${symbol}`}
           size="small"
           fullWidth
           className="max-w-164px lt-md:max-w-none"
@@ -123,7 +123,7 @@ const YourSupplies: React.FC = () => {
   );
 
   return (
-    <Card title="Your Supplies" showHideButton="no-pb" className="w-50% lt-2xl:w-full">
+    <Card title="Your Supplies" showHideButton="no-pb" className="w-50% lt-2xl:w-full" id='dashboard-your-supplies-card'>
       {!curUserSupplyTokens?.length && <p className="mt-40px mb-24px text-center">No Supplies</p>}
       {curUserSupplyTokens?.length ? (
         <>
@@ -131,13 +131,13 @@ const YourSupplies: React.FC = () => {
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               Balance
               <span className="ml-6px text-#303549 font-semibold">
-                <BalanceText balance={curUserSupplyPrice} abbrDecimals={2} symbolPrefix="$" />
+                <BalanceText balance={curUserSupplyPrice} abbrDecimals={2} symbolPrefix="$" id='dashboard-your-supplies-balance' />
               </span>
             </div>
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               APY
               <span className="ml-6px text-#303549 font-semibold">
-                <PercentageText value={curUserSupplyAPY} />
+                <PercentageText value={curUserSupplyAPY} id='dashboard-your-supplies-apy' />
               </span>
               <ToolTip text="The weighted average of APY for all supplied assets, including incentives.">
                 <span className="i-bi:info-circle ml-4px cursor-pointer" />
@@ -146,7 +146,7 @@ const YourSupplies: React.FC = () => {
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               Collateral
               <span className="ml-6px text-#303549 font-semibold">
-                <BalanceText balance={totalCollateralPrice} abbrDecimals={2} symbolPrefix="$" />
+                <BalanceText balance={totalCollateralPrice} abbrDecimals={2} symbolPrefix="$" id='dashboard-your-supplies-collateral-price' />
               </span>
               <ToolTip text="The total amount of your assets denominated in USD that can be used as collateral for borrowing assets.">
                 <span className="i-bi:info-circle ml-4px cursor-pointer" />
