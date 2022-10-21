@@ -13,7 +13,7 @@ const LockGoledo: React.FC = () => {
   const lockAPR = useGoledoLockAPR();
   const balance = useGoledoBalance();
   const APR = useMemo(
-    () => <span className="text-20px text-#3AC170 font-bold">APR {isInVestingLockTime ? 'Infinity%' : <PercentageText value={lockAPR} />}</span>,
+    () => <span className="text-20px text-#3AC170 font-bold" id="stake-goledo-APR">APR {isInVestingLockTime ? 'Infinity%' : <PercentageText value={lockAPR} />}</span>,
     [isInVestingLockTime, lockAPR]
   );
   return (
