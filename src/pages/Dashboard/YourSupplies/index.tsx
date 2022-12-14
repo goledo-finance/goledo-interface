@@ -123,8 +123,8 @@ const YourSupplies: React.FC = () => {
   );
 
   return (
-    <Card title="Your Supplies" showHideButton="no-pb" className="w-50% lt-2xl:w-full" id='dashboard-your-supplies-card'>
-      {!curUserSupplyTokens?.length && <p className="mt-40px mb-24px text-center">No Supplies</p>}
+    <Card title="You're supplying" showHideButton="no-pb" className="w-50% lt-2xl:w-full" id='dashboard-your-supplies-card'>
+      {!curUserSupplyTokens?.length && <p className="mt-40px mb-24px text-center">None Supplied</p>}
       {curUserSupplyTokens?.length ? (
         <>
           <div className="mt-16px flex gap-8px flex-wrap">

@@ -16,7 +16,7 @@ const HealthFactor: React.FC<Props> = ({ value, style, ...props }) => {
 
   if (valueUnit.greaterThanOrEqualTo(Yellow)) {
     if (valueUnit.lessThan(Health)) {
-      text = 'Health';
+      text = 'Healthy';
     } else {
       text = 'Infinity';
     }

@@ -91,7 +91,7 @@ const ModalContent: React.FC<{ tokenAddress: string | 'lp' | 'all' }> = ({ token
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You Vesting <BalanceText className="font-semibold" balance={vestingAmount} symbol="Goledo" />
+                You are vesting <BalanceText className="font-semibold" balance={vestingAmount} symbol="Goledo" />
               </>
             )}
             {transactionStatus === 'failed' && error}

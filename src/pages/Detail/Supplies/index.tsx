@@ -34,7 +34,7 @@ const Operate: React.FC<{ address: string; symbol: string; balance?: Unit; suppl
 const Supplies: React.FC<Token> = ({ address, symbol, decimals, balance, supplyBalance, collateral, canBeCollateral }) => {
   return (
     <Card
-      title="Supplies"
+      title="Supplying"
       className="flex-auto flex flex-col gap-12px"
       titleRight={<Operate address={address} symbol={symbol} balance={balance} supplyBalance={supplyBalance} />}
     >

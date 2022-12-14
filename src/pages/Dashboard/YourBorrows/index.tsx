@@ -102,8 +102,8 @@ const YourBorrows: React.FC = () => {
   const userData = useUserData();
 
   return (
-    <Card title="Your Borrows" showHideButton="no-pb" className="w-50% lt-2xl:w-full" id='dashboard-your-borrows-card'>
-      {!curUserBorrowTokens?.length && <p className="mt-40px mb-24px text-center">No Borrows</p>}
+    <Card title="You're borrowing" showHideButton="no-pb" className="w-50% lt-2xl:w-full" id='dashboard-your-borrows-card'>
+      {!curUserBorrowTokens?.length && <p className="mt-40px mb-24px text-center">None Borrowed</p>}
       {curUserBorrowTokens?.length ? (
         <>
           <div className="mt-16px flex gap-8px flex-wrap">
@@ -123,7 +123,7 @@ const YourBorrows: React.FC = () => {
               </ToolTip>
             </div>
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
-              Borrow power used
+              Borrowing power used
               <span className="ml-6px text-#303549 font-semibold">
                 <PercentageText value={userData?.borrowPowerUsed} id='dashboard-your-borrows-borrow-power-used' />
               </span>

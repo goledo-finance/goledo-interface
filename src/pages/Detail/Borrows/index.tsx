@@ -49,7 +49,7 @@ const Borrows: React.FC<Token> = ({ address, symbol, decimals, borrowBalance, av
 
   return (
     <Card
-      title="Borrows"
+      title="Borrowed"
       className="flex-auto flex flex-col gap-12px"
       titleRight={<Operate address={address} symbol={symbol} borrowBalance={borrowBalance} availableBorrowBalance={availableBorrowBalance} />}
     >
@@ -72,7 +72,7 @@ const Borrows: React.FC<Token> = ({ address, symbol, decimals, borrowBalance, av
       </div>
 
       <div className="flex justify-between text-14px text-#303549">
-        <span>Available to borrow</span>
+        <span>Available to Borrow</span>
         <span className="font-semibold">
           <BalanceText balance={availableBorrowBalance} decimals={decimals} />
           <span className="text-#62677B font-normal"> {symbol}</span>
