@@ -54,7 +54,7 @@ const Button = forwardRef<HTMLButtonElement, PropsWithChildren<Props>>(
         {startIcon && <span className="fui-button__icon">{renderReactNode(startIcon)}</span>}
         {children && 
           <span className="fui-button__content">
-            {loading === 'start' && <Spin className='mr-8px text-1.5em'/>}
+            {loading === 'start' && <Spin className='mr-8px text-1.4em translate-y-[-.3em]'/>}
             {children}
           </span>
         }

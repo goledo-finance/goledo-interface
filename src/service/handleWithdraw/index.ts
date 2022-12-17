@@ -8,7 +8,7 @@ export const handleWithdraw = async ({ amount, tokenAddress, symbol }: { amount:
   try {
     let data: string;
     if (symbol === 'CFX') {
-      data = WETHGatewayContract.interface.encodeFunctionData('withdrawETH', [import.meta.env.VITE_LendingPoolAddress, amount.toHexMinUnit(), account]);
+      data = WETHGatewayContract.interface.encodeFunctionData('withdrawCFX', [import.meta.env.VITE_LendingPoolAddress, amount.toHexMinUnit(), account]);
     } else {
       data = LendingPoolContract.interface.encodeFunctionData('withdraw', [tokenAddress, amount.toHexMinUnit(), account]);
     }

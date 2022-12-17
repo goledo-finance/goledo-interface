@@ -20,13 +20,13 @@ const Mobile: React.FC<{ open: boolean; curPath: string }> = ({ open, curPath })
     >
       <p className="mt-32px pl-40px text-12px text-#A5A8B6 font-semibold">Menu</p>
       <ul className="pl-40px flex flex-col gap-12px mt-8px text-22px font-semibold">
-        <NavLink to="/dashboard" curPath={curPath}>
+        <NavLink to="/dashboard" curPath={curPath} id='nav-bar-mobile-dashboard-link'>
           Dashboard
         </NavLink>
-        <NavLink to="/markets" curPath={curPath}>
+        <NavLink to="/markets" curPath={curPath} id='nav-bar-mobile-markets-link'>
           Markets
         </NavLink>
-        <NavLink to="/stake" curPath={curPath}>
+        <NavLink to="/stake" curPath={curPath} id='nav-bar-mobile-stake-link'>
           Stake
         </NavLink>
       </ul>
@@ -37,6 +37,7 @@ const Mobile: React.FC<{ open: boolean; curPath: string }> = ({ open, curPath })
 
       <div className="pl-24px text-16px font-semibold no-underline">
         <a
+          id='nav-bar-mobile-faq-link'
           className="relative flex items-center h-44px px-50px text-#F1F1F3 no-underline"
           href="https://goledo.gitbook.io/goledo/"
           target="_blank"
@@ -46,8 +47,9 @@ const Mobile: React.FC<{ open: boolean; curPath: string }> = ({ open, curPath })
           FAQ
         </a>
         <a
+          id='nav-bar-telegram-mobile-link'
           className="relative flex items-center h-44px px-50px text-#F1F1F3 no-underline"
-          href="https://goledo.gitbook.io/goledo/"
+          href="https://t.me/GoledoFinance"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -55,6 +57,7 @@ const Mobile: React.FC<{ open: boolean; curPath: string }> = ({ open, curPath })
           Telegram
         </a>
         <a
+          id='nav-bar-github-mobile-link'
           className="relative flex items-center h-44px px-50px text-#F1F1F3 no-underline"
           href="https://github.com/goledo-finance/goledo-interface"
           target="_blank"

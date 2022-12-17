@@ -3,7 +3,7 @@ import cx from 'clsx';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import composeRef from '@utils/composeRef';
 import Button from '@components/Button';
-import BalanceText from '@components/BalanceText';
+import BalanceText from '@modules/BalanceText';
 import tokensIcon from '@assets/tokens';
 import './index.css';
 
@@ -16,15 +16,18 @@ export type Props = OverWrite<
     decimals: number;
     usdPrice: Unit;
     max?: Unit;
+    maxText?: string;
+    maxPrefix?: React.ReactNode;
     title?: string | React.ReactNode;
     error?: string;
     inputClassName?: string;
     bindAccout?: string;
+    amountPrefix?: string;
   }
 >;
 
 const BalanceInput = forwardRef<HTMLInputElement, Props>(
-  ({ className, inputClassName, title, error, bindAccout, defaultValue, max, symbol, decimals = 18, usdPrice, onChange, ...props }, ref) => {
+  ({ className, inputClassName, title, error, bindAccout, defaultValue, max, symbol, decimals = 18, usdPrice, maxPrefix, maxText, amountPrefix, onChange, ...props }, ref) => {
     const curInputPrice = useRef<HTMLSpanElement>(null!);
     const domRef = useRef<HTMLInputElement>(null!);
     useEffect(() => {
@@ -52,10 +55,11 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
 
     return (
       <>
-        {title && <p className="mb-4px text-14px text-#62677B">{title}</p>}
+        {title && <div className="mb-4px text-14px text-#62677B">{title}</div>}
         <div className={cx('balanceInput-wrapper', className)}>
           <div className="flex justify-between items-center">
             <input
+              id='balance-input-amount-input'
               ref={composeRef(ref, domRef)}
               className={cx('balanceInput', inputClassName)}
               autoComplete="off"
@@ -65,6 +69,14 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
               type="number"
               disabled={!max}
               autoFocus
+              onInvalid={(evt) => {
+                const target = evt.target as HTMLInputElement;
+                if (target?.validity?.rangeUnderflow) {
+                  target.setCustomValidity(navigator.language === 'zh-CN' ? '值必须大于 0' : 'Value must be greater than 0.');
+                } else {
+                  target.setCustomValidity('');
+                }
+              }}
               {...props}
             />
             <div className="ml-16px flex items-center text-18px text-#303549 font-semibold">
@@ -73,16 +85,17 @@ const BalanceInput = forwardRef<HTMLInputElement, Props>(
             </div>
             <div className="balanceInput-errorBorder" />
           </div>
-
-          <div className="mt-2px flex justify-between items-center text-14px">
+          <div className="mt-2px flex justify-between items-center text-14px ">
             <span className="text-#D2D4DC" ref={curInputPrice} />
-            <div className="flex items-center">
-              <span className="text-#62677B">
-                Balance <BalanceText balance={max} decimals={decimals} placement="bottom"/>
-              </span>
-
-              <Button className="ml-8px !text-#62677B font-normal" variant="text" size="mini" type="button" disabled={!max} onClick={handleClickMax}>
-                MAX
+            <div className="relative flex items-center pr-42px">
+              {!maxPrefix &&
+                <span className="text-#62677B">
+                  {amountPrefix ? amountPrefix : 'Balance'} <BalanceText balance={max} decimals={decimals} placement="bottom" />
+                </span>
+              }
+              {maxPrefix}
+              <Button id="balance-input-max-btn" className="absolute -right-6px top-1/2 -translate-y-1/2 !text-#62677B font-normal" variant="text" size="mini" type="button" disabled={!max} onClick={handleClickMax}>
+                {maxText ?? 'MAX'}
               </Button>
             </div>
           </div>

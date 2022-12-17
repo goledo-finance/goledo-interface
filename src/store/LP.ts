@@ -7,6 +7,7 @@ import { debounce } from 'lodash-es';
 import { tokensStore } from './Tokens';
 import { goledoStore } from './Goledo';
 
+const Zero = Unit.fromMinUnit(0);
 const OneDaySeconds = Unit.fromMinUnit(86400);
 const OneWeekSeconds = Unit.fromMinUnit(604800);
 const OneYearSeconds = Unit.fromMinUnit(31536000);
@@ -23,8 +24,8 @@ interface LPStore {
   stakedPrice?: Unit;
   totalMarketStakedBalance?: Unit;
   totalMarketStakedPrice?: Unit;
-  pendingRewardsBalance?: Unit;
-  pendingRewardsPrice?: Unit;
+  earnedGoledoBalance?: Unit;
+  earnedGoledoPrice?: Unit;
   totalRewardsPerDayBalance?: Unit;
   totalRewardsPerDayPrice?: Unit;
   totalRewardsPerWeekBalance?: Unit;
@@ -39,7 +40,7 @@ const initState = {
   name: 'GOLCFX',
   symbol: 'GOLCFX',
   decimals: 18,
-  address: import.meta.env.VITE_LPTokenAddress,
+  address: import.meta.env.VITE_SwappiPairAddress,
   stakeAPR: undefined,
   usdPrice: undefined,
   balance: undefined,
@@ -47,8 +48,8 @@ const initState = {
   stakedPrice: undefined,
   totalMarketStakedBalance: undefined,
   totalMarketStakedPrice: undefined,
-  pendingRewardsBalance: undefined,
-  pendingRewardsPrice: undefined,
+  earnedGoledoBalance: undefined,
+  earnedGoledoPrice: undefined,
   totalRewardsPerDayBalance: undefined,
   totalRewardsPerDayPrice: undefined,
   totalRewardsPerWeekBalance: undefined,
@@ -77,7 +78,7 @@ const getData = debounce(() => {
     [import.meta.env.VITE_MasterChefAddress, MasterChefContract.interface.encodeFunctionData('rewardsPerSecond')],
     [import.meta.env.VITE_SwappiPairAddress, SwappiPaiContract.interface.encodeFunctionData('getReserves')],
     [import.meta.env.VITE_SwappiPairAddress, SwappiPaiContract.interface.encodeFunctionData('totalSupply')],
-    [import.meta.env.VITE_LPTokenAddress, LpTokenContract.interface.encodeFunctionData('balanceOf', [account])],
+    [import.meta.env.VITE_SwappiPairAddress, LpTokenContract.interface.encodeFunctionData('balanceOf', [account])],
   ];
   
   unsub = intervalFetchChain(() => MulticallContract.callStatic.aggregate(promises), {
@@ -90,7 +91,7 @@ const getData = debounce(() => {
 
       const userBaseClaimable = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('userBaseClaimable', returnData[2])?.[0]?._hex ?? 0);
       const claimableReward = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('claimableReward', returnData[3])?.[0]?.[0]?._hex ?? 0);
-      const pendingRewardsBalance = userBaseClaimable.add(claimableReward);
+      const earnedGoledoBalance = userBaseClaimable.add(claimableReward);
 
       const rewardsPerSecond = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('rewardsPerSecond', returnData[4])?.[0]?._hex ?? 0);
       const totalRewardsPerDayBalance = rewardsPerSecond.mul(OneDaySeconds);
@@ -102,7 +103,7 @@ const getData = debounce(() => {
 
       const balance = Unit.fromMinUnit(returnData[7] ?? 0);
 
-      lpStore.setState({ totalMarketStakedBalance, stakedBalance, pendingRewardsBalance, rewardsPerSecond, totalRewardsPerDayBalance, totalRewardsPerWeekBalance, reserve0, totalSupply, balance });
+      lpStore.setState({ totalMarketStakedBalance, stakedBalance, earnedGoledoBalance, rewardsPerSecond, totalRewardsPerDayBalance, totalRewardsPerWeekBalance, reserve0, totalSupply, balance });
     },
   });
 }, 10);
@@ -118,13 +119,16 @@ const calcLPUsdPrice = debounce(() => {
     return;
   }
 
-  const usdPrice = reserve0.mul(Unit.fromMinUnit(2)).mul(cfxUsdPrice).div(totalSupply);
-  const { stakedBalance, totalMarketStakedBalance, pendingRewardsBalance, totalRewardsPerDayBalance, totalRewardsPerWeekBalance } = lpStore.getState();
+  let usdPrice = reserve0.mul(Unit.fromMinUnit(2)).mul(cfxUsdPrice).div(totalSupply);
+  if (usdPrice.toDecimalMinUnit() === 'NaN') {
+    usdPrice = Zero
+  }
+  const { stakedBalance, totalMarketStakedBalance, earnedGoledoBalance, totalRewardsPerDayBalance, totalRewardsPerWeekBalance } = lpStore.getState();
   lpStore.setState({
     usdPrice,
     stakedPrice: usdPrice.mul(stakedBalance!),
     totalMarketStakedPrice: usdPrice.mul(totalMarketStakedBalance!),
-    pendingRewardsPrice: usdPrice.mul(pendingRewardsBalance!),
+    earnedGoledoPrice: usdPrice.mul(earnedGoledoBalance!),
     totalRewardsPerDayPrice: usdPrice.mul(totalRewardsPerDayBalance!),
     totalRewardsPerWeekPrice: usdPrice.mul(totalRewardsPerWeekBalance!),
   });
@@ -144,7 +148,7 @@ const calcStakeAPR = debounce(() => {
   }
 
   const stakeAPR = rewardsPerSecond.mul(OneYearSeconds).mul(goledoUsdPrice).div(totalMarketStakedBalance.mul(usdPrice));
-  lpStore.setState({ stakeAPR });
+  lpStore.setState({ stakeAPR: stakeAPR.toDecimalMinUnit() === 'NaN' ? Zero : stakeAPR });
 }, 50);
 lpStore.subscribe((state) => state.usdPrice, calcStakeAPR, { fireImmediately: true });
 goledoStore.subscribe((state) => state.usdPrice, calcStakeAPR, { fireImmediately: true });
@@ -160,8 +164,8 @@ const selectors = {
   stakedPrice: (state: LPStore) => state.stakedPrice,
   totalMarketStakedBalance: (state: LPStore) => state.totalMarketStakedBalance,
   totalMarketStakedPrice: (state: LPStore) => state.totalMarketStakedPrice,
-  pendingRewardsBalance: (state: LPStore) => state.pendingRewardsBalance,
-  pendingRewardsPrice: (state: LPStore) => state.pendingRewardsPrice,
+  earnedGoledoBalance: (state: LPStore) => state.earnedGoledoBalance,
+  earnedGoledoPrice: (state: LPStore) => state.earnedGoledoPrice,
   totalRewardsPerDayBalance: (state: LPStore) => state.totalRewardsPerDayBalance,
   totalRewardsPerDayPrice: (state: LPStore) => state.totalRewardsPerDayPrice,
   totalRewardsPerWeekBalance: (state: LPStore) => state.totalRewardsPerWeekBalance,
@@ -176,8 +180,8 @@ export const useLpStakedBalance = () => lpStore(selectors.stakedBalance);
 export const useLpPStakedPrice = () => lpStore(selectors.stakedPrice);
 export const useLpTotalMarketStakedBalance = () => lpStore(selectors.totalMarketStakedBalance);
 export const useLpTotalMarketStakedPrice = () => lpStore(selectors.totalMarketStakedPrice);
-export const useLpPendingRewardsBalance = () => lpStore(selectors.pendingRewardsBalance);
-export const useLpPendingRewardsPrice = () => lpStore(selectors.pendingRewardsPrice);
+export const useLpEarnedGoledoBalance = () => lpStore(selectors.earnedGoledoBalance);
+export const useLpEarnedGoledoPrice = () => lpStore(selectors.earnedGoledoPrice);
 export const useLpTotalRewardsPerDayBalance = () => lpStore(selectors.totalRewardsPerDayBalance);
 export const useLpTotalRewardsPerDayPrice = () => lpStore(selectors.totalRewardsPerDayPrice);
 export const useLpTotalRewardsPerWeekBalance = () => lpStore(selectors.totalRewardsPerWeekBalance);

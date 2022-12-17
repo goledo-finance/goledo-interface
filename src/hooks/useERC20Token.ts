@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { sendTransaction, useAccount, Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { createERC20Contract } from '@utils/contracts';
+import { createERC20Contract, createDebtTokenContract } from '@utils/contracts';
 import waitTransactionReceipt from '@utils/waitTranscationReceipt';
 
 export type Status = 'checking-approve' | 'need-approve' | 'approving' | 'approved';
@@ -9,22 +9,24 @@ const useERC20Token = ({
   tokenAddress,
   contractAddress,
   amount,
-  isCFX,
+  needApprove = true,
+  isDebtToken,
 }: {
   tokenAddress: string;
   contractAddress: string;
   amount: Unit | undefined;
-  isCFX?: boolean;
+  needApprove?: boolean;
+  isDebtToken?: boolean;
 }) => {
   const [status, setStatus] = useState<Status>('checking-approve');
-  const tokenContract = useMemo(() => (tokenAddress ? createERC20Contract(tokenAddress) : undefined), []);
+  const tokenContract = useMemo(() => (tokenAddress ? (!isDebtToken ? createERC20Contract : createDebtTokenContract)(tokenAddress) : undefined), [tokenAddress]);
   const account = useAccount();
 
   const checkApprove = useCallback(async () => {
     if (!tokenContract || !account || !contractAddress || !amount) return;
     try {
       setStatus('checking-approve');
-      const res = await tokenContract.allowance(account, contractAddress);
+      const res = await tokenContract[!isDebtToken ? 'allowance' : 'borrowAllowance'](account, contractAddress);
       const approveBalance = Unit.fromMinUnit(res._hex);
       if (approveBalance.greaterThanOrEqualTo(amount)) {
         setStatus('approved');
@@ -32,6 +34,7 @@ const useERC20Token = ({
         setStatus('need-approve');
       }
     } catch (err) {
+      setStatus('need-approve');
       console.log('Check approve err', err);
     }
   }, [amount]);
@@ -42,24 +45,24 @@ const useERC20Token = ({
       setStatus('approving');
       const txnHash = await sendTransaction({
         to: tokenAddress,
-        data: tokenContract.interface.encodeFunctionData('approve', [contractAddress, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff']),
+        data: tokenContract.interface.encodeFunctionData(!isDebtToken ? 'approve' : 'approveDelegation', [contractAddress, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff']),
       });
       const txReceipt = await waitTransactionReceipt(txnHash);
       checkApprove();
-      console.log('TxnHash', txnHash);
-      console.log('txReceipt', txReceipt);
+      return txReceipt;
     } catch (err) {
+      setStatus('need-approve');
       console.log('Handle approve err', err);
     }
   }, [checkApprove]);
 
   useEffect(() => {
-    if (!amount) return;
+    if (!needApprove || !amount) return;
     checkApprove();
-  }, [amount]);
+  }, [amount, needApprove]);
 
   return {
-    status: isCFX ? 'approved' : status,
+    status: !needApprove ? 'approved' : status,
     handleApprove,
   };
 };

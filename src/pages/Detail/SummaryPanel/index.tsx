@@ -4,10 +4,12 @@ import cx from 'clsx';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import Button from '@components/Button';
 import ToolTip from '@components/Tooltip';
+import BalanceText from '@modules/BalanceText';
+import PercentageText from '@modules/PercentageText';
 import tokensIcon from '@assets/tokens';
 import { type Token } from '../index';
 
-const Hundred = Unit.fromMinUnit(100);
+const Zero = Unit.fromMinUnit(0);
 
 const SummaryPanelItem: React.FC<{ iconUrl?: string; iconName?: string; title: string; titleTip?: string; children: React.ReactNode; className?: string; }> = ({
   className,
@@ -34,7 +36,7 @@ const SummaryPanelItem: React.FC<{ iconUrl?: string; iconName?: string; title: s
       <div className='lt-sm:text-center'>
         <p className="flex items-center text-14px lt-sm:text-12px text-#ccc whitespace-nowrap">
           {title}
-          {titleTip && 
+          {titleTip &&
             <ToolTip text={titleTip}>
               <span className="i-bi:info-circle ml-4px cursor-pointer" />
             </ToolTip>
@@ -50,6 +52,7 @@ const SummaryPanelItem: React.FC<{ iconUrl?: string; iconName?: string; title: s
 const SummaryPanel: React.FC<Token> = ({
   name,
   symbol,
+  decimals,
   usdPrice,
   totalMarketSupplyBalance,
   totalMarketSupplyPrice,
@@ -60,7 +63,7 @@ const SummaryPanel: React.FC<Token> = ({
   const navigate = useNavigate();
 
   const utilizationRate = useMemo(
-    () => (totalMarketSupplyBalance && totalMarketBorrowBalance ? totalMarketBorrowBalance.div(totalMarketSupplyBalance) : undefined),
+    () => (totalMarketSupplyBalance && totalMarketBorrowBalance ? (totalMarketSupplyBalance.equalsWith(Zero) ? Zero : totalMarketBorrowBalance.div(totalMarketSupplyBalance)) : undefined),
     [totalMarketSupplyBalance, totalMarketBorrowBalance]
   );
 
@@ -68,6 +71,7 @@ const SummaryPanel: React.FC<Token> = ({
     <>
       <div className='flex items-center gap-16px lt-md:justify-center lt-md:flex-col lt-md:items-start lt-md:gap-8px'>
         <Button
+          id='detail-summary-panel-go-back-btn'
           variant='outlined'
           color='white'
           onClick={() => navigate(-1)}
@@ -76,44 +80,44 @@ const SummaryPanel: React.FC<Token> = ({
         >
           Go Back
         </Button>
-        
+
         <p className='text-36px text-#F1F1F3 font-semibold lt-md:text-32px lt-md:leading-30px lt-md:self-center'>Overview</p>
       </div>
 
       <div className="mt-16px flex w-full gap-16px lt-md:justify-center lt-sm:flex-wrap lt-sm:gap-0 lt-sm:gap-y-12px">
-        <SummaryPanelItem iconUrl={tokensIcon[symbol]} title={symbol} className="lt-md:display-none w-156px lt-lg:w-140px">
-          <p className="text-20px lt-sm:text-16px text-#F1F1F3 font-bold">
+        <SummaryPanelItem iconUrl={tokensIcon[symbol]} title={symbol} className="lt-md:display-none w-208px lt-lg:w-180px">
+          <p className="text-20px lt-sm:text-16px text-#F1F1F3 font-bold whitespace-nowrap">
             {name || 'Unset'}
           </p>
         </SummaryPanelItem>
 
         <SummaryPanelItem iconName="i-bx:cube" title="Total Amount" className="w-208px lt-lg:w-160px">
           <p className="text-20px lt-sm:text-16px text-#F1F1F3 font-bold">
-            {totalMarketSupplyBalance?.toDecimalStandardUnit(2) ?? '--'}
+            <BalanceText balance={totalMarketSupplyBalance} decimals={decimals} />
           </p>
           <p className="text-14px lt-sm:text-12px text-#ccc">
-            ${totalMarketSupplyPrice?.toDecimalStandardUnit(2) ?? '--'}
+            <BalanceText balance={totalMarketSupplyPrice} abbrDecimals={2} symbolPrefix="$" />
           </p>
         </SummaryPanelItem>
 
         <SummaryPanelItem iconName="i-icon-park-outline:chart-pie" title="Available Liquidity" className="w-208px lt-lg:w-160px">
           <p className="text-20px lt-sm:text-16px text-#F1F1F3 font-bold">
-            {availableBalance?.toDecimalStandardUnit(2) ?? '--'}
+            <BalanceText balance={availableBalance} decimals={decimals} />
           </p>
           <p className="text-14px lt-sm:text-12px text-#ccc">
-            ${availablePrice?.toDecimalStandardUnit(2) ?? '--'}
+            <BalanceText balance={availablePrice} abbrDecimals={2} symbolPrefix="$" />
           </p>
         </SummaryPanelItem>
 
         <SummaryPanelItem iconName="i-ph:chart-line-up" title="Utilization Rate" className="w-168px lt-lg:w-128px">
           <p className="text-20px lt-sm:text-16px text-#F1F1F3 font-bold">
-            {utilizationRate ? `${utilizationRate?.mul(Hundred).toDecimalMinUnit(2)}%` : '--'}
+            <PercentageText value={utilizationRate} />
           </p>
         </SummaryPanelItem>
 
         <SummaryPanelItem iconName="i-ant-design:dollar-circle-outlined" title="Oracle Price" className="w-168px lt-lg:w-128px">
           <p className="text-20px lt-sm:text-16px text-#F1F1F3 font-bold">
-            ${usdPrice?.toDecimalMinUnit(2) ?? '--'}
+            <BalanceText balance={usdPrice?.mul(Unit.fromMinUnit(10e17))} abbrDecimals={2} symbolPrefix="$" />
           </p>
         </SummaryPanelItem>
       </div>

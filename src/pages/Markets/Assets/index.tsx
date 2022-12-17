@@ -1,21 +1,24 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useTokens, TokenInfo } from '@store/index';
 import tokensIcon from '@assets/tokens';
 import Card from '@components/Card';
+import ToolTip from '@components/Tooltip';
 import Table, { type Columns } from '@components/Table';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
+import BalanceText from '@modules/BalanceText';
+import PercentageText from '@modules/PercentageText';
 import Network from '@utils/Network';
+import handleVestingGoledo from '@service/handleVestingGoledo';
 
-const PointZeroOne = Unit.fromMinUnit(0.0001);
-const Hundred = Unit.fromMinUnit(100);
+const Zero = Unit.fromMinUnit(0);
 
 const columns: Columns<TokenInfo> = [{
   name: 'Assets',
   width: '14%',
-  renderHeader: () => <div className='w-full h-full flex justify-start items-center pl-4px'>Assets</div>,
+  renderHeader: () => <div className='w-full h-full flex justify-start pl-4px'>Assets</div>,
   render: ({ symbol }) => (
     <div className='w-full h-full flex justify-start items-center pl-4px font-semibold'>
       <img className="w-24px h-24px mr-8px" src={tokensIcon[symbol]} alt={symbol} />
@@ -25,36 +28,53 @@ const columns: Columns<TokenInfo> = [{
 }, {
   name: 'Total Supplied',
   width: '21%',
-  render: ({ totalMarketSupplyBalance, totalMarketSupplyPrice }) => (
+  render: ({ totalMarketSupplyBalance, totalMarketSupplyPrice, decimals }) => (
     <div>
-      <p className='font-semibold'>{totalMarketSupplyBalance?.toDecimalStandardUnit(2)}</p>
-      <p className='text-12px text-#62677B'>${totalMarketSupplyPrice?.toDecimalStandardUnit(2)}</p>
+      <p className='font-semibold'><BalanceText balance={totalMarketSupplyBalance} decimals={decimals} /></p>
+      <p className='text-12px text-#62677B'><BalanceText balance={totalMarketSupplyPrice} abbrDecimals={2} symbolPrefix="$" /></p>
     </div>
   )
 }, {
   name: 'Supply APY',
   width: '12%',
-  render: ({ supplyAPY }) => <div className='font-semibold'>{`${supplyAPY?.greaterThan(PointZeroOne) ? `${supplyAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}`}</div>
-},{
+  render: ({ supplyAPY }) => <div className='font-semibold'><PercentageText value={supplyAPY} /></div>
+}, {
   name: 'Total Borrowed',
   width: '21%',
-  render: ({ totalMarketBorrowBalance, totalMarketBorrowPrice }) => (
+  render: ({ totalMarketBorrowBalance, totalMarketBorrowPrice, decimals }) => (
     <div>
-      <p className='font-semibold'>{totalMarketBorrowBalance?.toDecimalStandardUnit(2)}</p>
-      <p className='text-12px text-#62677B'>${totalMarketBorrowPrice?.toDecimalStandardUnit(2)}</p>
+      <p className='font-semibold'><BalanceText balance={totalMarketBorrowBalance} decimals={decimals} /></p>
+      <p className='text-12px text-#62677B'><BalanceText balance={totalMarketBorrowPrice} abbrDecimals={2} symbolPrefix="$" /></p>
     </div>
   )
 }, {
   name: 'Borrow APY',
   width: '12%',
-  render: ({ borrowAPY }) => <div className='font-semibold'>{`${borrowAPY?.greaterThan(PointZeroOne) ? `${borrowAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}`}</div>
+  renderHeader: () => (
+    <div className="flex justify-center items-center">
+      Borrow APY
+      <ToolTip text="Interest rate will fluctuate based on the market conditions. Recommended for short-term loans.">
+        <span className="i-bi:info-circle ml-4px cursor-pointer" />
+      </ToolTip>
+    </div>
+  ),
+  render: ({ borrowAPY }) => <div className='font-semibold'><PercentageText value={borrowAPY} /></div>
 }, {
   name: '',
   width: '20%',
-  render: ({ address }) => (
+  render: ({ address, earnedGoledoBalance, decimals, symbol }) => (
     <div className='w-full h-full flex justify-end items-center gap-12px'>
-      <Button size='small' className='!flex-shrink-1 lt-md:max-w-none lt-md:w-50%'>Vest xxxx Goledo</Button>
-      <Link to={`/detail/${address}`} className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none no-underline'>
+      <Button
+        id={`markets-assets-vesting-${symbol}-btn`}
+        size='small'
+        className='!flex-shrink-1 lt-md:max-w-none lt-md:w-50%'
+        loading={!earnedGoledoBalance}
+        disabled={earnedGoledoBalance?.equals(Zero)}
+        onClick={() => handleVestingGoledo({ tokenAddress: address })}
+      >
+        {earnedGoledoBalance?.greaterThan(Zero) ? <BalanceText balance={earnedGoledoBalance} decimals={decimals} symbol="Goledo" /> : 'None to vest'}
+      </Button>
+      <Link to={`/detail/${address}`} className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none no-underline' id={`markets-assets-details-${symbol}-link`}>
         <Button size='small' variant='outlined' fullWidth>Details</Button>
       </Link>
     </div>
@@ -81,7 +101,7 @@ const Assets: React.FC = () => {
   const tokens = useTokens();
 
   return (
-    <Card title={`${Network.chainName} Assets`}>
+    <Card title={`${Network.chainName} Assets`} className="!pb-2px">
       <Table
         className='mt-16px'
         columns={columns}

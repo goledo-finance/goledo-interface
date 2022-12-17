@@ -5,13 +5,16 @@ import { intervalFetchChain } from '@utils/fetchChain';
 import { MultiFeeDistributionContract, GoledoTokenContract, MulticallContract, ChefIncentivesControllerContract, SwappiPaiContract } from '@utils/contracts';
 import { debounce } from 'lodash-es';
 import { tokensStore } from './Tokens';
+
 const OneYearSeconds = Unit.fromMinUnit(31536000);
+const Zero = Unit.fromMinUnit(0);
 
 interface GoledoStore {
   name: 'Goledo';
   symbol: 'GOL';
   decimals: 18;
   address: string;
+  APR?: Unit;
   stakeAPR?: Unit;
   lockAPR?: Unit;
   usdPrice?: Unit;
@@ -72,7 +75,6 @@ const getData = debounce(() => {
   const promises = [
     [import.meta.env.VITE_GoledoTokenAddress, GoledoTokenContract.interface.encodeFunctionData('balanceOf', [account])],
     [import.meta.env.VITE_MultiFeeDistributionAddress, MultiFeeDistributionContract.interface.encodeFunctionData('lockedBalances', [account])],
-    [import.meta.env.VITE_MultiFeeDistributionAddress, MultiFeeDistributionContract.interface.encodeFunctionData('unlockedBalance', [account])],
     [
       import.meta.env.VITE_ChefIncentivesControllerContractAddress,
       ChefIncentivesControllerContract.interface.encodeFunctionData('userBaseClaimable', [account]),
@@ -94,7 +96,7 @@ const getData = debounce(() => {
   const tokensRewardsPromises = tokens.map(token =>
     [
       import.meta.env.VITE_MultiFeeDistributionAddress,
-      MultiFeeDistributionContract.interface.encodeFunctionData('rewardData', [token.address])
+      MultiFeeDistributionContract.interface.encodeFunctionData('rewardData', [token.supplyTokenAddress])
     ]);
 
   
@@ -109,29 +111,28 @@ const getData = debounce(() => {
       const lockedBalance = Unit.fromMinUnit(lockedBalancesData?.locked?._hex ?? 0);
       const lockeds = lockedBalancesData?.lockData?.map((data: any) => ({ balance: Unit.fromMinUnit(data?.amount?._hex ?? 0), unlockTime: Number(data?.unlockTime?._hex ?? 0) * 1000 }));
       const unlockedableBalance = Unit.fromMinUnit(lockedBalancesData?.unlockable?._hex ?? 0);
-
-      const stakedBalance = Unit.fromMinUnit(returnData[2] ?? 0);
       
-      let earnedBalance = Unit.fromMinUnit(returnData[3]);
-      const eachTokenEarned = ChefIncentivesControllerContract.interface.decodeFunctionResult('claimableReward', returnData[4])?.[0];
+      let earnedBalance = Unit.fromMinUnit(returnData[2]);
+      const eachTokenEarned = ChefIncentivesControllerContract.interface.decodeFunctionResult('claimableReward', returnData[3])?.[0];
       eachTokenEarned?.forEach(({ _hex}: { _hex: string; }) => earnedBalance = earnedBalance.add(Unit.fromMinUnit(_hex)));
 
-      const vestingBalancesData = MultiFeeDistributionContract.interface.decodeFunctionResult('earnedBalances', returnData[5]);
+      const vestingBalancesData = MultiFeeDistributionContract.interface.decodeFunctionResult('earnedBalances', returnData[4]);
       const vestingBalance = Unit.fromMinUnit(vestingBalancesData?.total?._hex ?? 0);
       const vestings = vestingBalancesData?.earningsData?.map((data: any) => ({ balance: Unit.fromMinUnit(data?.amount?._hex ?? 0), unlockTime: Number(data?.unlockTime?._hex ?? 0) * 1000 }));
 
-      const withdrawableBalanceData = MultiFeeDistributionContract.interface.decodeFunctionResult('withdrawableBalance', returnData[6]);
+      const withdrawableBalanceData = MultiFeeDistributionContract.interface.decodeFunctionResult('withdrawableBalance', returnData[5]);
       const withdrawableBalance = { 
         amount: Unit.fromMinUnit(withdrawableBalanceData?.amount?._hex ?? 0),
         penaltyAmount: Unit.fromMinUnit(withdrawableBalanceData?.penaltyAmount?._hex ?? 0),
       }
+      const stakedBalance = withdrawableBalance.amount.add(withdrawableBalance.penaltyAmount).sub(vestingBalance);
 
-      const reservesData = SwappiPaiContract.interface.decodeFunctionResult('getReserves', returnData[7]);
+      const reservesData = SwappiPaiContract.interface.decodeFunctionResult('getReserves', returnData[6]);
       const reserves: GoledoStore['reserves'] = [Unit.fromMinUnit(reservesData?.[0]?._hex ?? 0), Unit.fromMinUnit(reservesData?.[1]?._hex ?? 0)];
-      const totalMarketLockedBalance = Unit.fromMinUnit(MultiFeeDistributionContract.interface.decodeFunctionResult('lockedSupply', returnData[8])?.[0]?._hex ?? 0);
+      const totalMarketLockedBalance = Unit.fromMinUnit(MultiFeeDistributionContract.interface.decodeFunctionResult('lockedSupply', returnData[7])?.[0]?._hex ?? 0);
 
       const rewardRates = {} as GoledoStore['rewardRates'];
-      returnData.slice(9).map((data, index) => {
+      returnData.slice(8).map((data, index) => {
         const rewardData = MultiFeeDistributionContract.interface.decodeFunctionResult('rewardData', data);
         const rewardRate = Unit.fromMinUnit(rewardData?.rewardRate?._hex ?? 0);
 
@@ -141,6 +142,7 @@ const getData = debounce(() => {
           rewardRates![tokens[index - 1].address] = rewardRate;
         }
       });
+
 
       goledoStore.setState({ balance, stakedBalance, lockedBalance, lockeds, unlockedableBalance, earnedBalance, vestingBalance, vestings, withdrawableBalance, reserves, totalMarketLockedBalance, rewardRates });
     },
@@ -157,11 +159,10 @@ const calcGoledoPrice = debounce(() => {
   const cfxUsdPrice = tokensStore.getState().cfxUsdPrice;
 
   if (!cfxUsdPrice || !reserves || !stakedBalance || !lockedBalance || !earnedBalance) {
-    goledoStore.setState({ usdPrice: undefined, stakedBalance: undefined, lockedBalance: undefined });
+    goledoStore.setState({ usdPrice: undefined });
     return;
   }
-
-  const goledoUsdPrice = reserves[0].div(reserves[1]).mul(cfxUsdPrice);
+  const goledoUsdPrice = reserves[1]?.equalsWith(Unit.fromMinUnit(0)) ? Unit.fromMinUnit(0) : reserves[0].div(reserves[1]).mul(cfxUsdPrice);
   const stakedPrice = stakedBalance.mul(goledoUsdPrice);
   const lockedPrice = lockedBalance.mul(goledoUsdPrice);
   const earnedPrice = earnedBalance.mul(goledoUsdPrice);
@@ -179,9 +180,14 @@ const calcGoledoAPR = debounce(() => {
   }
 
   const APR = (rewardRates[import.meta.env.VITE_GoledoTokenAddress] ?? 0).mul(OneYearSeconds).mul(goledoUsdPrice).div(totalMarketLockedBalance);
-  const stakeAPR = tokens.reduce((acc, token) => acc.add((rewardRates[token.address] ?? 0).mul(OneYearSeconds).mul(token.usdPrice!).div(token.totalMarketSupplyBalance!.mul(goledoUsdPrice))), Unit.fromMinUnit(0));
-  const lockAPR  = stakeAPR.add((rewardRates[import.meta.env.VITE_GoledoTokenAddress] ?? 0).mul(OneYearSeconds).mul(goledoUsdPrice).div(totalMarketLockedBalance.mul(goledoUsdPrice)));
-  goledoStore.setState({ stakeAPR, lockAPR });
+  const stakeAPR = tokens.reduce((acc, token) => acc.add((rewardRates[token.address] ?? Zero).mul(OneYearSeconds).mul(token.usdPrice!).div(token.totalMarketSupplyBalance!.mul(goledoUsdPrice))), Unit.fromMinUnit(0));
+  const lockAPR  = stakeAPR.add((rewardRates[import.meta.env.VITE_GoledoTokenAddress] ?? Zero).mul(OneYearSeconds).mul(goledoUsdPrice).div(totalMarketLockedBalance.mul(goledoUsdPrice)));
+
+  goledoStore.setState({
+    stakeAPR: stakeAPR.toDecimalMinUnit() === 'NaN' ? Zero : stakeAPR.div(Unit.fromMinUnit(1e12)),
+    lockAPR: lockAPR.toDecimalMinUnit() === 'NaN' ? Zero : lockAPR.div(Unit.fromMinUnit(1e12)),
+    APR: APR.toDecimalMinUnit() === 'NaN' ? Zero : APR.div(Unit.fromMinUnit(1e12))
+  });
 }, 10);
 
 goledoStore.subscribe((state) => state.reserves, calcGoledoPrice, { fireImmediately: true });
@@ -208,12 +214,14 @@ const selectors = {
   vestingBalance: (state: GoledoStore) => state.vestingBalance,
   vestings: (state: GoledoStore) => state.vestings,
   withdrawableBalance: (state: GoledoStore) => state.withdrawableBalance,
+  APR: (state: GoledoStore) => state.APR,
 };
 
 export const useGoledo = () => goledoStore(selectors.all);
+export const useGoledoAPR = () => goledoStore(selectors.APR);
 export const useGoledoStakeAPR = () => goledoStore(selectors.stakeAPR);
 export const useGoledoLockAPR = () => goledoStore(selectors.lockAPR);
-export const useGoledoUsdPrice = () => goledoStore(selectors.balance);
+export const useGoledoUsdPrice = () => goledoStore(selectors.usdPrice);
 export const useGoledoBalance = () => goledoStore(selectors.balance);
 export const useGoledoStakedBalance = () => goledoStore(selectors.stakedBalance);
 export const useGoledoStakedPrice = () => goledoStore(selectors.stakedPrice);

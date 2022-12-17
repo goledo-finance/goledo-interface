@@ -1,19 +1,19 @@
 .fui-toggle {
-  @apply relative box-border inline-grid items-center justify-center w-48px h-24px mx-4px my-0;
+  @apply relative box-border inline-grid items-center justify-center w-36px h-20px mx-4px my-0 ;
 }
 
 .fui-toggle > input {
-  @apply absolute -m-9999px invisible;
+  @apply display-none;
 }
 
 .fui-toggle > label {
-  @apply inline-grid box-border items-center outline-none select-none w-48px h-24px bg-#8e92a3 rounded-full;
+  @apply inline-grid box-border items-center outline-none select-none w-36px h-20px bg-#8e92a3 rounded-full cursor-pointer;
 }
 .fui-toggle > label:before {
-  @apply content-none block absolute rounded-full w-44px h-20px bg-#8e92a3 left-2px;
+  @apply content-none block absolute rounded-full w-32px h-16px bg-#8e92a3 left-2px;
 }
 .fui-toggle > label:after {
-  @apply content-none block absolute w-16px h-16px rounded-full bg-#fff transition duration-400ms ease-out ml-4px;
+  @apply content-none block absolute w-16px h-16px rounded-full bg-#fff transition duration-400ms ease-out ml-2px;
 }
 
 .is-checked > label {
@@ -23,13 +23,16 @@
   @apply bg-#4caf50;
 }
 .is-checked > label:after {
-  @apply transition duration-200ms ease-out ml-[calc(100%-20px)];
+  @apply transition duration-200ms ease-out ml-[calc(100%-18px)];
 }
 
 .is-disabled > label {
-  @apply !bg-#eee !cursor-default;
+  @apply !bg-#eee cursor-default;
+}
+.is-disabled > label:before {
+  @apply !bg-#eee;
 }
 .is-disabled > label:after {
-  @apply !shadow-none !bg-#eee;
+  @apply !shadow-none !bg-#fff;
 }
 

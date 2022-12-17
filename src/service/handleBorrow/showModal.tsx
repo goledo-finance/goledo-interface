@@ -3,20 +3,17 @@ import { useForm } from 'react-hook-form';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { TokenInfo, useTokens, useUserData } from '@store/Tokens';
 import { showModal, hideAllModal } from '@components/showPopup/Modal';
-import BalanceInput from '@components/BalanceInput';
+import BalanceInput from '@modules/BalanceInput';
 import ToolTip from '@components/Tooltip';
 import Button from '@components/Button';
-import BalanceText from '@components/BalanceText';
+import BalanceText from '@modules/BalanceText';
+import HealthFactor from '@modules/HealthFactor';
 import useEstimateHealthFactor from '@hooks/useEstimateHealthFactor';
 import useERC20Token from '@hooks/useERC20Token';
 import useTransaction from '@hooks/useTransaction';
 import Success from '@assets/icons/success.svg';
 import Error from '@assets/icons/error.svg';
 import { handleBorrow } from './index';
-
-const Zero = Unit.fromMinUnit(0);
-const PointZeroOne = Unit.fromMinUnit(0.0001);
-const Hundred = Unit.fromMinUnit(100);
 
 const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const { register, handleSubmit: withForm } = useForm();
@@ -38,13 +35,14 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   }, [token, confirmAmountUnit]);
   const estimateHealthFactor = useEstimateHealthFactor(estimateToken);
 
-  const handleContinue = useCallback(withForm(({ amount }) => setConfirmAmount(amount)),[]);
+  const handleContinue = useCallback(withForm(({ amount }) => setConfirmAmount(amount)), []);
 
   const { status: approveStatus, handleApprove } = useERC20Token({
-    isCFX: token.symbol === 'CFX',
-    tokenAddress: address,
-    contractAddress: import.meta.env.VITE_LendingPoolAddress,
+    needApprove: token?.symbol === 'CFX',
+    tokenAddress: token?.borrowTokenAddress,
+    contractAddress: import.meta.env.VITE_WETHGatewayAddress,
     amount: confirmAmountUnit,
+    isDebtToken: true
   });
 
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleBorrow);
@@ -54,8 +52,9 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   return (
     <div className='relative'>
       {!confirmAmount && (
-        <form onSubmit={handleContinue} className="mt-10px">
+        <form id='handle-borrow-form' onSubmit={handleContinue} className="mt-10px">
           <BalanceInput
+            id='handle-borrow-amount-input'
             {...register('amount', {
               required: true,
               min: Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals),
@@ -77,7 +76,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             max={max}
           />
 
-          <Button fullWidth size="large" className="mt-48px">
+          <Button id='handle-borrow-continue-btn' fullWidth size="large" className="mt-48px">
             Continue
           </Button>
         </form>
@@ -89,8 +88,8 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             <div className="flex justify-between">
               <span>Amount</span>
               <div className="text-right">
-                <BalanceText balance={confirmAmountUnit} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
-                <p className="mt-2px text-12px text-#62677B">${confirmAmountUnit.mul(token?.usdPrice!).toDecimalStandardUnit(2)}</p>
+                <BalanceText balance={confirmAmountUnit} symbol={token?.symbol} decimals={token?.decimals} />
+                <p className="mt-2px text-12px text-#62677B"><BalanceText balance={confirmAmountUnit.mul(token?.usdPrice!)} abbrDecimals={2} symbolPrefix="$" /></p>
               </div>
             </div>
 
@@ -98,10 +97,10 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               <div className="flex justify-between">
                 <span>Health factor</span>
                 <div className="text-right">
-                  <p className="text-#F89F1A">
-                    <span>{userData?.healthFactor ?? ''}</span>
+                  <p>
+                    <HealthFactor value={userData?.healthFactor} />
                     <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                    <span>{estimateHealthFactor}</span>
+                    <HealthFactor value={estimateHealthFactor} />
                   </p>
                   <p className="mt-6px text-12px text-#62677B">{`Liquidation at <1.0`}</p>
                 </div>
@@ -110,6 +109,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           </div>
 
           <Button
+            id='handle-borrow-confirm-btn'
             fullWidth
             size="large"
             className="mt-48px"
@@ -137,7 +137,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
       )}
       {(transactionStatus === 'success' || transactionStatus === 'failed') && (
         <>
-          <img src={transactionStatus === 'success' ? Success : Error} alt="error" className="block w-48px h-48px mt-24px mx-auto" />
+          <img src={transactionStatus === 'success' ? Success : Error} alt={transactionStatus} className="block w-48px h-48px mt-24px mx-auto" />
           <p className="mt-12px mb-8px text-20px text-#303549 text-center font-semibold">
             {transactionStatus === 'success' && 'All done!'}
             {transactionStatus === 'failed' && 'Transaction failed!'}
@@ -145,13 +145,14 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You Borrowed <span className='font-semibold'>{confirmAmountUnit?.toDecimalStandardUnit(2)}</span> {token?.symbol}
+                You Borrowed <BalanceText className='font-semibold' balance={confirmAmountUnit} symbol={token?.symbol} decimals={token?.decimals} />
               </>
             )}
             {transactionStatus === 'failed' && error}
           </p>
           {scanUrl &&
             <a
+              id='handle-borrow-reviewTx-link'
               className='absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline'
               href={scanUrl}
               target="_blank"
@@ -161,7 +162,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               <span className='i-charm:link-external ml-3px text-10px translate-y-[-.5px]' />
             </a>
           }
-          <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
+          <Button id='handle-borrow-ok-btn' fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
         </>

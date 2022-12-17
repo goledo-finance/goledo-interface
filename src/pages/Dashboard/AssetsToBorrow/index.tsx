@@ -1,21 +1,24 @@
-import React, { useMemo } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useTokens, TokenInfo } from '@store/index';
 import tokensIcon from '@assets/tokens';
 import Card from '@components/Card';
+import ToolTip from '@components/Tooltip';
 import Table, { type Columns } from '@components/Table';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
 import Button from '@components/Button';
+import BalanceText from '@modules/BalanceText';
+import PercentageText from '@modules/PercentageText';
 import showBorrowModal from '@service/handleBorrow';
 
-const PointZeroOne = Unit.fromMinUnit(0.0001);
-const Hundred = Unit.fromMinUnit(100);
+const Zero = Unit.fromMinUnit(0);
 
 const columns: Columns<TokenInfo> = [
   {
     name: 'Assets',
     width: '16%',
-    renderHeader: () => <div className="w-full h-full flex justify-start items-center pl-4px">Assets</div>,
+    renderHeader: () => <div className="w-full h-full flex justify-start pl-4px">Assets</div>,
     render: ({ symbol }) => (
       <div className="w-full h-full flex justify-start items-center pl-4px font-semibold">
         <img className="w-24px h-24px mr-8px" src={tokensIcon[symbol]} alt={symbol} />
@@ -26,26 +29,58 @@ const columns: Columns<TokenInfo> = [
   {
     name: 'Available',
     width: '29%',
-    render: ({ availableBorrowBalance }) => <div className="font-semibold">{availableBorrowBalance?.toDecimalStandardUnit(2)}</div>,
+    renderHeader: () => (
+      <div className="flex justify-center items-center">
+        Available
+        <ToolTip text="This is the total amount available for you to borrow. You can borrow based on your collateral and until the borrow cap is reached.">
+          <span className="i-bi:info-circle ml-4px cursor-pointer" />
+        </ToolTip>
+      </div>
+    ),
+    render: ({ availableBorrowBalance, decimals, symbol }) => (
+      <div className="font-semibold">
+        <BalanceText balance={availableBorrowBalance} decimals={decimals} id={`dashboard-assets-available-borrow-balance-${symbol}`} />
+      </div>
+    ),
   },
   {
-    name: 'APY',
+    name: 'Interest Rate',
     width: '25%',
-    render: ({ borrowAPY }) => (
-      <div className="font-semibold">{`${borrowAPY?.greaterThan(PointZeroOne) ? `${borrowAPY.mul(Hundred).toDecimalMinUnit(2)}%` : '<0.01%'}`}</div>
+    renderHeader: () => (
+      <div className="flex justify-center items-center">
+        Interest Rate
+        <ToolTip text="Interest rate will fluctuate based on the market conditions. Recommended for short-term loans.">
+          <span className="i-bi:info-circle ml-4px cursor-pointer" />
+        </ToolTip>
+      </div>
+    ),
+    render: ({ borrowAPY, symbol }) => (
+      <div className="font-semibold">
+        <PercentageText value={borrowAPY} id={`dashboard-assets-borrow-interest-rate-${symbol}`}/>
+      </div>
     ),
   },
   {
     name: '',
     width: '30%',
-    render: ({ address, symbol }) => (
+    render: ({ address, symbol, availableBorrowBalance }) => (
       <div className="w-full h-full flex justify-end items-center gap-12px">
-        <Button size="small" className="max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none" onClick={() => showBorrowModal({ address, symbol })}>
+        <Button
+          id="dashboard-assets-to-borrow-btn"
+          size="small"
+          className="max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none"
+          loading={!availableBorrowBalance}
+          disabled={availableBorrowBalance?.equalsWith(Zero)}
+          onClick={() => showBorrowModal({ address, symbol })}
+        >
           Borrow
         </Button>
-        <Button size="small" variant="outlined" className="max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none">
-          Detail
-        </Button>
+
+        <Link to={`/detail/${address}`} className="max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none no-underline" id="dashboard-assets-to-borrow-link">
+          <Button size="small" variant="outlined" fullWidth>
+            Details
+          </Button>
+        </Link>
       </div>
     ),
   },
@@ -57,7 +92,7 @@ const configs: Configs<TokenInfo> = [
     renderContent: columns[1].render,
   },
   {
-    name: 'Borrow APY',
+    name: 'Borrow Interest Rate',
     renderContent: columns[2].render,
   },
   {

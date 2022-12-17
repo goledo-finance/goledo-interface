@@ -3,10 +3,12 @@ import { useForm } from 'react-hook-form';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { TokenInfo, useTokens, useUserData } from '@store/Tokens';
 import { showModal, hideAllModal } from '@components/showPopup/Modal';
-import BalanceInput from '@components/BalanceInput';
+import BalanceInput from '@modules/BalanceInput';
 import ToolTip from '@components/Tooltip';
 import Button from '@components/Button';
-import BalanceText from '@components/BalanceText';
+import Toggle from '@components/Toggle';
+import BalanceText from '@modules/BalanceText';
+import HealthFactor from '@modules/HealthFactor';
 import useEstimateHealthFactor from '@hooks/useEstimateHealthFactor';
 import useERC20Token from '@hooks/useERC20Token';
 import useTransaction from '@hooks/useTransaction';
@@ -23,13 +25,16 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   const { register, handleSubmit: withForm } = useForm();
   const tokens = useTokens();
   const token = tokens?.find((t) => t.address === address)!;
+  const hasSupplied = !!tokens?.find((token) => token.supplyBalance?.greaterThan(Zero));
   const userData = useUserData();
+
+  const [useWCFX, setUseWCFX] = useState(false);
 
   const [confirmAmount, setConfirmAmount] = useState<string | null>(null);
   const confirmAmountUnit = useMemo(() => (confirmAmount ? Unit.fromStandardUnit(confirmAmount || 0, token?.decimals) : undefined), [confirmAmount]);
 
   const estimateToken = useMemo(() => {
-    const res: PartialOmit<TokenInfo, 'symbol'> = { symbol: token.symbol };
+    const res: PartialOmit<TokenInfo, 'symbol'> = { symbol: token?.symbol };
     if (!confirmAmountUnit || !token.supplyBalance || !token.usdPrice) return res;
     const supplyBalance = token.supplyBalance.add(confirmAmountUnit);
     const supplyPrice = token.usdPrice.mul(supplyBalance);
@@ -41,10 +46,13 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
 
   const cfxGasFee = useEstimateCfxGasFee({ createData: createCFXData, to: import.meta.env.VITE_WETHGatewayAddress, isCFX: token?.symbol === 'CFX' });
 
-  const handleContinue = useCallback(withForm(({ amount }) => setConfirmAmount(amount)),[]);
+  const handleContinue = useCallback(
+    withForm(({ amount }) => setConfirmAmount(amount)),
+    []
+  );
 
   const { status: approveStatus, handleApprove } = useERC20Token({
-    isCFX: token.symbol === 'CFX',
+    needApprove: token?.symbol !== 'CFX' || useWCFX,
     tokenAddress: address,
     contractAddress: import.meta.env.VITE_LendingPoolAddress,
     amount: confirmAmountUnit,
@@ -52,35 +60,55 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
 
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleSupply);
 
-  const max = token?.symbol !== 'CFX' ? token?.balance : (cfxGasFee && token?.balance ? (token.balance.greaterThan(cfxGasFee) ? token.balance.sub(cfxGasFee) : Zero) : undefined);
+  const max =
+    token?.symbol !== 'CFX'
+      ? token?.balance
+      : useWCFX
+        ? token?.wcfxBalance
+        : cfxGasFee && token?.balance
+          ? token.balance.greaterThan(cfxGasFee)
+            ? token.balance.sub(cfxGasFee)
+            : Zero
+          : undefined;
+
+  const symbol = token?.symbol !== 'CFX' ? token?.symbol : useWCFX ? 'WCFX' : 'CFX';
   if (!token) return null;
   return (
-    <div className='relative'>
+    <div className="relative">
       {!confirmAmount && (
-        <form onSubmit={handleContinue} className="mt-10px">
+        <form id='handle-supply-form' onSubmit={handleContinue} className="mt-10px">
           <BalanceInput
+            id='handle-supply-amount-input'
             {...register('amount', {
               required: true,
               min: Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals),
               max: max?.toDecimalStandardUnit(),
             })}
             title={
-              <span>
-                Available to supply
-                <ToolTip text="This is the total amount that you are able to supply to in this reserve. You are able to supply your wallet balance up until the supply cap is reached.">
-                  <span className="i-bi:info-circle ml-4px text-12px cursor-pointer" />
-                </ToolTip>
-              </span>
+              <div className="flex items-center justify-between">
+                <span>
+                  Available to supply
+                  <ToolTip text="This is the total amount that you are able to supply to in this reserve. You are able to supply your wallet balance up until the supply cap is reached.">
+                    <span className="i-bi:info-circle ml-4px text-12px cursor-pointer" />
+                  </ToolTip>
+                </span>
+                {token?.symbol === 'CFX' && (
+                  <div className="flex items-center">
+                    Supply WCFX
+                    <Toggle id='handle-supply-toggle' className="ml-8px" checked={useWCFX} onClick={() => setUseWCFX((pre) => !pre)} />
+                  </div>
+                )}
+              </div>
             }
             step={String(`1e-${token?.decimals}`)}
-            symbol={token?.symbol}
+            symbol={symbol}
             decimals={token?.decimals}
             usdPrice={token?.usdPrice!}
             min={Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals)}
             max={max}
           />
 
-          <Button fullWidth size="large" className="mt-48px" disabled={!max} loading={!max ? 'start' : undefined}>
+          <Button id='handle-supply-max-btn' fullWidth size="large" className="mt-48px" disabled={!max} loading={!max ? 'start' : undefined}>
             {max ? 'Continue' : 'Checking Gas Fee...'}
           </Button>
         </form>
@@ -92,8 +120,10 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             <div className="flex justify-between">
               <span>Amount</span>
               <div className="text-right">
-                <BalanceText balance={confirmAmountUnit} symbol={token?.symbol} decimals={token?.decimals} placement="top" />
-                <p className="mt-2px text-12px text-#62677B">${confirmAmountUnit.mul(token?.usdPrice!).toDecimalStandardUnit(2)}</p>
+                <BalanceText balance={confirmAmountUnit} symbol={symbol} decimals={token?.decimals} />
+                <p className="mt-2px text-12px text-#62677B">
+                  <BalanceText balance={confirmAmountUnit.mul(token?.usdPrice!)} abbrDecimals={2} symbolPrefix="$" />
+                </p>
               </div>
             </div>
 
@@ -106,17 +136,31 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
 
             <div className="flex justify-between">
               <span>Collateralization</span>
-              <div className="text-right">Disabled</div>
+              <div className="text-right text-#3AC170">
+                {token?.canBeCollateral ? (
+                  <>
+                    <span className="i-charm:circle-tick text-18px mr-6px translate-y-[-1px]" />
+                    Can be collateral
+                  </>
+                ) : token?.canBeCollateral === false ? (
+                  <>
+                    <span className="i-charm:circle-cross text-18px mr-6px translate-y-[-1px]" />
+                    Can't be collateral
+                  </>
+                ) : (
+                  '--'
+                )}
+              </div>
             </div>
 
-            {estimateHealthFactor && (
+            {hasSupplied && estimateHealthFactor && (
               <div className="flex justify-between">
                 <span>Health factor</span>
                 <div className="text-right">
-                  <p className="text-#F89F1A">
-                    <span>{userData?.healthFactor ?? ''}</span>
+                  <p>
+                    <HealthFactor value={userData?.healthFactor} />
                     <span className="i-fa6-solid:arrow-right-long mx-6px text-12px translate-y-[-1px]" />
-                    <span>{estimateHealthFactor}</span>
+                    <HealthFactor value={estimateHealthFactor} />
                   </p>
                   <p className="mt-6px text-12px text-#62677B">{`Liquidation at <1.0`}</p>
                 </div>
@@ -125,14 +169,15 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           </div>
 
           <Button
+            id='handle-supply-confirm-btn'
             fullWidth
             size="large"
             className="mt-48px"
             disabled={approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending'}
-            loading={(approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending') ? 'start' : undefined}
+            loading={approveStatus === 'checking-approve' || approveStatus === 'approving' || transactionStatus === 'sending' ? 'start' : undefined}
             onClick={() => {
               if (approveStatus === 'approved') {
-                sendTransaction({ amount: confirmAmountUnit, symbol: token.symbol, tokenAddress: token.address });
+                sendTransaction({ amount: confirmAmountUnit, symbol: symbol, tokenAddress: token.address });
               } else if (approveStatus === 'need-approve') {
                 handleApprove();
               }
@@ -142,17 +187,17 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               <>
                 {approveStatus === 'checking-approve' && 'Checking Approve...'}
                 {approveStatus === 'approving' && 'Approving...'}
-                {approveStatus === 'need-approve' && `Approve ${token?.symbol}`}
-                {approveStatus === 'approved' && `Supply ${token?.symbol}`}
+                {approveStatus === 'need-approve' && `Approve ${symbol}`}
+                {approveStatus === 'approved' && `Supply ${symbol}`}
               </>
             )}
-            {transactionStatus === 'sending' && `Supplying ${token?.symbol}...`}
+            {transactionStatus === 'sending' && `Supplying ${symbol}...`}
           </Button>
         </>
       )}
       {(transactionStatus === 'success' || transactionStatus === 'failed') && (
         <>
-          <img src={transactionStatus === 'success' ? Success : Error} alt="error" className="block w-48px h-48px mt-24px mx-auto" />
+          <img src={transactionStatus === 'success' ? Success : Error} alt={transactionStatus} className="block w-48px h-48px mt-24px mx-auto" />
           <p className="mt-12px mb-8px text-20px text-#303549 text-center font-semibold">
             {transactionStatus === 'success' && 'All done!'}
             {transactionStatus === 'failed' && 'Transaction failed!'}
@@ -160,23 +205,24 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           <p className="text-14px text-#303549 text-center">
             {transactionStatus === 'success' && (
               <>
-                You supplied <span className='font-semibold'>{confirmAmountUnit?.toDecimalStandardUnit(2)}</span> {token?.symbol}
+                You supplied <BalanceText className="font-semibold" balance={confirmAmountUnit} symbol={symbol} />
               </>
             )}
             {transactionStatus === 'failed' && error}
           </p>
-          {scanUrl &&
+          {scanUrl && (
             <a
-              className='absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline'
+              id='handle-supply-reviewTx-link'
+              className="absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline"
               href={scanUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
               Review tx details
-              <span className='i-charm:link-external ml-3px text-10px translate-y-[-.5px]' />
+              <span className="i-charm:link-external ml-3px text-10px translate-y-[-.5px]" />
             </a>
-          }
-          <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
+          )}
+          <Button id='handle-supply-ok-btn' fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
         </>

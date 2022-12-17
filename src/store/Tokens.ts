@@ -3,7 +3,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import LocalStorage from 'localstorage-enhance';
 import { store as walletStore, Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { intervalFetchChain } from '@utils/fetchChain';
-import { UiPoolDataContract, LendingPoolContract, MulticallContract, createERC20Contract } from '@utils/contracts';
+import { UiPoolDataContract, LendingPoolContract, MultiFeeDistributionContract, MulticallContract, ChefIncentivesControllerContract, createERC20Contract } from '@utils/contracts';
 import { isEqual, debounce } from 'lodash-es';
 
 interface Token {
@@ -21,7 +21,7 @@ interface TokenData extends Token {
   supplyAPY: Unit;
   borrowAPY: Unit;
   availableLiquidity: Unit;
-  canBecollateral: boolean;
+  canBeCollateral: boolean;
   reserveLiquidationThreshold: Unit;
   reserveLiquidationBonus: Unit;
   maxLTV: number;
@@ -57,9 +57,10 @@ export interface TokenInfo {
   maxLTV?: string;
   liquidationThreshold?: string;
   liquidationPenalty?: string;
-  canBecollateral?: boolean;
+  canBeCollateral?: boolean;
 
   balance?: Unit;
+  wcfxBalance?: Unit;
   supplyBalance?: Unit;
   supplyPrice?: Unit;
   supplyAPY?: Unit;
@@ -71,9 +72,10 @@ export interface TokenInfo {
   totalMarketBorrowBalance?: Unit;
   totalMarketBorrowPrice?: Unit;
   availableBorrowBalance?: Unit;
+  earnedGoledoBalance?: Unit;
 }
 
-interface TokensStore {
+export interface TokensStore {
   cfxUsdPrice?: Unit;
   tokensInPool?: Array<Token>;
 
@@ -82,11 +84,14 @@ interface TokensStore {
   tokensBalance?: Record<
     string,
     {
+      name?: string;
       balance?: Unit;
+      wcfxBalance?: Unit;
       supplyBalance?: Unit;
       borrowBalance?: Unit;
       totalMarketSupplyBalance?: Unit;
       totalMarketBorrowBalance?: Unit;
+      earnedGoledoBalance?: Unit,
     }
   >;
 
@@ -111,7 +116,8 @@ interface TokensStore {
     borrowPowerUsed: string;
     availableBorrowsUSD: Unit;
     loanToValue: string;
-  }
+  };
+  claimableFees?: Array<{ name: string; symbol: string; address: string; supplyTokenAddress: string; decimals: number; balance: Unit; price: Unit; }>;
 }
 
 export const tokensStore = create(subscribeWithSelector(() =>({ tokensInPool: LocalStorage.getItem(`tokensInPool-${import.meta.env.MODE}`)} as TokensStore)));
@@ -122,8 +128,8 @@ walletStore.subscribe(
   (state) => state.accounts,
   (accounts) => {
     unsub?.();
-
     const account = accounts?.[0];
+    
     if (!account) {
       tokensStore.setState({
         tokensData: undefined,
@@ -140,6 +146,7 @@ walletStore.subscribe(
     const promises = [
       [import.meta.env.VITE_LendingPoolAddress, LendingPoolContract.interface.encodeFunctionData('getUserAccountData', [account])],
       [import.meta.env.VITE_UiPoolDataProviderAddress, UiPoolDataContract.interface.encodeFunctionData('getReservesData', [import.meta.env.VITE_LendingPoolAddressesProviderAddress, account])],
+      [import.meta.env.VITE_MultiFeeDistributionAddress, MultiFeeDistributionContract.interface.encodeFunctionData('claimableRewards', [account])],
     ];
 
     unsub = intervalFetchChain(() => MulticallContract.callStatic.aggregate(promises), {
@@ -147,14 +154,18 @@ walletStore.subscribe(
       callback: ({ returnData }: { returnData?: Array<any> } = { returnData: undefined }) => {
         const userAccountData = LendingPoolContract.interface.decodeFunctionResult('getUserAccountData', returnData?.[0]);
         const availableBorrowsUSD = Unit.fromMinUnit(userAccountData?.availableBorrowsETH?._hex ?? 0);
-
         const totalDebtUSD = Unit.fromMinUnit(userAccountData?.totalDebtETH?._hex ?? 0);
         const userData = {
-          healthFactor: Unit.fromMinUnit(userAccountData?.healthFactor?._hex ?? 0).toDecimalStandardUnit(2),
+          healthFactor: Unit.fromMinUnit(userAccountData?.healthFactor?._hex ?? 0).toDecimalStandardUnit(),
           borrowPowerUsed: totalDebtUSD.div(totalDebtUSD.add(availableBorrowsUSD)).mul(Hundred).toDecimalMinUnit(2),
           availableBorrowsUSD,
           loanToValue: Unit.fromMinUnit(userAccountData?.ltv?._hex ?? 0).div(Unit.fromMinUnit(10000)).toDecimalMinUnit(),
         }
+        if (userData.healthFactor.indexOf('e+') !== -1) {
+          userData.healthFactor = 'Infinity';
+        } else if (userData.healthFactor.indexOf('e-') !== -1) {
+          userData.healthFactor = '0';
+        } else userData.healthFactor = Unit.fromMinUnit(userAccountData?.healthFactor?._hex ?? 0).toDecimalStandardUnit(2);
 
         const reservesData = UiPoolDataContract.interface.decodeFunctionResult('getReservesData', returnData?.[1]);
         const tokensPoolDataArr: Array<TokenData> = reservesData[0]?.map((token: any) => convertOriginTokenData(token, availableBorrowsUSD));
@@ -178,7 +189,32 @@ walletStore.subscribe(
           userTokensPoolDataArr.map((userTokenData: UserTokenData) => [userTokenData.address, userTokenData])
         );
 
-        tokensStore.setState({ tokensData, userTokensData, userData });
+        const claimableFeesData = MultiFeeDistributionContract.interface.decodeFunctionResult('claimableRewards', returnData?.[2]);
+        const claimableFees: TokensStore['claimableFees'] = claimableFeesData?.[0]?.map((data: any) => {
+          const targetToken = tokensInPool.find((token) => token.supplyTokenAddress === data.token);
+          const balance = Unit.fromMinUnit(data.amount._hex ?? 0);
+          if (!targetToken) {
+            return {
+              address: import.meta.env.VITE_GoledoTokenAddress,
+              supplyTokenAddress: import.meta.env.VITE_GoledoTokenAddress,
+              balance,
+              name: 'Goledo',
+              symbol: 'GOL',
+              decimals: 18,
+            }
+          }
+          return {
+            address: targetToken?.address,
+            supplyTokenAddress: targetToken?.supplyTokenAddress,
+            balance,
+            price: tokensData[targetToken?.address]?.usdPrice?.mul(balance),
+            name: targetToken?.name,
+            symbol: targetToken?.symbol,
+            decimals: targetToken?.decimals,
+          }
+        });
+
+        tokensStore.setState({ tokensData, userTokensData, userData, claimableFees });
       },
     });
   },
@@ -219,30 +255,49 @@ const calcUserBalance = debounce(() => {
     const tokenContract = createERC20Contract(borrowTokenAddress);
     return [borrowTokenAddress, tokenContract.interface.encodeFunctionData('totalSupply')];
   });
+  const getNamePromises = tokens.map(({ address }) => {
+    const tokenContract = createERC20Contract(address);
+    return [address, tokenContract.interface.encodeFunctionData('name')];
+  });
+
   const promises = getBalancePromises
     .concat(getSupplyBalancePromises)
     .concat(getBrrowBalancePromises)
     .concat(getTotalSupplyBalancePromises)
-    .concat(getTotalBrrowBalancePromises);
+    .concat(getTotalBrrowBalancePromises)
+    .concat(getNamePromises);
+
+  promises.push([
+    import.meta.env.VITE_ChefIncentivesControllerContractAddress,
+    ChefIncentivesControllerContract.interface.encodeFunctionData('claimableReward', [account, tokens.map(token => token.borrowTokenAddress).concat(tokens.map(token => token.supplyTokenAddress))])
+  ]);
 
   unsubBalance = intervalFetchChain(() => MulticallContract.callStatic.aggregate(promises), {
     intervalTime: 5000,
     equalKey: 'tokensBalance',
-    callback: (result: { returnData: Array<string> }) => {
+    callback: (result: { returnData: any; }) => {
       const tokensBalance: TokensStore['tokensBalance'] = Object.fromEntries(tokens.map((token) => [token.address, {}]));
-
+      const eachTokenEarnedGoledoBalance = ChefIncentivesControllerContract.interface.decodeFunctionResult('claimableReward', result?.['returnData']?.at(-1))?.[0];
+      
       tokens.forEach((token, index) => {
         if (token.symbol === 'CFX') {
+          tokensBalance[token.address].name = 'CFX';
           tokensBalance[token.address].balance = walletStore.getState().balance;
+          tokensBalance[token.address].wcfxBalance = Unit.fromMinUnit(result?.['returnData']?.[index] ?? 0);
         } else {
           tokensBalance[token.address].balance = Unit.fromMinUnit(result?.['returnData']?.[index] ?? 0);
+          const tokenContract = createERC20Contract(token.address);
+          tokensBalance[token.address].name = tokenContract.interface.decodeFunctionResult('name', result?.['returnData']?.[index + tokens.length * 5])?.[0];
+  
         }
 
         tokensBalance[token.address].supplyBalance = Unit.fromMinUnit(result?.['returnData']?.[index + tokens.length] ?? 0);
         tokensBalance[token.address].borrowBalance = Unit.fromMinUnit(result?.['returnData']?.[index + tokens.length * 2] ?? 0);
         tokensBalance[token.address].totalMarketSupplyBalance = Unit.fromMinUnit(result?.['returnData']?.[index + tokens.length * 3] ?? 0);
         tokensBalance[token.address].totalMarketBorrowBalance = Unit.fromMinUnit(result?.['returnData']?.[index + tokens.length * 4] ?? 0);
+        tokensBalance[token.address].earnedGoledoBalance = Unit.fromMinUnit(eachTokenEarnedGoledoBalance?.[index]?._hex ?? 0).add(Unit.fromMinUnit(eachTokenEarnedGoledoBalance?.[index + tokens.length]?._hex ?? 0));
       });
+
       tokensStore.setState({ tokensBalance });
     },
   });
@@ -285,7 +340,8 @@ tokensStore.subscribe((state) => state.tokensData, calcSupplyTokenPrice, { fireI
 
 const aggregateData = debounce(() => {
   const { tokensInPool, tokensData, userTokensData, tokensBalance, tokensPrice } = tokensStore.getState();
-  if (!tokensInPool?.length) {
+  const account = walletStore.getState().accounts?.[0];
+  if (!account || !tokensInPool?.length) {
     tokensStore.setState({
       tokens: undefined,
       curUserSupplyPrice: undefined,
@@ -307,13 +363,12 @@ const aggregateData = debounce(() => {
     token.supplyAPY = tokensData?.[token.address]?.supplyAPY;
     token.borrowAPY = tokensData?.[token.address]?.borrowAPY;
     token.reserveLiquidationThreshold = tokensData?.[token.address]?.reserveLiquidationThreshold;
-    token.availableLiquidity = tokensData?.[token.address]?.availableLiquidity;
     token.usdPrice = tokensData?.[token.address]?.usdPrice;
     token.collateral = userTokensData?.[token.address]?.collateral;
     token.maxLTV = tokensData?.[token.address]?.maxLTV?.toFixed(2);
-    token.canBecollateral = tokensData?.[token.address]?.canBecollateral;
+    token.canBeCollateral = tokensData?.[token.address]?.canBeCollateral;
+    token.availableLiquidity = tokensData?.[token.address]?.availableLiquidity;
     token.availableBorrowBalance = tokensData?.[token.address]?.availableBorrowBalance;
-
     if (tokensData?.[token.address]?.reserveLiquidationThreshold) {
       token.liquidationThreshold = tokensData[token.address].reserveLiquidationThreshold.div(Hundred).toDecimalMinUnit(2);
     }
@@ -322,22 +377,36 @@ const aggregateData = debounce(() => {
     }
   });
 
-  const supplyTokens = tokens.filter(token => token.supplyPrice);
+  const hasBorrowed = tokens.some((token) => token.borrowBalance?.greaterThan(Zero));
+  tokens.forEach(token => {
+    if (token.availableLiquidity && token.availableBorrowBalance && (hasBorrowed || token.availableBorrowBalance.greaterThan(token.availableLiquidity))) {
+      token.availableBorrowBalance = Unit.min(token.availableBorrowBalance, token.availableLiquidity).mul(Unit.fromMinUnit(.99));
+      token.availableBorrowBalance = Unit.fromStandardUnit(token.availableBorrowBalance.toDecimalStandardUnit(token.decimals, token.decimals), token.decimals);
+    }
+  });
+
+  const supplyTokens = tokens.filter(token => token.supplyBalance?.greaterThan(Zero));
   if (supplyTokens.length) {
     const curUserSupplyPrice = supplyTokens.reduce((pre, cur) => pre.add(cur.supplyPrice ?? Zero), Zero);
     tokensStore.setState({ curUserSupplyPrice });
     if (curUserSupplyPrice.greaterThan(Zero) && supplyTokens.every(token => token.supplyAPY)) {
       tokensStore.setState({ curUserSupplyAPY: supplyTokens.reduce((pre, cur) => pre.add((cur.supplyPrice ?? Zero).mul(cur.supplyAPY ?? Zero).div(curUserSupplyPrice)), Zero) });
     }
+  } else {
+    tokensStore.setState({ curUserSupplyPrice: Zero, curUserSupplyAPY: Zero });
   }
 
-  const borrowTokens = tokens.filter(token => token.borrowPrice);
+  const borrowTokens = tokens.filter(token => token.borrowBalance?.greaterThan(Zero));
   if (borrowTokens.length) {
     const curUserBorrowPrice = borrowTokens.reduce((pre, cur) => pre.add(cur.borrowPrice ?? Zero), Zero);
     tokensStore.setState({ curUserBorrowPrice });
     if (borrowTokens.every(token => token.borrowAPY)) {
-      tokensStore.setState({ curUserBorrowAPY: borrowTokens.reduce((pre, cur) => pre.add((cur.borrowPrice ?? Zero).mul(cur.borrowAPY ?? Zero).div(curUserBorrowPrice)), Zero) });
+      tokensStore.setState({
+        curUserBorrowAPY: borrowTokens.reduce((pre, cur) => pre.add((cur.borrowPrice ?? Zero).mul(cur.borrowAPY ?? Zero).div(curUserBorrowPrice)), Zero)
+      });
     }
+  } else {
+    tokensStore.setState({ curUserBorrowPrice: Zero, curUserBorrowAPY: Zero });
   }
 
   tokensStore.setState({ tokens });
@@ -348,6 +417,7 @@ tokensStore.subscribe((state) => state.tokensData, aggregateData, { fireImmediat
 tokensStore.subscribe((state) => state.tokensBalance, aggregateData, { fireImmediately: true });
 tokensStore.subscribe((state) => state.userTokensData, aggregateData, { fireImmediately: true });
 tokensStore.subscribe((state) => state.tokensPrice, aggregateData, { fireImmediately: true });
+walletStore.subscribe((state) => state.accounts, aggregateData, { fireImmediately: true });
 
 
 
@@ -367,6 +437,7 @@ const selectors = {
   curUserBorrowPrice: (state: TokensStore) => state.curUserBorrowPrice,
   curUserBorrowAPY: (state: TokensStore) => state.curUserBorrowAPY,
   userData: (state: TokensStore) => state.userData,
+  claimableFees: (state: TokensStore) => state.claimableFees
 };
 
 export const useTokens = () => tokensStore(selectors.tokens);
@@ -375,6 +446,7 @@ export const useCurUserSupplyAPY = () => tokensStore(selectors.curUserSupplyAPY)
 export const useCurUserBorrowPrice = () => tokensStore(selectors.curUserBorrowPrice);
 export const useCurUserBorrowAPY = () => tokensStore(selectors.curUserBorrowAPY);
 export const useUserData = () => tokensStore(selectors.userData);
+export const useClaimableFees = () => tokensStore(selectors.claimableFees);
 
 
 
@@ -394,12 +466,16 @@ const convertOriginTokenData = (originData: any, availableBorrowsUSD: Unit) => {
     borrowTokenAddress: originData.variableDebtTokenAddress,
     usdPrice: Unit.fromMinUnit(originData.priceInEth._hex).div(Decimal),
     availableLiquidity: Unit.fromMinUnit(originData.availableLiquidity._hex),
-    canBecollateral: originData.borrowingEnabled,
+    canBeCollateral: originData.usageAsCollateralEnabled,
     reserveLiquidationThreshold: Unit.fromMinUnit(originData.reserveLiquidationThreshold._hex),
     reserveLiquidationBonus: Unit.fromMinUnit(originData.reserveLiquidationBonus._hex),
     maxLTV: Number(originData.baseLTVasCollateral._hex) / 100,
   } as TokenData;
+  
   res.availableBorrowBalance = Unit.fromStandardUnit(availableBorrowsUSD.div(res.usdPrice).toDecimalStandardUnit(res.decimals, res.decimals), res.decimals);
+  if (res.availableBorrowBalance.lessThan(Unit.fromStandardUnit(0.000001, res.decimals))) {
+    res.availableBorrowBalance = Zero;
+  }
   const liquidityRate = Unit.fromMinUnit(originData.liquidityRate._hex);
   const supplyAPR = liquidityRate.div(Ray);
   const supplyAPY = One.add(supplyAPR.div(SecondsPerYear)).pow(SecondsPerYear).sub(One);
