@@ -7,6 +7,7 @@ import USDT from './usdt.svg';
 const tokensIcon = {
     ETH,
     BTC,
+    WBTC: BTC,
     WCFX: CFX,
     CFX,
     GOL,
