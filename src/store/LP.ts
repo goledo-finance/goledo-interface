@@ -115,7 +115,7 @@ const calcLPUsdPrice = debounce(() => {
   const cfxUsdPrice = tokensStore.getState().cfxUsdPrice;
   const { reserve0, totalSupply } = lpStore.getState();
   if (!cfxUsdPrice || !reserve0 || !totalSupply) {
-    lpStore.setState({ usdPrice: undefined });
+    lpStore.setState({ usdPrice: undefined, stakedPrice: undefined, totalMarketStakedPrice: undefined });
     return;
   }
 
@@ -123,19 +123,35 @@ const calcLPUsdPrice = debounce(() => {
   if (usdPrice.toDecimalMinUnit() === 'NaN') {
     usdPrice = Zero
   }
-  const { stakedBalance, totalMarketStakedBalance, earnedGoledoBalance, totalRewardsPerDayBalance, totalRewardsPerWeekBalance } = lpStore.getState();
+  const { stakedBalance, totalMarketStakedBalance } = lpStore.getState();
   lpStore.setState({
     usdPrice,
     stakedPrice: usdPrice.mul(stakedBalance!),
     totalMarketStakedPrice: usdPrice.mul(totalMarketStakedBalance!),
-    earnedGoledoPrice: usdPrice.mul(earnedGoledoBalance!),
-    totalRewardsPerDayPrice: usdPrice.mul(totalRewardsPerDayBalance!),
-    totalRewardsPerWeekPrice: usdPrice.mul(totalRewardsPerWeekBalance!),
   });
 }, 50);
 lpStore.subscribe((state) => state.reserve0, calcLPUsdPrice, { fireImmediately: true });
 tokensStore.subscribe((state) => state.cfxUsdPrice, calcLPUsdPrice, { fireImmediately: true });
 
+const calcRewardsUsdPrice = debounce(() => {
+  let goledoUsdPrice = goledoStore.getState().usdPrice;
+  if (!goledoUsdPrice) {
+    lpStore.setState({ earnedGoledoPrice: undefined, totalRewardsPerDayPrice: undefined, totalRewardsPerWeekPrice: undefined });
+    return;
+  }
+
+  if (goledoUsdPrice.toDecimalMinUnit() === 'NaN') {
+    goledoUsdPrice = Zero
+  }
+  const { earnedGoledoBalance, totalRewardsPerDayBalance, totalRewardsPerWeekBalance } = lpStore.getState();
+  lpStore.setState({
+    earnedGoledoPrice: goledoUsdPrice.mul(earnedGoledoBalance!),
+    totalRewardsPerDayPrice: goledoUsdPrice.mul(totalRewardsPerDayBalance!),
+    totalRewardsPerWeekPrice: goledoUsdPrice.mul(totalRewardsPerWeekBalance!),
+  });
+}, 50);
+lpStore.subscribe((state) => state.earnedGoledoBalance, calcRewardsUsdPrice, { fireImmediately: true });
+goledoStore.subscribe((state) => state.usdPrice, calcRewardsUsdPrice, { fireImmediately: true });
 
 
 const calcStakeAPR = debounce(() => {
