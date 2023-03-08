@@ -20,4 +20,3 @@ completeDetectEthereum().then(() => {
     </React.StrictMode>
   );
 });
-
