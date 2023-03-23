@@ -237,7 +237,8 @@ const calcGoledoAPR = debounce(() => {
 
   const APR = (rewardDatas[import.meta.env.VITE_GoledoTokenAddress]?.rewardRate ?? Zero).mul(OneYearSeconds).mul(goledoUsdPrice).div(totalMarketLockedBalance);
 
-  const stakeAPR = tokens.reduce(
+  const stakeAPR = tokens.filter(token => rewardPerTokens[token.address] && rewardPerTokens[token.address].greaterThan(Zero))
+  .reduce(
     (acc, token) =>
       acc.add(
         (rewardPerTokens[token.address] ?? Zero)
