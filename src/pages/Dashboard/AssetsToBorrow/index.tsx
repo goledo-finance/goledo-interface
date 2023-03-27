@@ -37,7 +37,11 @@ const columns: Columns<TokenInfo> = [
         </ToolTip>
       </div>
     ),
-    render: ({ availableBorrowBalance, decimals }) => <div className="font-semibold"><BalanceText balance={availableBorrowBalance} decimals={decimals} /></div>,
+    render: ({ availableBorrowBalance, decimals, symbol }) => (
+      <div className="font-semibold">
+        <BalanceText balance={availableBorrowBalance} decimals={decimals} id={`dashboard-assets-available-borrow-balance-${symbol}`} />
+      </div>
+    ),
   },
   {
     name: 'Interest Rate',
@@ -50,8 +54,10 @@ const columns: Columns<TokenInfo> = [
         </ToolTip>
       </div>
     ),
-    render: ({ borrowAPY }) => (
-      <div className="font-semibold"><PercentageText value={borrowAPY} /></div>
+    render: ({ borrowAPY, symbol }) => (
+      <div className="font-semibold">
+        <PercentageText value={borrowAPY} id={`dashboard-assets-borrow-interest-rate-${symbol}`}/>
+      </div>
     ),
   },
   {
@@ -60,6 +66,7 @@ const columns: Columns<TokenInfo> = [
     render: ({ address, symbol, availableBorrowBalance }) => (
       <div className="w-full h-full flex justify-end items-center gap-12px">
         <Button
+          id="dashboard-assets-to-borrow-btn"
           size="small"
           className="max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none"
           loading={!availableBorrowBalance}
@@ -69,8 +76,10 @@ const columns: Columns<TokenInfo> = [
           Borrow
         </Button>
 
-        <Link to={`/detail/${address}`} className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none no-underline'>
-          <Button size='small' variant='outlined' fullWidth>Details</Button>
+        <Link to={`/detail/${address}`} className="max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none no-underline" id="dashboard-assets-to-borrow-link">
+          <Button size="small" variant="outlined" fullWidth>
+            Details
+          </Button>
         </Link>
       </div>
     ),

@@ -20,6 +20,7 @@ const Operate: React.FC<{ address: string; symbol: string; borrowBalance?: Unit;
   return (
     <div className="flex items-center gap-8px">
       <Button
+        id='detail-borrows-borrows-btn'
         size="small"
         className="w-80px"
         loading={!availableBorrowBalance}
@@ -29,6 +30,7 @@ const Operate: React.FC<{ address: string; symbol: string; borrowBalance?: Unit;
         Borrow
       </Button>
       <Button
+        id='detail-borrows-repay-btn'
         size="small"
         variant="outlined"
         className="w-80px"
@@ -47,7 +49,7 @@ const Borrows: React.FC<Token> = ({ address, symbol, decimals, borrowBalance, av
 
   return (
     <Card
-      title="Borrows"
+      title="Borrowed"
       className="flex-auto flex flex-col gap-12px"
       titleRight={<Operate address={address} symbol={symbol} borrowBalance={borrowBalance} availableBorrowBalance={availableBorrowBalance} />}
     >
@@ -70,7 +72,7 @@ const Borrows: React.FC<Token> = ({ address, symbol, decimals, borrowBalance, av
       </div>
 
       <div className="flex justify-between text-14px text-#303549">
-        <span>Available to borrow</span>
+        <span>Available to Borrow</span>
         <span className="font-semibold">
           <BalanceText balance={availableBorrowBalance} decimals={decimals} />
           <span className="text-#62677B font-normal"> {symbol}</span>

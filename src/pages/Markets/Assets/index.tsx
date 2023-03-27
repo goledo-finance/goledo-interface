@@ -38,7 +38,7 @@ const columns: Columns<TokenInfo> = [{
   name: 'Supply APY',
   width: '12%',
   render: ({ supplyAPY }) => <div className='font-semibold'><PercentageText value={supplyAPY} /></div>
-},{
+}, {
   name: 'Total Borrowed',
   width: '21%',
   render: ({ totalMarketBorrowBalance, totalMarketBorrowPrice, decimals }) => (
@@ -62,18 +62,19 @@ const columns: Columns<TokenInfo> = [{
 }, {
   name: '',
   width: '20%',
-  render: ({ address, earnedGoledoBalance, decimals }) => (
+  render: ({ address, earnedGoledoBalance, decimals, symbol }) => (
     <div className='w-full h-full flex justify-end items-center gap-12px'>
-        <Button
-          size='small'
-          className='!flex-shrink-1 lt-md:max-w-none lt-md:w-50%'
-          loading={!earnedGoledoBalance}
-          disabled={earnedGoledoBalance?.equals(Zero)}
-          onClick={() => handleVestingGoledo({ tokenAddress: address })}
-        >
-          {earnedGoledoBalance?.greaterThan(Zero) ? <BalanceText balance={earnedGoledoBalance} decimals={decimals} symbol="Goledo" /> : 'None to vest'}
-        </Button>
-      <Link to={`/detail/${address}`} className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none no-underline'>
+      <Button
+        id={`markets-assets-vesting-${symbol}-btn`}
+        size='small'
+        className='!flex-shrink-1 lt-md:max-w-none lt-md:w-50%'
+        loading={!earnedGoledoBalance}
+        disabled={earnedGoledoBalance?.equals(Zero)}
+        onClick={() => handleVestingGoledo({ tokenAddress: address })}
+      >
+        {earnedGoledoBalance?.greaterThan(Zero) ? <BalanceText balance={earnedGoledoBalance} decimals={decimals} symbol="Goledo" /> : 'None to vest'}
+      </Button>
+      <Link to={`/detail/${address}`} className='max-w-76px w-50% !flex-shrink-1 lt-md:max-w-none no-underline' id={`markets-assets-details-${symbol}-link`}>
         <Button size='small' variant='outlined' fullWidth>Details</Button>
       </Link>
     </div>

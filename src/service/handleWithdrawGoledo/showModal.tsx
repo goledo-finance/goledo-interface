@@ -63,6 +63,7 @@ const ModalContent: React.FC = () => {
           </div>
 
           <Button
+            id='handle-withdraw-goledo-send-transaction-btn'
             fullWidth
             size="large"
             className="mt-48px"
@@ -92,6 +93,7 @@ const ModalContent: React.FC = () => {
           </p>
           {scanUrl && (
             <a
+              id='handle-withdraw-goledo-reviewTx-link'
               className="absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline"
               href={scanUrl}
               target="_blank"
@@ -101,7 +103,7 @@ const ModalContent: React.FC = () => {
               <span className="i-charm:link-external ml-3px text-10px translate-y-[-.5px]" />
             </a>
           )}
-          <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
+          <Button id='handle-withdraw-goledo-ok-btn' fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
         </>

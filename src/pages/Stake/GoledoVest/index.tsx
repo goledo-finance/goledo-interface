@@ -13,20 +13,20 @@ const columns: Columns<Vesting> = [{
   render: ({ balance }) => (
     <div className='flex items-center'>
       <img className="w-18px h-18px mr-4px" src={Goledo} alt="Goledo" />
-      <BalanceText balance={balance} symbol="Goledo" />
+      <BalanceText balance={balance} symbol="Goledo" id='stake-goledo-vest-vesting' />
     </div>
   )
 }, {
   name: 'Expiry',
   width: '50%',
-  render: ({ unlockTime }) => <div>{new Date(unlockTime).toLocaleString()}</div>
+  render: ({ unlockTime }) => <div id='stake-goledo-vest-expiry'>{new Date(unlockTime).toLocaleString()}</div>
 }];
 
 const GoledoVest: React.FC = () => {
   const vestings = useGoledoVestings();
-  
+
   return (
-    <Card title="Goledo Vest">
+    <Card title="Goledo Vest" id='stake-godedo-vest-card'>
       <Table
         className='mt-16px'
         columns={columns}

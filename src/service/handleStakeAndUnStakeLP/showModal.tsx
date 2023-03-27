@@ -37,8 +37,9 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Unstake' }> = ({ type }) => {
   return (
     <div className="relative">
       {!confirmAmount && (
-        <form onSubmit={handleContinue} className="mt-10px">
+        <form id='handle-stake-unstakeLP-form' onSubmit={handleContinue} className="mt-10px">
           <BalanceInput
+            id='handle-stake-unstakelp-amount-input'
             {...register('amount', {
               required: true,
               min: Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, lpToken.decimals),
@@ -53,7 +54,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Unstake' }> = ({ type }) => {
             max={max}
           />
 
-          <Button fullWidth size="large" className="mt-48px">
+          <Button id='handle-stake-unstakeLP-continue-btn' fullWidth size="large" className="mt-48px">
             Continue
           </Button>
         </form>
@@ -93,6 +94,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Unstake' }> = ({ type }) => {
           </div>
 
           <Button
+            id='handle-stake-unstakeLP-confirm-btn'
             fullWidth
             size="large"
             className="mt-48px"
@@ -135,6 +137,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Unstake' }> = ({ type }) => {
           </p>
           {scanUrl && (
             <a
+              id='handle-stake-unstakeLP-reviewTx-link'
               className="absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline"
               href={scanUrl}
               target="_blank"
@@ -144,7 +147,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Unstake' }> = ({ type }) => {
               <span className="i-charm:link-external ml-3px text-10px translate-y-[-.5px]" />
             </a>
           )}
-          <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
+          <Button id='handle-stake-unstakeLP-ok-btn' fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
         </>

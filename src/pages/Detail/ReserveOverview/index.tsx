@@ -70,17 +70,17 @@ const ReserveOverview: React.FC<Token> = ({
           </div>
 
           <div className="flex justify-between items-center">
-            <span>Liquidation threshold</span>
+            <span>Liquidation Threshold</span>
             <span><PercentageText value={liquidationThreshold} /></span>
           </div>
 
           <div className="flex justify-between items-center">
-            <span>Liquidation penalty</span>
+            <span>Liquidation Penalty</span>
             <span><PercentageText value={liquidationPenalty} /></span>
           </div>
 
           <div className="flex justify-between items-center">
-            <span>Used Collateral</span>
+            <span>Use as Collateral</span>
             <span className="text-#3AC170 font-normal">
               {canBeCollateral ? (
                 <>

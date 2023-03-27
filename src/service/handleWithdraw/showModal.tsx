@@ -62,8 +62,9 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
   return (
     <div className="relative">
       {!confirmAmountUnit && (
-        <form onSubmit={handleContinue} className="mt-14px">
+        <form id='handle-withdraw-form' onSubmit={handleContinue} className="mt-14px">
           <BalanceInput
+            id='handle-withdraw-amount-input'
             {...register('amount', {
               required: true,
               min: Unit.fromMinUnit(1).toDecimalStandardUnit(undefined, token.decimals),
@@ -75,7 +76,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
                 {token?.symbol === 'CFX' && (
                   <div className="flex items-center whitespace-nowrap">
                     Supply WCFX
-                    <Toggle className="ml-8px" checked={useWCFX} onClick={() => setUseWCFX((pre) => !pre)} />
+                    <Toggle id='handle-withdraw-toggle' className="ml-8px" checked={useWCFX} onClick={() => setUseWCFX((pre) => !pre)} />
                   </div>
                 )}
               </div>
@@ -89,7 +90,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
             amountPrefix={'Available'}
           />
           {!availabeWithdrawAll && <p className='mt-14px text-10px sm:text-14px text-#FCCF23 absolute'>After the borrowers repays, you can withdraw all your assets</p>}
-          <Button fullWidth size="large" className="mt-48px" disabled={Number(estimateHealthFactor) < 1}>
+          <Button id='handle-withdraw-continue-btn' fullWidth size="large" className="mt-48px" disabled={Number(estimateHealthFactor) < 1}>
             Continue
           </Button>
         </form>
@@ -137,6 +138,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           </div>
 
           <Button
+            id='handle-withdraw-confirm-btn'
             fullWidth
             size="large"
             className="mt-48px"
@@ -189,6 +191,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
           </p>
           {scanUrl && (
             <a
+              id='handle-withdraw-reviewTx-link'
               className="absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline"
               href={scanUrl}
               target="_blank"
@@ -198,7 +201,7 @@ const ModalContent: React.FC<{ address: string }> = ({ address }) => {
               <span className="i-charm:link-external ml-3px text-10px translate-y-[-.5px]" />
             </a>
           )}
-          <Button fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
+          <Button id='handle-withdraw-ok-btn' fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
         </>

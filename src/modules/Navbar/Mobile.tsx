@@ -1,6 +1,7 @@
 import React, { type ComponentProps } from 'react';
 import cx from 'clsx';
 import { Link } from 'react-router-dom';
+import PeckShieldLogo from '@assets/imgs/PeckShieldLogo-w.svg';
 
 const NavLink: React.FC<ComponentProps<typeof Link> & { curPath: string }> = ({ to, children, curPath }) => (
   <li className={cx('relative flex items-center h-48px', { ['nav-link-mobile--active']: curPath?.startsWith(to as string) })}>
@@ -20,13 +21,13 @@ const Mobile: React.FC<{ open: boolean; curPath: string }> = ({ open, curPath })
     >
       <p className="mt-32px pl-40px text-12px text-#A5A8B6 font-semibold">Menu</p>
       <ul className="pl-40px flex flex-col gap-12px mt-8px text-22px font-semibold">
-        <NavLink to="/dashboard" curPath={curPath}>
+        <NavLink to="/dashboard" curPath={curPath} id="nav-bar-mobile-dashboard-link">
           Dashboard
         </NavLink>
-        <NavLink to="/markets" curPath={curPath}>
+        <NavLink to="/markets" curPath={curPath} id="nav-bar-mobile-markets-link">
           Markets
         </NavLink>
-        <NavLink to="/stake" curPath={curPath}>
+        <NavLink to="/stake" curPath={curPath} id="nav-bar-mobile-stake-link">
           Stake
         </NavLink>
       </ul>
@@ -37,6 +38,7 @@ const Mobile: React.FC<{ open: boolean; curPath: string }> = ({ open, curPath })
 
       <div className="pl-24px text-16px font-semibold no-underline">
         <a
+          id="nav-bar-mobile-faq-link"
           className="relative flex items-center h-44px px-50px text-#F1F1F3 no-underline"
           href="https://goledo.gitbook.io/goledo/"
           target="_blank"
@@ -46,6 +48,7 @@ const Mobile: React.FC<{ open: boolean; curPath: string }> = ({ open, curPath })
           FAQ
         </a>
         <a
+          id="nav-bar-telegram-mobile-link"
           className="relative flex items-center h-44px px-50px text-#F1F1F3 no-underline"
           href="https://t.me/GoledoFinance"
           target="_blank"
@@ -55,6 +58,7 @@ const Mobile: React.FC<{ open: boolean; curPath: string }> = ({ open, curPath })
           Telegram
         </a>
         <a
+          id="nav-bar-github-mobile-link"
           className="relative flex items-center h-44px px-50px text-#F1F1F3 no-underline"
           href="https://github.com/goledo-finance/goledo-interface"
           target="_blank"
@@ -62,6 +66,16 @@ const Mobile: React.FC<{ open: boolean; curPath: string }> = ({ open, curPath })
         >
           <span className="i-ant-design:github-filled absolute left-16px text-20px" />
           Github
+        </a>
+        <a
+          id="nav-bar-github-mobile-link"
+          className="relative flex items-center h-44px px-18px text-#F1F1F3 no-underline"
+          href="https://github.com/peckshield/publications/blob/master/audit_reports/PeckShield-Audit-Report-Goledo-v1.0.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Audit by
+          <img className="ml-6px w-100px h-22.25px select-none" src={PeckShieldLogo} draggable={false} alt="Peck shield" />
         </a>
       </div>
     </div>

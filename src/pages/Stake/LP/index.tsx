@@ -81,6 +81,7 @@ const LP: React.FC = () => {
 
       <div className="mt-12px flex gap-12px">
         <Button
+          id='stake-lp-stake-btn'
           size="large"
           className="w-33% !flex-auto"
           loading={!balance}
@@ -90,6 +91,7 @@ const LP: React.FC = () => {
           Stake
         </Button>
         <Button
+          id='stake-lp-unstake-btn'
           size="large"
           className="w-33% !flex-auto"
           loading={!balance}
@@ -99,6 +101,7 @@ const LP: React.FC = () => {
           Unstake
         </Button>
         <Button
+          id='stake-lp-vest-btn'
           size="large"
           className="w-33% !flex-auto"
           loading={!earnedGoledoBalance}
