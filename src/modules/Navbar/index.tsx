@@ -72,7 +72,7 @@ const MoreContent: React.FC = () => {
       <a
         id="nav-bar-faq-link"
         className="relative flex items-center h-44px px-50px text-#160042 hover:bg-#F1F1F3 transition-colors no-underline"
-        href="https://goledo.gitbook.io/goledo/"
+        href="https://goledo-1.gitbook.io/goledo-docs/"
         target="_blank"
         rel="noopener noreferrer"
       >

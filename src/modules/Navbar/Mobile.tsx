@@ -40,7 +40,7 @@ const Mobile: React.FC<{ open: boolean; curPath: string }> = ({ open, curPath })
         <a
           id="nav-bar-mobile-faq-link"
           className="relative flex items-center h-44px px-50px text-#F1F1F3 no-underline"
-          href="https://goledo.gitbook.io/goledo/"
+          href="https://goledo-1.gitbook.io/goledo-docs/"
           target="_blank"
           rel="noopener noreferrer"
         >
