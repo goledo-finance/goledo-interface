@@ -5,6 +5,7 @@ import GOL from './goledo.svg';
 import USDT from './usdt.svg';
 import USDC from './usdc.svg';
 import xCFX from './xcfx.png';
+import NUT from './nut.png'
 
 const tokensIcon = {
     ETH,
@@ -16,7 +17,8 @@ const tokensIcon = {
     GOLCFX: GOL,
     USDT,
     USDC,
-    xCFX
+    xCFX,
+    NUT
 } as Record<string, string>;
 
 export default tokensIcon;
