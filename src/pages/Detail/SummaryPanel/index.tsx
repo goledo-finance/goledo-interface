@@ -85,7 +85,7 @@ const SummaryPanel: React.FC<Token> = ({
       </div>
 
       <div className="mt-16px flex w-full gap-16px lt-md:justify-center lt-sm:flex-wrap lt-sm:gap-0 lt-sm:gap-y-12px">
-        <SummaryPanelItem iconUrl={tokensIcon[symbol]} title={symbol} className="lt-md:display-none w-208px lt-lg:w-180px">
+        <SummaryPanelItem iconUrl={tokensIcon[symbol]} title={symbol} className="lt-md:display-none min-w-208px lt-lg:min-w-180px">
           <p className="text-20px lt-sm:text-16px text-#F1F1F3 font-bold whitespace-nowrap">
             {name || 'Unset'}
           </p>
