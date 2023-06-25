@@ -36,7 +36,7 @@ const ReserveOverview: React.FC<Token> = ({
             style={{ background: `conic-gradient(#FE6060 0, #FE6060 ${100 - borrowedPercent}%, #3AC170 ${100 - borrowedPercent}%, #3AC170)` }}
           >
             <img
-              className="w-100px h-100px lt-xl:w-82px lt-xl:h-82px lt-md:w-40px lt-md:h-40px rounded-full border-2px border-white"
+              className="w-100px h-100px lt-xl:w-82px lt-xl:h-82px lt-md:w-40px lt-md:h-40px rounded-full border-2px border-white bg-white"
               src={tokensIcon[symbol]}
               alt={symbol}
             />
