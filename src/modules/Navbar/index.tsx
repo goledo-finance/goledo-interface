@@ -2,13 +2,14 @@ import React, { useState, useEffect, type ComponentProps } from 'react';
 import cx from 'clsx';
 import { Link, useLocation } from 'react-router-dom';
 import { shortenAddress } from '@utils/address';
-import { useAccount } from '@cfxjs/use-wallet-react/ethereum';
 import Dropdown from '@components/Dropdown';
 import AuthConnectButton from '@modules/AuthConnectButton';
 import GoledoWhite from '@assets/tokens/goledo-white.svg';
 import PeckShieldLogo from '@assets/imgs/PeckShieldLogo-b.svg';
 import Mobile from './Mobile';
 import './index.css';
+import { useWalletStore } from '@store/Wallet';
+import { walletFunction } from '@utils/wallet';
 
 const NavLink: React.FC<ComponentProps<typeof Link> & { curPath: string }> = ({ to, children, curPath, id }) => (
   <li className={cx('navbar-link relative flex items-center px-14px h-full overflow-hidden', { ['navbar-link--active']: curPath?.startsWith(to as string) })}>
@@ -20,7 +21,8 @@ const NavLink: React.FC<ComponentProps<typeof Link> & { curPath: string }> = ({ 
 
 const Navbar: React.FC = () => {
   const { pathname: curPath } = useLocation();
-  const account = useAccount();
+  const wallet = useWalletStore();
+  const account = walletFunction[wallet.name].useAccount();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -45,11 +47,7 @@ const Navbar: React.FC = () => {
         </ul>
         <More />
 
-        <AuthConnectButton id="nav-bar-connect-btn" className="min-w-156px !rounded-100px">
-          <div className="flex items-center px-12px h-36px rounded-100px border-1px border-#ebebed1f text-14px text-#F1F1F3 font-semibold">
-            {shortenAddress(account)}
-          </div>
-        </AuthConnectButton>
+        <AuthConnectButton id="nav-bar-connect-btn" className="min-w-156px !rounded-100px" />
 
         <label className="burger-container ml-20px sm:display-none" htmlFor="burger-check">
           <input

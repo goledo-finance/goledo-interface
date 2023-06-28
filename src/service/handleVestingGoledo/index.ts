@@ -1,10 +1,13 @@
-import { sendTransaction, store as walletStore } from '@cfxjs/use-wallet-react/ethereum';
 import { ChefIncentivesControllerContract } from '@utils/contracts';
 import { tokensStore } from '@store/Tokens';
+import { walletStore } from '@store/Wallet';
+import { walletFunction } from '@utils/wallet';
 export { default } from './showModal';
 
-export const handleVestingGoledo = async ({ tokenAddress }: { tokenAddress: string | 'lp' | 'all'; }) => {
-  const account = walletStore.getState().accounts?.[0];
+export const handleVestingGoledo = async ({ tokenAddress }: { tokenAddress: string | 'lp' | 'all' }) => {
+  const wallet = walletStore.getState().wallet;
+  const account = walletFunction[wallet.name].store.getState().accounts?.[0];
+  const sendTransaction = walletFunction[wallet.name].sendTransaction;
   const tokens = tokensStore.getState().tokens;
   let inputTokens: Array<string> = [];
   if (tokenAddress === 'lp') {
@@ -12,7 +15,7 @@ export const handleVestingGoledo = async ({ tokenAddress }: { tokenAddress: stri
   } else if (tokenAddress === 'all') {
     tokens?.forEach((token) => {
       inputTokens.push(token.supplyTokenAddress, token.borrowTokenAddress);
-    }); 
+    });
   } else {
     const targetToken = tokens?.find((token) => token.address === tokenAddress);
     if (!targetToken) throw new Error('no target token');
