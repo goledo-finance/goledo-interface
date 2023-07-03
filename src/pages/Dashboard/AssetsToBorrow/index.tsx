@@ -102,7 +102,6 @@ const configs: Configs<TokenInfo> = [
 
 const AssetsToBorrow: React.FC = () => {
   const tokens = useTokens();
-
   return (
     <Card title="Assets to Borrow" showHideButton="no-pb" className="w-50% lt-2xl:w-full">
       <Table className="mt-16px" columns={columns} data={tokens} />

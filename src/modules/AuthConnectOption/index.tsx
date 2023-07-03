@@ -35,11 +35,15 @@ const AuthConnectOption: React.FC<Wallet> = ({ name, icon, connect, useStatus, i
     <div
       className={cx(
         'border-2 border-[#1e1e1e] border-solid rounded-[4px] flex h-[70px] my-[16px] items-center justify-between pl-[40px] pr-[24px] cursor-pointer',
-        (status === 'active' || status === 'not-installed') && 'cursor-not-allowed'
+        status === 'not-installed' && 'cursor-not-allowed',
+        'hover:bg-black hover:text-white'
       )}
       onClick={() => connectToWallet(index)}
     >
-      <div className="font-[18px] font-bold">{name}</div>
+      <div className="font-[18px] font-bold flex items-center">
+        {status === 'active' && <div className="h-[8px] w-[8px] rounded-[8px] bg-[#65be78] -ml-[16px] mr-[8px]" />}
+        {name}
+      </div>
       <div>
         {icon.map((item, index) => (
           <img
