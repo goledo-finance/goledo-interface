@@ -1,16 +1,15 @@
 import Card from '@components/Card';
 import AuthConnectButton from '@modules/AuthConnectButton';
 import Network from '@utils/Network';
-import { useWalletStore } from '@store/Wallet';
-import { walletFunction } from '@utils/wallet';
+import { useAccount, useChainId } from '@store/wallet';
+import CurrentNetwork from '@utils/Network';
 
 const AuthConnectPage = ({ children }: { children: (action: string) => React.ReactNode }) => {
-  const wallet = useWalletStore();
-  const status = walletFunction[wallet.name].useStatus();
-  const chainId = walletFunction[wallet.name].useChainId();
-  const chainMatch = chainId === Network.chainId;
+  const account = useAccount();
+  const chainId = useChainId();
+  const chainMatch = chainId === CurrentNetwork.chainId;
 
-  const action = status !== 'active' ? 'Connect your wallet' : !chainMatch ? 'Switch your Network' : '';
+  const action = !account ? 'Connect your wallet' : !chainMatch ? 'Switch your Network' : '';
 
   return (
     <Card className="w-full flex flex-col justify-center items-center min-h-[calc(100vh-380px)] text-center">

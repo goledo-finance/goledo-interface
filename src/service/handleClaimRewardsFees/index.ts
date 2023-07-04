@@ -1,12 +1,9 @@
 import { MultiFeeDistributionContract } from '@utils/contracts';
 import { tokensStore } from '@store/Tokens';
-import { walletStore } from '@store/Wallet';
-import { walletFunction } from '@utils/wallet';
+import { sendTransaction } from '@store/wallet';
 export { default } from './showModal';
 
 export const handleClaimRewardsFees = async () => {
-  const walet = walletStore.getState().wallet;
-  const sendTransaction = walletFunction[walet.name].sendTransaction;
   try {
     const claimableFees = tokensStore.getState().claimableFees;
     const TxnHash = await sendTransaction({

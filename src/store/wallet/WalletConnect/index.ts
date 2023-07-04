@@ -1,13 +1,11 @@
-import { WalletFunction } from '@utils/wallet';
 import { create } from 'zustand';
-import { Web3Modal } from '@web3modal/standalone';
 import { subscribeWithSelector } from 'zustand/middleware';
-import CurrentNetwork from '@utils/Network';
+import SignClient from '@walletconnect/sign-client';
+import { Web3Modal } from '@web3modal/standalone';
+import { type SessionTypes } from '@walletconnect/types';
 import { type sendTransaction as sendTransactionWithMetamask, type watchAsset as watchAssetWithMetamask } from '@cfxjs/use-wallet-react/ethereum';
-import { SignClient } from '@walletconnect/sign-client/dist/types/client';
-import { SessionTypes } from '@walletconnect/types';
-
-const projectId = '';
+import CurrentNetwork from '@utils/Network';
+const projectId = '7e687248f1fa49c26ed5f2cf87404dc8';
 const web3Modal = new Web3Modal({
   walletConnectVersion: 2,
   projectId,
@@ -17,35 +15,25 @@ const web3Modal = new Web3Modal({
 let signClient: SignClient;
 let session: ReturnType<SignClient['session']['getAll']>[number] | undefined;
 
-export const disconnect = async () => await handleSessionUpdate(undefined);
-
-type ConnectWalletStore = {
-  account: string | undefined;
-  chainId: string | undefined;
-  updateAccount: (_account: string | undefined) => void;
-  updateChainId: (_chainId: string | undefined) => void;
-};
-
-export const connectWalletStore = create<ConnectWalletStore>()(
-  (set) =>
-    ({
-      account: undefined,
-      chainId: undefined,
-      updateAccount: (_account: string | undefined) => {
-        set({ account: _account });
-      },
-      updateChainId: (_chainId: string | undefined) => {
-        set({ chainId: _chainId });
-      },
-    } as ConnectWalletStore)
+export const walletState = create(
+  subscribeWithSelector(
+    () =>
+      ({
+        account: undefined as string | undefined,
+        chainId: undefined as string | undefined,
+      })
+  )
 );
+
+export const disconnect = async () => await handleSessionUpdate(undefined);
 
 export const connect = async () => {
   try {
-    console.log(session);
     if (session) return;
     const { uri, approval } = await signClient.connect({
+      // Optionally: pass a known prior pairing (e.g. from `signClient.core.pairing.getPairings()`) to skip the `uri` step.
       pairingTopic: signClient.core.pairing.getPairings()?.at(-1)?.topic,
+      // Provide the namespaces and chains (e.g. `eip155` for EVM-based chains) we want to use in this session.
       requiredNamespaces: {
         eip155: {
           methods: ['eth_sendTransaction'],
@@ -54,18 +42,23 @@ export const connect = async () => {
         },
       },
     });
+    //如果返回URI，则打开QRCode模式(即我们没有连接现有的配对)。
     if (uri) {
       web3Modal.openModal({ uri, standaloneChains: ['eip155:1'] });
     }
 
+    // 等待钱包的会话批准。
     const newSession = await approval();
     if (newSession) {
       session = newSession;
       handleSessionUpdate(newSession);
     }
+    // 处理返回的会话(例如，将UI更新为“connected”状态)。
+    // await onSessionConnected(session);
   } catch (e) {
     console.error('err', e);
   } finally {
+    // 关闭QRCode模式，以防它是打开的。
     web3Modal.closeModal();
   }
 };
@@ -93,6 +86,7 @@ export const watchAsset: typeof watchAssetWithMetamask = async (params) => {
 };
 
 export const addChain = async () => '';
+
 export const switchChain = async () => '';
 
 const getAccountAndChainIdFromSession = (_session: SessionTypes.Struct | undefined) => {
@@ -108,17 +102,15 @@ const getAccountAndChainIdFromSession = (_session: SessionTypes.Struct | undefin
   const allNamespaceChainIds = Object.values(_session.namespaces)
     .map((namespace) => namespace.chains)
     .flat();
-
   const _account = allNamespaceAccounts?.[0];
   const _chainId = allNamespaceChainIds?.[0];
   let account: string | undefined;
   let chainId: string | undefined;
-  if (!account || !account.startsWith(`eip155:${CurrentNetwork.chainId}:`)) {
+  if (!_account || !_account.startsWith(`eip155:${CurrentNetwork.chainId}:`)) {
     account = undefined;
   } else {
     account = _account.split(`eip155:${CurrentNetwork.chainId}:`)?.[1];
   }
-
   if (!_chainId || !_chainId.startsWith('eip155:')) {
     chainId = undefined;
   } else {
@@ -134,13 +126,12 @@ const getAccountAndChainIdFromSession = (_session: SessionTypes.Struct | undefin
 const handleSessionUpdate = async (_session: SessionTypes.Struct | undefined) => {
   const { account, chainId } = getAccountAndChainIdFromSession(_session);
   if (account) {
-    connectWalletStore.getState().updateAccount(account);
+    walletState.setState({ account });
     if (chainId) {
-      connectWalletStore.getState().updateChainId(chainId);
+      walletState.setState({ chainId });
     }
   } else {
-    connectWalletStore.getState().updateAccount(undefined);
-    connectWalletStore.getState().updateChainId(undefined);
+    walletState.setState({ account: undefined, chainId: undefined });
 
     const lastTopic = signClient.core.pairing.getPairings()?.at(-1);
     if (lastTopic) {

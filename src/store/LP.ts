@@ -6,8 +6,7 @@ import { MasterChefContract, SwappiPaiContract, MulticallContract, LpTokenContra
 import { debounce } from 'lodash-es';
 import { tokensStore } from './Tokens';
 import { goledoStore } from './Goledo';
-import { walletStore } from './Wallet';
-import { walletFunction } from '@utils/wallet';
+import { accountMethodFilter } from './wallet';
 
 const Zero = Unit.fromMinUnit(0);
 const OneDaySeconds = Unit.fromMinUnit(86400);
@@ -64,12 +63,9 @@ export const lpStore = create(subscribeWithSelector(() => initState));
 
 let unsub: VoidFunction | null = null;
 
-const wallet = walletStore.getState().wallet;
-let ethereumStore = walletFunction[wallet.name].store;
-
 const getData = debounce(() => {
   unsub?.();
-  const account = ethereumStore.getState().accounts?.[0];
+  const account = accountMethodFilter.getState().accountState;
   if (!account) {
     lpStore.setState(initState);
     return;
@@ -126,15 +122,7 @@ const getData = debounce(() => {
   });
 }, 10);
 
-ethereumStore.subscribe((state) => state.accounts, getData, { fireImmediately: true });
-walletStore.subscribe(
-  (state) => state.wallet,
-  (wallet) => {
-    ethereumStore = walletFunction[wallet.name].store;
-    getData();
-  },
-  { fireImmediately: true }
-);
+accountMethodFilter.subscribe((state) => state, getData, { fireImmediately: true });
 
 const calcLPUsdPrice = debounce(() => {
   const cfxUsdPrice = tokensStore.getState().cfxUsdPrice;

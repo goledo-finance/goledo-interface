@@ -5,8 +5,7 @@ import { intervalFetchChain } from '@utils/fetchChain';
 import { MultiFeeDistributionContract, GoledoTokenContract, MulticallContract, ChefIncentivesControllerContract, SwappiPaiContract } from '@utils/contracts';
 import { debounce } from 'lodash-es';
 import { tokensStore } from './Tokens';
-import { walletStore } from './Wallet';
-import { walletFunction } from '@utils/wallet';
+import { accountMethodFilter } from './wallet';
 
 const OneYearSeconds = Unit.fromMinUnit(31536000);
 const Zero = Unit.fromMinUnit(0);
@@ -67,13 +66,10 @@ export const goledoStore = create(subscribeWithSelector(() => initState));
 
 let unsub: VoidFunction | null = null;
 
-const wallet = walletStore.getState().wallet;
-let ethereumStore = walletFunction[wallet.name].store;
-
 const getData = debounce(() => {
   unsub?.();
   const tokens = tokensStore.getState().tokensInPool;
-  const account = ethereumStore.getState().accounts?.[0];
+  const account = accountMethodFilter.getState().accountState;
   if (!account || !tokens?.length) {
     goledoStore.setState(initState);
     return;
@@ -181,15 +177,7 @@ const getData = debounce(() => {
   });
 }, 10);
 
-walletStore.subscribe(
-  (state) => state.wallet,
-  (wallet) => {
-    ethereumStore = walletFunction[wallet.name].store;
-    getData();
-  },
-  { fireImmediately: true }
-);
-ethereumStore.subscribe((state) => state.accounts, getData, { fireImmediately: true });
+accountMethodFilter.subscribe((state) => state, getData, { fireImmediately: true });
 tokensStore.subscribe((state) => state.tokensInPool, getData, { fireImmediately: true });
 
 const calcGoledoPrice = debounce(() => {

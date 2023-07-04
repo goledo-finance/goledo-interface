@@ -1,15 +1,12 @@
 import React, { useState, useEffect, type ComponentProps } from 'react';
 import cx from 'clsx';
 import { Link, useLocation } from 'react-router-dom';
-import { shortenAddress } from '@utils/address';
 import Dropdown from '@components/Dropdown';
 import AuthConnectButton from '@modules/AuthConnectButton';
 import GoledoWhite from '@assets/tokens/goledo-white.svg';
 import PeckShieldLogo from '@assets/imgs/PeckShieldLogo-b.svg';
 import Mobile from './Mobile';
 import './index.css';
-import { useWalletStore } from '@store/Wallet';
-import { walletFunction } from '@utils/wallet';
 
 const NavLink: React.FC<ComponentProps<typeof Link> & { curPath: string }> = ({ to, children, curPath, id }) => (
   <li className={cx('navbar-link relative flex items-center px-14px h-full overflow-hidden', { ['navbar-link--active']: curPath?.startsWith(to as string) })}>
@@ -21,8 +18,6 @@ const NavLink: React.FC<ComponentProps<typeof Link> & { curPath: string }> = ({ 
 
 const Navbar: React.FC = () => {
   const { pathname: curPath } = useLocation();
-  const wallet = useWalletStore();
-  const account = walletFunction[wallet.name].useAccount();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {

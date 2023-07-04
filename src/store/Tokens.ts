@@ -12,8 +12,8 @@ import {
   createERC20Contract,
 } from '@utils/contracts';
 import { isEqual, debounce } from 'lodash-es';
-import { walletStore } from './Wallet';
-import { walletFunction } from '@utils/wallet';
+import { accountMethodFilter } from './wallet';
+import { useBalance } from '@hooks/useBalance';
 
 interface Token {
   address: string;
@@ -133,14 +133,10 @@ export const tokensStore = create(subscribeWithSelector(() => ({ tokensInPool: L
 
 let unsub: VoidFunction | null = null;
 
-const wallet = walletStore.getState().wallet;
-let ethereumStore = walletFunction[wallet.name].store;
-
-ethereumStore.subscribe(
-  (state) => state.accounts,
-  (accounts) => {
+accountMethodFilter.subscribe(
+  (state) => state.accountState,
+  (account) => {
     unsub?.();
-    const account = accounts?.[0];
 
     if (!account) {
       tokensStore.setState({
@@ -241,7 +237,7 @@ ethereumStore.subscribe(
 // get balances
 let unsubBalance: VoidFunction | null = null;
 const calcUserBalance = debounce(() => {
-  const account = ethereumStore.getState().accounts?.[0];
+  const account = accountMethodFilter.getState().accountState;
   const tokens = tokensStore.getState().tokensInPool;
   unsubBalance?.();
 
@@ -302,8 +298,9 @@ const calcUserBalance = debounce(() => {
 
       tokens.forEach((token, index) => {
         if (token.symbol === 'CFX') {
+          const balance = useBalance();
           tokensBalance[token.address].name = 'CFX';
-          tokensBalance[token.address].balance = ethereumStore.getState().balance;
+          tokensBalance[token.address].balance = balance;
           tokensBalance[token.address].wcfxBalance = Unit.fromMinUnit(result?.['returnData']?.[index] ?? 0);
         } else {
           tokensBalance[token.address].balance = Unit.fromMinUnit(result?.['returnData']?.[index] ?? 0);
@@ -325,8 +322,10 @@ const calcUserBalance = debounce(() => {
   });
 }, 10);
 tokensStore.subscribe((state) => state.tokensInPool, calcUserBalance, { fireImmediately: true });
-ethereumStore.subscribe((state) => state.accounts, calcUserBalance, { fireImmediately: true });
-ethereumStore.subscribe((state) => state.balance, calcUserBalance, { fireImmediately: true });
+accountMethodFilter.subscribe((state) => state.accountFilter, calcUserBalance, { fireImmediately: true });
+accountMethodFilter.subscribe((state) => state.accountState, calcUserBalance, { fireImmediately: true });
+accountMethodFilter.subscribe((state) => state.chainIdState, calcUserBalance, { fireImmediately: true });
+// ethereumStore.subscribe((state) => state.balance, calcUserBalance, { fireImmediately: true });
 
 // calc supply & borrow Price
 const Zero = Unit.fromMinUnit(0);
@@ -360,7 +359,7 @@ tokensStore.subscribe((state) => state.tokensData, calcSupplyTokenPrice, { fireI
 
 const aggregateData = debounce(() => {
   const { tokensInPool, tokensData, userTokensData, tokensBalance, tokensPrice } = tokensStore.getState();
-  const account = ethereumStore.getState().accounts?.[0];
+  const account = accountMethodFilter.getState().accountState;
   if (!account || !tokensInPool?.length) {
     tokensStore.setState({
       tokens: undefined,
@@ -446,16 +445,9 @@ tokensStore.subscribe((state) => state.tokensData, aggregateData, { fireImmediat
 tokensStore.subscribe((state) => state.tokensBalance, aggregateData, { fireImmediately: true });
 tokensStore.subscribe((state) => state.userTokensData, aggregateData, { fireImmediately: true });
 tokensStore.subscribe((state) => state.tokensPrice, aggregateData, { fireImmediately: true });
-ethereumStore.subscribe((state) => state.accounts, aggregateData, { fireImmediately: true });
-walletStore.subscribe(
-  (state) => state.wallet,
-  (wallet) => {
-    ethereumStore = walletFunction[wallet.name].store;
-    calcUserBalance();
-    aggregateData();
-  },
-  { fireImmediately: true }
-);
+accountMethodFilter.subscribe((state) => state.accountFilter, aggregateData, { fireImmediately: true });
+accountMethodFilter.subscribe((state) => state.accountState, aggregateData, { fireImmediately: true });
+accountMethodFilter.subscribe((state) => state.chainIdState, aggregateData, { fireImmediately: true });
 
 tokensStore.subscribe(
   (state) => state.tokens,

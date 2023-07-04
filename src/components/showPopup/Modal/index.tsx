@@ -4,8 +4,7 @@ import { PopupClass } from '@components/Popup';
 import Button from '@components/Button';
 import renderReactNode from '@utils/renderReactNode';
 import './index.css';
-import { useWalletStore } from '@store/Wallet';
-import { walletFunction } from '@utils/wallet';
+import { useAccount, useChainId } from '@store/wallet';
 
 const ModalPopup = new PopupClass();
 ModalPopup.setListClassName('modal-wrapper');
@@ -14,9 +13,8 @@ ModalPopup.setAnimatedSize(false);
 
 const Modal: React.FC<{ Content: ReactNode | Function; title: string; className?: string }> = memo(({ Content, title, className }) => {
   const hasInit = useRef(false);
-  const wallet = useWalletStore();
-  const chainId = walletFunction[wallet.name].useChainId;
-  const account = walletFunction[wallet.name].useAccount;
+  const chainId = useChainId();
+  const account = useAccount();
 
   useEffect(() => {
     if (!hasInit.current) {

@@ -35,20 +35,20 @@ const DashBoard: React.FC = () => {
       <PageWrapper className="relative">
         {!isAuthed && (
           <AuthConnectPage>
-            {(action) =>
+            {(action) => (
               <p className="text-14px text-#62677B">
                 {action} to see your supplies,
                 <br className="lt-sm:display-none" />
                 borrowings and open positions.
               </p>
-            }
+            )}
           </AuthConnectPage>
         )}
         {isAuthed && (
           <>
             <div className="xl:display-none absolute top-[-36px] left-1/2 translate-x-[-50%] w-320px h-36px p-6px rounded-t-4px text-14px bg-#383D51 text-center font-semibold overflow-hidden select-none">
               <div
-                id='dashboard-assets-switch-supply'
+                id="dashboard-assets-switch-supply"
                 className={cx(
                   'inline-flex w-50% h-full justify-center items-center rounded-4px cursor-pointer',
                   currentAsset === 'Supply' ? 'bg-white pointer-events-none' : 'text-#8E92A3'
@@ -58,7 +58,7 @@ const DashBoard: React.FC = () => {
                 <span className={cx(currentAsset === 'Supply' && 'currentAsset')}>Supply</span>
               </div>
               <div
-                id='dashboard-assets-switch-borrow'
+                id="dashboard-assets-switch-borrow"
                 className={cx(
                   'inline-flex w-50% h-full justify-center items-center rounded-4px cursor-pointer',
                   currentAsset === 'Borrow' ? 'bg-white pointer-events-none' : 'text-#8E92A3'

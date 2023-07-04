@@ -1,25 +1,20 @@
 import React from 'react';
 import cx from 'clsx';
 import { showToast } from '@components/showPopup/Toast';
-import { setWalletStore } from '@store/Wallet';
-import { walletConfig, walletFunction } from '@utils/wallet';
+import { connect, Methods, setAccountMethod, useAccountMethod, walletConfig, walletFunction } from '@store/wallet';
 import { hideAllModal } from '@components/showPopup/Modal';
 
 interface Wallet {
   name: string;
-  index: number;
   icon: Array<string>;
-  connect: () => Promise<string[]>;
-  useStatus: () => 'in-detecting' | 'not-installed' | 'not-active' | 'in-activating' | 'active' | 'chain-error';
 }
 
-export async function connectToWallet(index: number) {
-  const connect = walletFunction[walletConfig[index].name].connect;
+export async function connectToWallet(name: Methods) {
   try {
-    const accounts = await connect();
+    const accounts = await connect(name);
     showToast(`Connect to Wallet Success!`, { type: 'success' });
     hideAllModal();
-    setWalletStore(walletConfig[index]);
+    setAccountMethod(name as Methods);
     return accounts?.[0];
   } catch (err) {
     if ((err as any)?.code === 4001) {
@@ -29,19 +24,18 @@ export async function connectToWallet(index: number) {
   return undefined;
 }
 
-const AuthConnectOption: React.FC<Wallet> = ({ name, icon, connect, useStatus, index }) => {
-  const status = useStatus();
+const AuthConnectOption: React.FC<Wallet> = ({ name, icon }) => {
+  const method = useAccountMethod();
   return (
     <div
       className={cx(
         'border-2 border-[#1e1e1e] border-solid rounded-[4px] flex h-[70px] my-[16px] items-center justify-between pl-[40px] pr-[24px] cursor-pointer',
-        status === 'not-installed' && 'cursor-not-allowed',
         'hover:bg-black hover:text-white'
       )}
-      onClick={() => connectToWallet(index)}
+      onClick={() => connectToWallet(name as Methods)}
     >
       <div className="font-[18px] font-bold flex items-center">
-        {status === 'active' && <div className="h-[8px] w-[8px] rounded-[8px] bg-[#65be78] -ml-[16px] mr-[8px]" />}
+        {name === method && <div className="h-[8px] w-[8px] rounded-[8px] bg-[#65be78] -ml-[16px] mr-[8px]" />}
         {name}
       </div>
       <div>

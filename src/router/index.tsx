@@ -7,8 +7,8 @@ import DashBoardPage from '@pages/Dashboard';
 import MarketsPage from '@pages/Markets';
 import DetailPage from '@pages/Detail';
 import StakePage from '@pages/Stake';
-import { useWalletStore } from '@store/Wallet';
-import { walletFunction } from '@utils/wallet';
+import { useBalance } from '@hooks/useBalance';
+import { useAccount } from '@store/wallet';
 
 const AppRouter: React.FC = () => {
   return (
@@ -32,8 +32,7 @@ const AppRouter: React.FC = () => {
 };
 
 const BalanceRef: React.FC = memo(() => {
-  const wallet = useWalletStore();
-  const useBalance = walletFunction[wallet.name].useBalance;
+  const account = useAccount();
   useBalance();
   return null;
 });

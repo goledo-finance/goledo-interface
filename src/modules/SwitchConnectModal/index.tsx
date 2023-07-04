@@ -7,8 +7,9 @@ import useClipboard from 'react-use-clipboard';
 import ToolTip from '@components/Tooltip';
 import { hideAllModal, showModal } from '@components/showPopup/Modal';
 import AuthConnectModal from '@modules/AuthConnectModal';
+import { disconnect } from '@store/wallet';
 
-const SwitchConnectModal: React.FC<{ account: string | undefined; shortAccount: string }> = ({ account, shortAccount }) => {
+const SwitchConnectModal: React.FC<{ account: string | undefined | null; shortAccount: string }> = ({ account, shortAccount }) => {
   const [isCopied, setCopied] = useClipboard(account ?? '', { successDuration: 1000 });
   const [isShowConnect, setIsShowConnect] = useState(false);
 
@@ -40,7 +41,7 @@ const SwitchConnectModal: React.FC<{ account: string | undefined; shortAccount: 
             </div>
           </div>
           <div className="flex justify-between">
-            <Button variant="outlined" className="w-[220px] h-[42px]">
+            <Button variant="outlined" className="w-[220px] h-[42px]" onClick={disconnect}>
               Disconnect
             </Button>
             <Button className="w-[220px] h-[42px]" onClick={changeConnect}>

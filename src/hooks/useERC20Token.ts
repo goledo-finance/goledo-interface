@@ -2,8 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { createERC20Contract, createDebtTokenContract } from '@utils/contracts';
 import waitTransactionReceipt from '@utils/waitTranscationReceipt';
-import { useWalletStore } from '@store/Wallet';
-import { walletFunction } from '@utils/wallet';
+import { sendTransaction, useAccount } from '@store/wallet';
 
 export type Status = 'checking-approve' | 'need-approve' | 'approving' | 'approved';
 
@@ -25,9 +24,7 @@ const useERC20Token = ({
     () => (tokenAddress ? (!isDebtToken ? createERC20Contract : createDebtTokenContract)(tokenAddress) : undefined),
     [tokenAddress]
   );
-  const wallet = useWalletStore();
-  const account = walletFunction[wallet.name].useAccount();
-  const sendTransaction = walletFunction[wallet.name].sendTransaction;
+  const account = useAccount();
 
   const checkApprove = useCallback(async () => {
     if (!tokenContract || !account || !contractAddress || !amount) return;

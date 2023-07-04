@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Unit, provider } from '@cfxjs/use-wallet-react/ethereum';
-import { useWalletStore } from '@store/Wallet';
-import { walletFunction } from '@utils/wallet';
+import { useAccount } from '@store/wallet';
+import { useBalance } from './useBalance';
 
 const useEstimateCfxGasFee = ({
   createData,
@@ -16,9 +16,8 @@ const useEstimateCfxGasFee = ({
 }) => {
   const count = useRef(0);
   const [cfxGasFee, setCfxGasFee] = useState<Unit | undefined>(undefined);
-  const wallet = useWalletStore();
-  const account = walletFunction[wallet.name].useAccount();
-  const balance = walletFunction[wallet.name].useBalance();
+  const account = useAccount();
+  const balance = useBalance();
 
   useEffect(() => {
     if (isCFX !== true) return;

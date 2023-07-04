@@ -1,14 +1,12 @@
-import { useWalletStore, walletStore } from '@store/Wallet';
-import Network from '@utils/Network';
-import { walletFunction } from '@utils/wallet';
+import { useAccount, useChainId } from '@store/wallet';
+import CurrentNetwork from '@utils/Network';
+import { useEffect } from 'react';
 
 const useIsAuthed = () => {
-  const wallet = useWalletStore();
-  const status = walletFunction[wallet.name].useStatus();
-  const chainId = walletFunction[wallet.name].useChainId();
-  const chainMatch = chainId === Network.chainId;
-
-  if (status === 'active' && chainMatch) return true;
+  const account = useAccount();
+  const chainId = useChainId();
+  const chainMatch = chainId === CurrentNetwork.chainId;
+  if (!!account && chainMatch) return true;
   return false;
 };
 
