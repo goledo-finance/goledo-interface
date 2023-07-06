@@ -26,6 +26,7 @@ export async function connectToWallet(name: Methods) {
 
 const AuthConnectOption: React.FC<Wallet> = ({ name, icon }) => {
   const method = useAccountMethod();
+
   return (
     <div
       className={cx(

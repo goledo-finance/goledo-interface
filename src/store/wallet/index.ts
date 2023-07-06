@@ -45,7 +45,7 @@ import {
 } from '@store/wallet/WalletConnect';
 import CurrentNetwork from '@utils/Network';
 import { showToast } from '@components/showPopup/Toast';
-import { debounce, method } from 'lodash-es';
+import { debounce } from 'lodash-es';
 
 export interface Wallet {
   name: string;
@@ -134,20 +134,28 @@ const selectors = {
   chainIdState: (state: AccountMethodFilter) => state.chainIdState,
 };
 
+let unsubAccount: VoidFunction | null = null;
+let unsubChainId: VoidFunction | null = null;
 const updateState = debounce(() => {
+  if (unsubAccount) {
+    unsubAccount();
+    unsubAccount = null;
+  }
+  if (unsubChainId) {
+    unsubChainId();
+    unsubChainId = null;
+  }
   const method = accountMethodFilter.getState().accountFilter;
-  const getAccountState = () => {
-    if (!method) return null;
-    if (!walletFunction[method]) return null;
-    return walletFunction[method].walletState.getState().account;
-  };
-  const getChainIdState = () => {
-    if (!method) return null;
-    if (!walletFunction[method]) return null;
-    return walletFunction[method].walletState.getState().chainId;
-  };
-  setAccountState(getAccountState());
-  setChainIdState(getChainIdState());
+  if (!method) {
+    setAccountState(null);
+    setChainIdState(null);
+    return;
+  }
+  const walletState = walletFunction[method]?.walletState;
+  setAccountState(walletState.getState().account);
+  setChainIdState(walletState.getState().chainId);
+  unsubAccount = walletState.subscribe((state) => state.account, (account) => setAccountState(account));
+  unsubChainId = walletState.subscribe((state) => state.chainId, (chainId) => setChainIdState(chainId));
 });
 
 accountMethodFilter.subscribe((state) => state.accountFilter, updateState, { fireImmediately: true });
