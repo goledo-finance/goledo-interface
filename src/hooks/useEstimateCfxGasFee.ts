@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Unit, provider } from '@cfxjs/use-wallet-react/ethereum';
-import { useAccount } from '@store/wallet';
-import { useBalance } from './useBalance';
+import { useAccount, useBalance } from '@store/wallet';
 
 const useEstimateCfxGasFee = ({
   createData,

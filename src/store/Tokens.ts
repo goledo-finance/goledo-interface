@@ -12,8 +12,7 @@ import {
   createERC20Contract,
 } from '@utils/contracts';
 import { isEqual, debounce } from 'lodash-es';
-import { accountMethodFilter } from './wallet';
-import { useBalance } from '@hooks/useBalance';
+import { accountMethodFilter, balanceStore } from './wallet';
 
 interface Token {
   address: string;
@@ -298,9 +297,8 @@ const calcUserBalance = debounce(() => {
 
       tokens.forEach((token, index) => {
         if (token.symbol === 'CFX') {
-          const balance = useBalance();
           tokensBalance[token.address].name = 'CFX';
-          tokensBalance[token.address].balance = balance;
+          tokensBalance[token.address].balance = balanceStore.getState().balance;
           tokensBalance[token.address].wcfxBalance = Unit.fromMinUnit(result?.['returnData']?.[index] ?? 0);
         } else {
           tokensBalance[token.address].balance = Unit.fromMinUnit(result?.['returnData']?.[index] ?? 0);
@@ -325,7 +323,7 @@ tokensStore.subscribe((state) => state.tokensInPool, calcUserBalance, { fireImme
 accountMethodFilter.subscribe((state) => state.accountFilter, calcUserBalance, { fireImmediately: true });
 accountMethodFilter.subscribe((state) => state.accountState, calcUserBalance, { fireImmediately: true });
 accountMethodFilter.subscribe((state) => state.chainIdState, calcUserBalance, { fireImmediately: true });
-// ethereumStore.subscribe((state) => state.balance, calcUserBalance, { fireImmediately: true });
+balanceStore.subscribe((state) => state.balance, calcUserBalance, { fireImmediately: true });
 
 // calc supply & borrow Price
 const Zero = Unit.fromMinUnit(0);

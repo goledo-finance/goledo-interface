@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
+import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import LocalStorage from 'localstorage-enhance';
 import MetaMaskIcon from '@assets/icons/MetaMask.svg';
 import Halo from '@assets/icons/Halo.svg';
@@ -46,6 +47,7 @@ import {
 import CurrentNetwork from '@utils/Network';
 import { showToast } from '@components/showPopup/Toast';
 import { debounce } from 'lodash-es';
+import { intervalFetchChain } from '@utils/fetchChain';
 
 export interface Wallet {
   name: string;
@@ -154,8 +156,14 @@ const updateState = debounce(() => {
   const walletState = walletFunction[method]?.walletState;
   setAccountState(walletState.getState().account);
   setChainIdState(walletState.getState().chainId);
-  unsubAccount = walletState.subscribe((state) => state.account, (account) => setAccountState(account));
-  unsubChainId = walletState.subscribe((state) => state.chainId, (chainId) => setChainIdState(chainId));
+  unsubAccount = walletState.subscribe(
+    (state) => state.account,
+    (account) => setAccountState(account)
+  );
+  unsubChainId = walletState.subscribe(
+    (state) => state.chainId,
+    (chainId) => setChainIdState(chainId)
+  );
 });
 
 accountMethodFilter.subscribe((state) => state.accountFilter, updateState, { fireImmediately: true });
@@ -235,3 +243,43 @@ export const setChainIdState = (chainId: string | undefined | null) => {
   LocalStorage.setItem({ key: 'chainIdStatus', data: chainId });
   accountMethodFilter.setState({ chainIdState: chainId });
 };
+
+export const balanceStore = create(
+  subscribeWithSelector(() => ({
+    balance: undefined as Unit | undefined,
+  }))
+);
+
+export const useBalance = () => balanceStore((state) => state.balance);
+
+(function () {
+  let unsub: VoidFunction | null = null;
+
+  accountMethodFilter.subscribe(
+    (state) => state.accountState,
+    (account) => {
+      if (unsub) {
+        unsub?.();
+        unsub = null;
+      }
+      if (!account) {
+        balanceStore.setState({ balance: undefined });
+        return;
+      }
+      unsub = intervalFetchChain(
+        {
+          rpcUrl: import.meta.env.VITE_ESpaceRpcUrl,
+          method: 'eth_getBalance',
+          params: [account, 'latest'],
+        },
+        {
+          intervalTime: 5000,
+          equalKey: 'cfxBalance',
+          callback: (data: string) => {
+            balanceStore.setState({ balance: Unit.fromMinUnit(data) });
+          },
+        }
+      );
+    }
+  );
+})();

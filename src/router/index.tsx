@@ -7,7 +7,6 @@ import DashBoardPage from '@pages/Dashboard';
 import MarketsPage from '@pages/Markets';
 import DetailPage from '@pages/Detail';
 import StakePage from '@pages/Stake';
-import { useBalance } from '@hooks/useBalance';
 import { useAccount } from '@store/wallet';
 
 const AppRouter: React.FC = () => {
@@ -15,7 +14,6 @@ const AppRouter: React.FC = () => {
     <Router>
       <ErrorBoundary>
         <Navbar />
-        <BalanceRef />
         <CustomScrollbar className="main-scroller" contentClassName="pb-100px">
           <Routes>
             <Route index element={<DashBoardPage />} />
@@ -30,11 +28,5 @@ const AppRouter: React.FC = () => {
     </Router>
   );
 };
-
-const BalanceRef: React.FC = memo(() => {
-  const account = useAccount();
-  useBalance();
-  return null;
-});
 
 export default AppRouter;
