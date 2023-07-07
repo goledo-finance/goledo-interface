@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import CustomScrollbar from 'custom-react-scrollbar';
 import ErrorBoundary from '@modules/ErrorBoundary';
@@ -7,7 +7,6 @@ import DashBoardPage from '@pages/Dashboard';
 import MarketsPage from '@pages/Markets';
 import DetailPage from '@pages/Detail';
 import StakePage from '@pages/Stake';
-import { useAccount } from '@store/wallet';
 
 const AppRouter: React.FC = () => {
   return (

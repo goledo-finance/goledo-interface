@@ -5,7 +5,7 @@ import { Web3Modal } from '@web3modal/standalone';
 import { type SessionTypes } from '@walletconnect/types';
 import { type sendTransaction as sendTransactionWithMetamask, type watchAsset as watchAssetWithMetamask } from '@cfxjs/use-wallet-react/ethereum';
 import CurrentNetwork from '@utils/Network';
-const projectId = '7e687248f1fa49c26ed5f2cf87404dc8';
+const projectId = 'ecd29726bdb28aef6ceded6a6c4319f6';
 const web3Modal = new Web3Modal({
   walletConnectVersion: 2,
   projectId,
@@ -16,13 +16,10 @@ let signClient: SignClient;
 let session: ReturnType<SignClient['session']['getAll']>[number] | undefined;
 
 export const walletState = create(
-  subscribeWithSelector(
-    () =>
-      ({
-        account: undefined as string | undefined,
-        chainId: undefined as string | undefined,
-      })
-  )
+  subscribeWithSelector(() => ({
+    account: undefined as string | undefined,
+    chainId: undefined as string | undefined,
+  }))
 );
 
 export const disconnect = async () => await handleSessionUpdate(undefined);
@@ -44,7 +41,7 @@ export const connect = async () => {
     });
     //如果返回URI，则打开QRCode模式(即我们没有连接现有的配对)。
     if (uri) {
-      web3Modal.openModal({ uri, standaloneChains: ['eip155:1'] });
+      web3Modal.openModal({ uri, standaloneChains: [`eip155:${CurrentNetwork.chainId}`] });
     }
 
     // 等待钱包的会话批准。
@@ -156,8 +153,8 @@ const handleSessionUpdate = async (_session: SessionTypes.Struct | undefined) =>
   const client = await SignClient.init({
     projectId,
     metadata: {
-      name: 'Example Dapp',
-      description: 'Example Dapp',
+      name: 'Goledo',
+      description: 'Goledo is a lending and borrowing market built on Conflux eSpace. Lend your assets to begin earning and use them to collateralize loans.',
       url: window.location.host,
       icons: ['https://walletconnect.com/walletconnect-logo.png'],
     },

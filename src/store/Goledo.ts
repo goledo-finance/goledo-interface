@@ -177,7 +177,7 @@ const getData = debounce(() => {
   });
 }, 10);
 
-accountMethodFilter.subscribe((state) => state, getData, { fireImmediately: true });
+accountMethodFilter.subscribe((state) => state.accountState, getData, { fireImmediately: true });
 tokensStore.subscribe((state) => state.tokensInPool, getData, { fireImmediately: true });
 
 const calcGoledoPrice = debounce(() => {

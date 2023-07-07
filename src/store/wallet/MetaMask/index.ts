@@ -19,7 +19,6 @@ export const walletState = create(
     (state) => state.accounts,
     (accounts) => {
       walletState.setState({ account: accounts?.[0] });
-      console.log('metamaskStore.subscribe', accounts?.[0])
     }
   );
   metamaskStore.subscribe(

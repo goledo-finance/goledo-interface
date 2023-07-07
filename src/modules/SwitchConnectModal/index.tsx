@@ -5,7 +5,6 @@ import copyIcon from '@assets/icons/copy.svg';
 import shareIcon from '@assets/icons/share.svg';
 import useClipboard from 'react-use-clipboard';
 import ToolTip from '@components/Tooltip';
-import { hideAllModal, showModal } from '@components/showPopup/Modal';
 import AuthConnectModal from '@modules/AuthConnectModal';
 import { disconnect } from '@store/wallet';
 
@@ -35,7 +34,12 @@ const SwitchConnectModal: React.FC<{ account: string | undefined | null; shortAc
             </ToolTip>
             <div className="flex items-center cursor-pointer">
               <img src={shareIcon} alt="share" className="mr-[4px]" />
-              <a href="" className="text-[#1e1e1e] no-underline">
+              <a
+                href={`${import.meta.env.VITE_ESpaceScanUrl}/address/${account}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#1e1e1e] no-underline"
+              >
                 View on Conflux Scan
               </a>
             </div>

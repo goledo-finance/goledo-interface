@@ -122,7 +122,7 @@ const getData = debounce(() => {
   });
 }, 10);
 
-accountMethodFilter.subscribe((state) => state, getData, { fireImmediately: true });
+accountMethodFilter.subscribe((state) => state.accountState, getData, { fireImmediately: true });
 
 const calcLPUsdPrice = debounce(() => {
   const cfxUsdPrice = tokensStore.getState().cfxUsdPrice;
