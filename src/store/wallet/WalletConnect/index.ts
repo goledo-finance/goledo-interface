@@ -52,8 +52,8 @@ export const connect = async () => {
     }
     // 处理返回的会话(例如，将UI更新为“connected”状态)。
     // await onSessionConnected(session);
-  } catch (e) {
-    console.error('err', e);
+  } catch (err) {
+    throw err;
   } finally {
     // 关闭QRCode模式，以防它是打开的。
     web3Modal.closeModal();
