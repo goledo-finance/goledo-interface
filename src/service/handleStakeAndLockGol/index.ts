@@ -1,8 +1,9 @@
-import { sendTransaction, Unit } from '@cfxjs/use-wallet-react/ethereum';
+import { Unit } from '@cfxjs/use-wallet-react/ethereum';
+import { sendTransaction } from '@store/wallet';
 import { MultiFeeDistributionContract } from '@utils/contracts';
 export { default } from './showModal';
 
-export const handleStakeAndLock = async ({ amount, type }: { amount: Unit; type: 'Stake' | 'Lock'; }) => {
+export const handleStakeAndLock = async ({ amount, type }: { amount: Unit; type: 'Stake' | 'Lock' }) => {
   try {
     const TxnHash = await sendTransaction({
       to: import.meta.env.VITE_MultiFeeDistributionAddress,

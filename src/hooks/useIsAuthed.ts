@@ -1,12 +1,12 @@
-import { useStatus, useChainId } from '@cfxjs/use-wallet-react/ethereum';
-import Network from '@utils/Network';
+import { useAccount, useChainId } from '@store/wallet';
+import CurrentNetwork from '@utils/Network';
+import { useEffect } from 'react';
 
 const useIsAuthed = () => {
-  const status = useStatus();
+  const account = useAccount();
   const chainId = useChainId();
-  const chainMatch = chainId === Network.chainId;
-
-  if (status === 'active' && chainMatch) return true;
+  const chainMatch = chainId === CurrentNetwork.chainId;
+  if (!!account && chainMatch) return true;
   return false;
 };
 

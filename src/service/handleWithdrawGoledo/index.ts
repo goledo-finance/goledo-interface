@@ -1,4 +1,4 @@
-import { sendTransaction } from '@cfxjs/use-wallet-react/ethereum';
+import { sendTransaction } from '@store/wallet';
 import { MultiFeeDistributionContract } from '@utils/contracts';
 export { default } from './showModal';
 

@@ -3,6 +3,10 @@ html {
   scroll-behavior: smooth;
 }
 
+:root {
+  --w3m-z-index: 100001 !important;
+}
+
 @font-face {
   font-family: 'Inter';
   src: url('./assets/fonts/Inter-Regular.woff2') format('woff2');

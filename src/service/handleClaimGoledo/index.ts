@@ -1,6 +1,6 @@
-import { sendTransaction } from '@cfxjs/use-wallet-react/ethereum';
 import { MultiFeeDistributionContract } from '@utils/contracts';
 import { goledoStore } from '@store/Goledo';
+import { sendTransaction } from '@store/wallet';
 export { default } from './showModal';
 
 export const handleClaimGoledo = async () => {

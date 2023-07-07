@@ -1,9 +1,10 @@
-import { sendTransaction, store as walletStore, Unit } from '@cfxjs/use-wallet-react/ethereum';
+import { Unit } from '@cfxjs/use-wallet-react/ethereum';
+import { accountMethodFilter, sendTransaction } from '@store/wallet';
 import { LendingPoolContract, WETHGatewayContract } from '@utils/contracts';
 export { default } from './showModal';
 
 export const handleWithdraw = async ({ amount, tokenAddress, symbol }: { amount: Unit; tokenAddress: string; symbol: string }) => {
-  const account = walletStore.getState().accounts?.[0];
+  const account = accountMethodFilter.getState().accountState;
 
   try {
     let data: string;

@@ -39,7 +39,7 @@ const columns: Columns<TokenInfo> = [
     width: '18%',
     render: ({ supplyAPY, symbol }) => (
       <div className="font-semibold">
-        <PercentageText value={supplyAPY} id={`dashboard-assets-supply-apy-${symbol}`}/>
+        <PercentageText value={supplyAPY} id={`dashboard-assets-supply-apy-${symbol}`} />
       </div>
     ),
   },

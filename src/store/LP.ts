@@ -1,11 +1,12 @@
 import create from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import { store as ethereumStore, Unit } from '@cfxjs/use-wallet-react/ethereum';
+import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { intervalFetchChain } from '@utils/fetchChain';
 import { MasterChefContract, SwappiPaiContract, MulticallContract, LpTokenContract } from '@utils/contracts';
 import { debounce } from 'lodash-es';
 import { tokensStore } from './Tokens';
 import { goledoStore } from './Goledo';
+import { accountMethodFilter } from './wallet';
 
 const Zero = Unit.fromMinUnit(0);
 const OneDaySeconds = Unit.fromMinUnit(86400);
@@ -64,7 +65,7 @@ let unsub: VoidFunction | null = null;
 
 const getData = debounce(() => {
   unsub?.();
-  const account = ethereumStore.getState().accounts?.[0];
+  const account = accountMethodFilter.getState().accountState;
   if (!account) {
     lpStore.setState(initState);
     return;
@@ -74,13 +75,16 @@ const getData = debounce(() => {
     [import.meta.env.VITE_SwappiPairAddress, SwappiPaiContract.interface.encodeFunctionData('balanceOf', [import.meta.env.VITE_MasterChefAddress])],
     [import.meta.env.VITE_MasterChefAddress, MasterChefContract.interface.encodeFunctionData('userInfo', [import.meta.env.VITE_SwappiPairAddress, account])],
     [import.meta.env.VITE_MasterChefAddress, MasterChefContract.interface.encodeFunctionData('userBaseClaimable', [account])],
-    [import.meta.env.VITE_MasterChefAddress, MasterChefContract.interface.encodeFunctionData('claimableReward', [account, [import.meta.env.VITE_SwappiPairAddress]])],
+    [
+      import.meta.env.VITE_MasterChefAddress,
+      MasterChefContract.interface.encodeFunctionData('claimableReward', [account, [import.meta.env.VITE_SwappiPairAddress]]),
+    ],
     [import.meta.env.VITE_MasterChefAddress, MasterChefContract.interface.encodeFunctionData('rewardsPerSecond')],
     [import.meta.env.VITE_SwappiPairAddress, SwappiPaiContract.interface.encodeFunctionData('getReserves')],
     [import.meta.env.VITE_SwappiPairAddress, SwappiPaiContract.interface.encodeFunctionData('totalSupply')],
     [import.meta.env.VITE_SwappiPairAddress, LpTokenContract.interface.encodeFunctionData('balanceOf', [account])],
   ];
-  
+
   unsub = intervalFetchChain(() => MulticallContract.callStatic.aggregate(promises), {
     intervalTime: 5000,
     callback: ({ returnData }: { returnData?: Array<any> } = { returnData: undefined }) => {
@@ -103,13 +107,22 @@ const getData = debounce(() => {
 
       const balance = Unit.fromMinUnit(returnData[7] ?? 0);
 
-      lpStore.setState({ totalMarketStakedBalance, stakedBalance, earnedGoledoBalance, rewardsPerSecond, totalRewardsPerDayBalance, totalRewardsPerWeekBalance, reserve0, totalSupply, balance });
+      lpStore.setState({
+        totalMarketStakedBalance,
+        stakedBalance,
+        earnedGoledoBalance,
+        rewardsPerSecond,
+        totalRewardsPerDayBalance,
+        totalRewardsPerWeekBalance,
+        reserve0,
+        totalSupply,
+        balance,
+      });
     },
   });
 }, 10);
 
-ethereumStore.subscribe((state) => state.accounts, getData, { fireImmediately: true });
-
+accountMethodFilter.subscribe((state) => state.accountState, getData, { fireImmediately: true });
 
 const calcLPUsdPrice = debounce(() => {
   const cfxUsdPrice = tokensStore.getState().cfxUsdPrice;
@@ -121,7 +134,7 @@ const calcLPUsdPrice = debounce(() => {
 
   let usdPrice = reserve0.mul(Unit.fromMinUnit(2)).mul(cfxUsdPrice).div(totalSupply);
   if (usdPrice.toDecimalMinUnit() === 'NaN') {
-    usdPrice = Zero
+    usdPrice = Zero;
   }
   const { stakedBalance, totalMarketStakedBalance } = lpStore.getState();
   lpStore.setState({
@@ -141,7 +154,7 @@ const calcRewardsUsdPrice = debounce(() => {
   }
 
   if (goledoUsdPrice.toDecimalMinUnit() === 'NaN') {
-    goledoUsdPrice = Zero
+    goledoUsdPrice = Zero;
   }
   const { earnedGoledoBalance, totalRewardsPerDayBalance, totalRewardsPerWeekBalance } = lpStore.getState();
   lpStore.setState({
@@ -152,7 +165,6 @@ const calcRewardsUsdPrice = debounce(() => {
 }, 50);
 lpStore.subscribe((state) => state.earnedGoledoBalance, calcRewardsUsdPrice, { fireImmediately: true });
 goledoStore.subscribe((state) => state.usdPrice, calcRewardsUsdPrice, { fireImmediately: true });
-
 
 const calcStakeAPR = debounce(() => {
   const { rewardsPerSecond, totalMarketStakedBalance, usdPrice } = lpStore.getState();
@@ -168,8 +180,6 @@ const calcStakeAPR = debounce(() => {
 }, 50);
 lpStore.subscribe((state) => state.usdPrice, calcStakeAPR, { fireImmediately: true });
 goledoStore.subscribe((state) => state.usdPrice, calcStakeAPR, { fireImmediately: true });
-
-
 
 const selectors = {
   all: (state: LPStore) => state,

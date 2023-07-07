@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { sendTransaction, useAccount, Unit } from '@cfxjs/use-wallet-react/ethereum';
+import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { createERC20Contract, createDebtTokenContract } from '@utils/contracts';
 import waitTransactionReceipt from '@utils/waitTranscationReceipt';
+import { sendTransaction, useAccount } from '@store/wallet';
 
 export type Status = 'checking-approve' | 'need-approve' | 'approving' | 'approved';
 
@@ -19,7 +20,10 @@ const useERC20Token = ({
   isDebtToken?: boolean;
 }) => {
   const [status, setStatus] = useState<Status>('checking-approve');
-  const tokenContract = useMemo(() => (tokenAddress ? (!isDebtToken ? createERC20Contract : createDebtTokenContract)(tokenAddress) : undefined), [tokenAddress]);
+  const tokenContract = useMemo(
+    () => (tokenAddress ? (!isDebtToken ? createERC20Contract : createDebtTokenContract)(tokenAddress) : undefined),
+    [tokenAddress]
+  );
   const account = useAccount();
 
   const checkApprove = useCallback(async () => {
@@ -45,7 +49,10 @@ const useERC20Token = ({
       setStatus('approving');
       const txnHash = await sendTransaction({
         to: tokenAddress,
-        data: tokenContract.interface.encodeFunctionData(!isDebtToken ? 'approve' : 'approveDelegation', [contractAddress, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff']),
+        data: tokenContract.interface.encodeFunctionData(!isDebtToken ? 'approve' : 'approveDelegation', [
+          contractAddress,
+          '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+        ]),
       });
       const txReceipt = await waitTransactionReceipt(txnHash);
       checkApprove();

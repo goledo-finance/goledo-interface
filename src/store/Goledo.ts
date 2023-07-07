@@ -1,10 +1,11 @@
 import create from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import { store as ethereumStore, Unit } from '@cfxjs/use-wallet-react/ethereum';
+import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { intervalFetchChain } from '@utils/fetchChain';
 import { MultiFeeDistributionContract, GoledoTokenContract, MulticallContract, ChefIncentivesControllerContract, SwappiPaiContract } from '@utils/contracts';
 import { debounce } from 'lodash-es';
 import { tokensStore } from './Tokens';
+import { accountMethodFilter } from './wallet';
 
 const OneYearSeconds = Unit.fromMinUnit(31536000);
 const Zero = Unit.fromMinUnit(0);
@@ -68,7 +69,7 @@ let unsub: VoidFunction | null = null;
 const getData = debounce(() => {
   unsub?.();
   const tokens = tokensStore.getState().tokensInPool;
-  const account = ethereumStore.getState().accounts?.[0];
+  const account = accountMethodFilter.getState().accountState;
   if (!account || !tokens?.length) {
     goledoStore.setState(initState);
     return;
@@ -176,7 +177,7 @@ const getData = debounce(() => {
   });
 }, 10);
 
-ethereumStore.subscribe((state) => state.accounts, getData, { fireImmediately: true });
+accountMethodFilter.subscribe((state) => state.accountState, getData, { fireImmediately: true });
 tokensStore.subscribe((state) => state.tokensInPool, getData, { fireImmediately: true });
 
 const calcGoledoPrice = debounce(() => {
@@ -206,18 +207,10 @@ const calcGoledoAPR = debounce(() => {
 
   const APR = (rewardRates[import.meta.env.VITE_GoledoTokenAddress] ?? 0).mul(OneYearSeconds).mul(goledoUsdPrice).div(totalMarketLockedBalance);
   const stakeAPR = tokens.reduce(
-    (acc, token) =>
-      acc.add(
-        (rewardRates[token.address] ?? Zero)
-          .mul(OneYearSeconds)
-          .mul(token.usdPrice!)
-          .div(totalMarketSupplyBalance!.mul(goledoUsdPrice))
-      ),
+    (acc, token) => acc.add((rewardRates[token.address] ?? Zero).mul(OneYearSeconds).mul(token.usdPrice!).div(totalMarketSupplyBalance!.mul(goledoUsdPrice))),
     Unit.fromMinUnit(0)
   );
-  const lockAPR = stakeAPR.add(
-    (rewardRates[import.meta.env.VITE_GoledoTokenAddress] ?? Zero).mul(OneYearSeconds).div(totalMarketLockedBalance)
-  );
+  const lockAPR = stakeAPR.add((rewardRates[import.meta.env.VITE_GoledoTokenAddress] ?? Zero).mul(OneYearSeconds).div(totalMarketLockedBalance));
 
   goledoStore.setState({
     stakeAPR: stakeAPR.toDecimalMinUnit() === 'NaN' ? Zero : stakeAPR.div(Unit.fromMinUnit(1e12)),
