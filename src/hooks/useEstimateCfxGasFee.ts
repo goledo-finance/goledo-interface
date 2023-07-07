@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { Unit, provider } from '@cfxjs/use-wallet-react/ethereum';
+import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import { useAccount, useBalance } from '@store/wallet';
+import { fetchChain } from '@utils/fetchChain';
 
 const useEstimateCfxGasFee = ({
   createData,
@@ -21,7 +22,7 @@ const useEstimateCfxGasFee = ({
   useEffect(() => {
     if (isCFX !== true) return;
     const fetcher = async () => {
-      if (!provider || !account) return;
+      if (!account) return;
       const usedAmount = amount || balance;
       if (!usedAmount) return;
       const minUnitAmount = Unit.lessThan(usedAmount, Unit.fromStandardUnit('16e-12'))
@@ -31,7 +32,8 @@ const useEstimateCfxGasFee = ({
       const fetchCount = count.current;
 
       Promise.all([
-        provider.request({
+        fetchChain({
+          rpcUrl: import.meta.env.VITE_ESpaceRpcUrl,
           method: 'eth_estimateGas',
           params: [
             {
@@ -42,7 +44,8 @@ const useEstimateCfxGasFee = ({
             },
           ],
         }),
-        provider.request({
+        fetchChain({
+          rpcUrl: import.meta.env.VITE_ESpaceRpcUrl,
           method: 'eth_gasPrice',
           params: [],
         }),
