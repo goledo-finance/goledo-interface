@@ -87,7 +87,7 @@ const getData = debounce(() => {
       ChefIncentivesControllerContract.interface.encodeFunctionData('claimableReward', [
         account,
         tokens.map((token) => token.borrowTokenAddress).concat(tokens.map((token) => token.supplyTokenAddress)),
-      ]),
+      ]), 
     ],
     [import.meta.env.VITE_MultiFeeDistributionAddress, MultiFeeDistributionContract.interface.encodeFunctionData('earnedBalances', [account])],
     [import.meta.env.VITE_MultiFeeDistributionAddress, MultiFeeDistributionContract.interface.encodeFunctionData('withdrawableBalance', [account])],

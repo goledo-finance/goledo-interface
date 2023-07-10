@@ -87,7 +87,7 @@ export const addChain = async () => '';
 export const switchChain = async () => '';
 
 const getAccountAndChainIdFromSession = (_session: SessionTypes.Struct | undefined) => {
-  if (!_session || (session?.expiry && session.expiry * 1000 - Date.now() < 0)) {
+  if (!_session || (_session?.expiry && (_session.expiry * 1000 - Date.now()) < 0)) {
     return {
       account: undefined,
       chainId: undefined,
