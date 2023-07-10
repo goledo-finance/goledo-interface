@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { useTokens, TokenInfo } from '@store/index';
+import { useTokens, TokenInfo, useGoledo, useIsInVestingLockTime } from '@store/index';
 import tokensIcon from '@assets/tokens';
 import Card from '@components/Card';
 import Table, { type Columns } from '@components/Table';
@@ -10,10 +10,11 @@ import Button from '@components/Button';
 import BalanceText from '@modules/BalanceText';
 import PercentageText from '@modules/PercentageText';
 import showSupplyModal from '@service/handleSupply';
+import tokenIcons from '@assets/tokens';
 
 const Zero = Unit.fromMinUnit(0);
 
-const columns: Columns<TokenInfo> = [
+const columns: Columns<TokenInfo, { isInVestingLockTime: boolean; GoledoLockAPR: Unit | undefined }> = [
   {
     name: 'Assets',
     width: '13%',
@@ -37,9 +38,14 @@ const columns: Columns<TokenInfo> = [
   {
     name: 'APY',
     width: '18%',
-    render: ({ supplyAPY, symbol }) => (
+    render: ({ supplyAPY, symbol }, { isInVestingLockTime, GoledoLockAPR } = { isInVestingLockTime: false, GoledoLockAPR: undefined }) => (
       <div className="font-semibold">
         <PercentageText value={supplyAPY} id={`dashboard-assets-supply-apy-${symbol}`} />
+        <div className="ml-8px mt-4px flex justify-center items-center px-4px py-2px rounded-4px border-1px border-#EAEBEF text-12px">
+          <img className="w-14px h-14px" src={tokenIcons.GOL} alt="/" />
+          <span className="text-#62677B mx-4px">APR</span>
+          {isInVestingLockTime ? <span className="font-semibold">Infinity%</span> : <PercentageText className="font-semibold" value={GoledoLockAPR} />}
+        </div>
       </div>
     ),
   },
@@ -83,7 +89,7 @@ const columns: Columns<TokenInfo> = [
   },
 ];
 
-const configs: Configs<TokenInfo> = [
+const configs: Configs<TokenInfo, { isInVestingLockTime: boolean; GoledoLockAPR: Unit | undefined }> = [
   {
     name: 'Supply Balance',
     renderContent: columns[1].render,
@@ -103,11 +109,13 @@ const configs: Configs<TokenInfo> = [
 
 const AssetsToSupply: React.FC = () => {
   const tokens = useTokens();
+  const data = useGoledo();
+  const isInVestingLockTime = useIsInVestingLockTime();
 
   return (
     <Card title="Assets to Supply" showHideButton="no-pb" className="w-50% lt-2xl:w-full">
-      <Table className="mt-16px" columns={columns} data={tokens} />
-      <TokenAssets className="mt-16px" configs={configs} data={tokens} />
+      <Table className="mt-16px" columns={columns} data={tokens} otherData={{ isInVestingLockTime, GoledoLockAPR: data?.lockAPR }} />
+      <TokenAssets className="mt-16px" configs={configs} data={tokens} otherData={{ isInVestingLockTime, GoledoLockAPR: data?.lockAPR }} />
     </Card>
   );
 };
