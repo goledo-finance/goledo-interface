@@ -7,7 +7,15 @@ import ToolTip from '@components/Tooltip';
 import BalanceText from '@modules/BalanceText';
 import PercentageText from '@modules/PercentageText';
 import HealthFactor from '@modules/HealthFactor';
-import { useCurUserSupplyPrice, useCurUserSupplyAPY, useCurUserBorrowPrice, useCurUserBorrowAPY, useUserData } from '@store/index';
+import {
+  useCurUserSupplyPrice,
+  useCurUserSupplyAPY,
+  useCurUserBorrowPrice,
+  useCurUserBorrowAPY,
+  useUserData,
+  useTokens,
+  useGoledoTokensAPR,
+} from '@store/index';
 import showRiskDetails from './RiskDetails';
 
 const Zero = Unit.fromMinUnit(0);
@@ -45,6 +53,34 @@ const SummaryPanel: React.FC = () => {
   const curUserBorrowAPY = useCurUserBorrowAPY();
   const userData = useUserData();
 
+  const goledoTokensAPR = useGoledoTokensAPR();
+  const tokens = useTokens();
+  const curUserBorrowTokens = useMemo(() => tokens?.filter((token) => token.borrowBalance?.greaterThan(Zero)), [tokens]);
+  const curUserSupplyTokens = useMemo(
+    () => tokens?.filter((token) => token.supplyBalance?.greaterThan(Unit.fromStandardUnit('0.0001', token.decimals))),
+    [tokens]
+  );
+  const curUserBorrowAPR = useMemo(() => {
+    if (!curUserBorrowTokens?.length || !curUserBorrowAPY || !goledoTokensAPR) return undefined;
+    return curUserBorrowTokens
+      .reduce((acc, { borrowTokenAddress }) => {
+        const goledoTokenAPR = goledoTokensAPR?.[borrowTokenAddress];
+        if (!goledoTokenAPR) return acc;
+        return acc.add(goledoTokenAPR);
+      }, new Unit(0))
+      .add(curUserBorrowAPY);
+  }, [curUserBorrowTokens, curUserBorrowAPY, goledoTokensAPR]);
+  const curUserSupplyAPR = useMemo(() => {
+    if (!curUserSupplyTokens?.length || !curUserSupplyAPY || !goledoTokensAPR) return undefined;
+    return curUserSupplyTokens
+      .reduce((acc, { supplyTokenAddress }) => {
+        const goledoTokenAPR = goledoTokensAPR?.[supplyTokenAddress];
+        if (!goledoTokenAPR) return acc;
+        return acc.add(goledoTokenAPR);
+      }, new Unit(0))
+      .add(curUserSupplyAPY);
+  }, [curUserSupplyTokens, curUserSupplyAPY, goledoTokensAPR]);
+
   const NetWorth = useMemo(
     () => (curUserSupplyPrice && curUserBorrowPrice ? curUserSupplyPrice.sub(curUserBorrowPrice) : undefined),
     [curUserSupplyPrice, curUserBorrowPrice]
@@ -54,10 +90,10 @@ const SummaryPanel: React.FC = () => {
     () =>
       curUserSupplyPrice?.equalsWith(Zero)
         ? Zero
-        : curUserSupplyPrice && curUserSupplyAPY && curUserBorrowPrice && curUserBorrowAPY
-          ? curUserSupplyPrice.mul(curUserSupplyAPY).sub(curUserBorrowPrice.mul(curUserBorrowAPY)).div(curUserSupplyPrice.sub(curUserBorrowPrice))
-          : undefined,
-    [curUserSupplyPrice, curUserSupplyAPY, curUserBorrowPrice, curUserBorrowAPY]
+        : curUserSupplyPrice && curUserSupplyAPR && curUserBorrowPrice && curUserBorrowAPR
+        ? curUserSupplyPrice.mul(curUserSupplyAPR).sub(curUserBorrowPrice.mul(curUserBorrowAPR)).div(curUserSupplyPrice.sub(curUserBorrowPrice))
+        : undefined,
+    [curUserSupplyPrice, curUserSupplyAPR, curUserBorrowPrice, curUserBorrowAPR]
   );
 
   return (
@@ -78,7 +114,14 @@ const SummaryPanel: React.FC = () => {
         <SummaryPanelItem iconName="i-codicon:heart" title="Health Factor">
           <div className="flex items-center">
             <HealthFactor value={userData?.healthFactor} />
-            <Button id='dashboard-summary-panel-risk-btn' variant="outlined" size="mini" color="green" className="!rounded-6px ml-8px translate-y-1px" onClick={showRiskDetails}>
+            <Button
+              id="dashboard-summary-panel-risk-btn"
+              variant="outlined"
+              size="mini"
+              color="green"
+              className="!rounded-6px ml-8px translate-y-1px"
+              onClick={showRiskDetails}
+            >
               <span className="lt-sm:display-none">Risk </span>
               <span>Details</span>
             </Button>

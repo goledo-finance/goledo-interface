@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { useTokens, TokenInfo, useGoledo, useIsInVestingLockTime } from '@store/index';
+import { useTokens, TokenInfo, useGoledoTokensAPR, useIsInVestingLockTime } from '@store/index';
 import tokensIcon from '@assets/tokens';
 import Card from '@components/Card';
 import Table, { type Columns } from '@components/Table';
@@ -14,7 +14,7 @@ import tokenIcons from '@assets/tokens';
 
 const Zero = Unit.fromMinUnit(0);
 
-const columns: Columns<TokenInfo, { isInVestingLockTime: boolean; GoledoLockAPR: Unit | undefined }> = [
+const columns: Columns<TokenInfo, { isInVestingLockTime: boolean; goledoTokensAPR: Record<string, Unit> | undefined }> = [
   {
     name: 'Assets',
     width: '13%',
@@ -36,15 +36,22 @@ const columns: Columns<TokenInfo, { isInVestingLockTime: boolean; GoledoLockAPR:
     ),
   },
   {
-    name: 'APY',
+    name: 'APR',
     width: '18%',
-    render: ({ supplyAPY, symbol }, { isInVestingLockTime, GoledoLockAPR } = { isInVestingLockTime: false, GoledoLockAPR: undefined }) => (
+    render: (
+      { supplyAPY, symbol, supplyTokenAddress },
+      { isInVestingLockTime, goledoTokensAPR } = { isInVestingLockTime: false, goledoTokensAPR: undefined }
+    ) => (
       <div className="font-semibold">
         <PercentageText value={supplyAPY} id={`dashboard-assets-supply-apy-${symbol}`} />
         <div className="ml-8px mt-4px flex justify-center items-center px-4px py-2px rounded-4px border-1px border-#EAEBEF text-12px">
           <img className="w-14px h-14px" src={tokenIcons.GOL} alt="/" />
           <span className="text-#62677B mx-4px">APR</span>
-          {isInVestingLockTime ? <span className="font-semibold">Infinity%</span> : <PercentageText className="font-semibold" value={GoledoLockAPR} />}
+          {isInVestingLockTime ? (
+            <span className="font-semibold">Infinity%</span>
+          ) : (
+            <PercentageText className="font-semibold" value={goledoTokensAPR?.[supplyTokenAddress]} />
+          )}
         </div>
       </div>
     ),
@@ -89,13 +96,13 @@ const columns: Columns<TokenInfo, { isInVestingLockTime: boolean; GoledoLockAPR:
   },
 ];
 
-const configs: Configs<TokenInfo, { isInVestingLockTime: boolean; GoledoLockAPR: Unit | undefined }> = [
+const configs: Configs<TokenInfo, { isInVestingLockTime: boolean; goledoTokensAPR: Record<string, Unit> | undefined }> = [
   {
     name: 'Supply Balance',
     renderContent: columns[1].render,
   },
   {
-    name: 'Supply APY',
+    name: 'Supply APR',
     renderContent: columns[2].render,
   },
   {
@@ -109,13 +116,13 @@ const configs: Configs<TokenInfo, { isInVestingLockTime: boolean; GoledoLockAPR:
 
 const AssetsToSupply: React.FC = () => {
   const tokens = useTokens();
-  const data = useGoledo();
+  const goledoTokensAPR = useGoledoTokensAPR();
   const isInVestingLockTime = useIsInVestingLockTime();
 
   return (
     <Card title="Assets to Supply" showHideButton="no-pb" className="w-50% lt-2xl:w-full">
-      <Table className="mt-16px" columns={columns} data={tokens} otherData={{ isInVestingLockTime, GoledoLockAPR: data?.lockAPR }} />
-      <TokenAssets className="mt-16px" configs={configs} data={tokens} otherData={{ isInVestingLockTime, GoledoLockAPR: data?.lockAPR }} />
+      <Table className="mt-16px" columns={columns} data={tokens} otherData={{ isInVestingLockTime, goledoTokensAPR }} />
+      <TokenAssets className="mt-16px" configs={configs} data={tokens} otherData={{ isInVestingLockTime, goledoTokensAPR }} />
     </Card>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { useTokens, TokenInfo, useCurUserBorrowPrice, useCurUserBorrowAPY, useUserData } from '@store/index';
+import { useTokens, TokenInfo, useCurUserBorrowPrice, useCurUserBorrowAPY, useUserData, useGoledoTokensAPR } from '@store/index';
 import tokensIcon from '@assets/tokens';
 import Card from '@components/Card';
 import ToolTip from '@components/Tooltip';
@@ -14,10 +14,10 @@ import showRepayModal from '@service/handleRepay';
 
 const Zero = Unit.fromMinUnit(0);
 
-const columns: Columns<TokenInfo> = [
+const columns: Columns<TokenInfo, { goledoTokensAPR: Record<string, Unit> | undefined }> = [
   {
     name: 'Assets',
-    width: '16%',
+    width: '13%',
     renderHeader: () => <div className="w-full h-full flex justify-start pl-4px">Assets</div>,
     render: ({ symbol }) => (
       <div className="w-full h-full flex justify-start items-center pl-4px font-semibold">
@@ -28,7 +28,7 @@ const columns: Columns<TokenInfo> = [
   },
   {
     name: 'DEBT',
-    width: '29%',
+    width: '24%',
     render: ({ decimals, borrowBalance, borrowPrice, symbol }) => (
       <div>
         <p className="font-semibold">
@@ -42,7 +42,7 @@ const columns: Columns<TokenInfo> = [
   },
   {
     name: 'Interest Rate',
-    width: '25%',
+    width: '18%',
     render: ({ borrowAPY, symbol }) => (
       <div className="font-semibold">
         <PercentageText value={borrowAPY} id={`dashboard-your-borrows-borrow-apy-${symbol}`} />
@@ -50,8 +50,17 @@ const columns: Columns<TokenInfo> = [
     ),
   },
   {
+    name: 'GOL APR',
+    width: '17%',
+    render: ({ symbol, borrowTokenAddress }, { goledoTokensAPR } = { goledoTokensAPR: undefined }) => (
+      <div className="font-semibold">
+        <PercentageText className="font-semibold" id={`dashboard-assets-borrow-APR-${symbol}`} value={goledoTokensAPR?.[borrowTokenAddress]} />
+      </div>
+    ),
+  },
+  {
     name: '',
-    width: '30%',
+    width: '28%',
     render: ({ address, symbol, borrowBalance, availableBorrowBalance }) => (
       <div className="w-full h-full flex justify-end items-center gap-12px">
         <Button
@@ -80,7 +89,7 @@ const columns: Columns<TokenInfo> = [
   },
 ];
 
-const configs: Configs<TokenInfo> = [
+const configs: Configs<TokenInfo, { goledoTokensAPR: Record<string, Unit> | undefined }> = [
   {
     name: 'Debt',
     renderContent: columns[1].render,
@@ -90,19 +99,35 @@ const configs: Configs<TokenInfo> = [
     renderContent: columns[2].render,
   },
   {
-    render: columns[3].render,
+    name: 'Goledo APR',
+    renderContent: columns[3].render,
+  },
+  {
+    render: columns[4].render,
   },
 ];
 
 const YourBorrows: React.FC = () => {
   const tokens = useTokens();
+  const goledoTokensAPR = useGoledoTokensAPR();
   const curUserBorrowTokens = useMemo(() => tokens?.filter((token) => token.borrowBalance?.greaterThan(Zero)), [tokens]);
   const curUserBorrowPrice = useCurUserBorrowPrice();
   const curUserBorrowAPY = useCurUserBorrowAPY();
+  const curUserBorrowAPR = useMemo(() => {
+    if (!curUserBorrowTokens?.length || !curUserBorrowAPY || !goledoTokensAPR) return undefined;
+    return curUserBorrowTokens.reduce((acc, { borrowTokenAddress }) => {
+      const goledoTokenAPR = goledoTokensAPR?.[borrowTokenAddress];
+      if (!goledoTokenAPR) return acc;
+      return acc.add(goledoTokenAPR);
+    }
+    , new Unit(0)).add(curUserBorrowAPY);
+  }
+  , [curUserBorrowTokens, curUserBorrowAPY, goledoTokensAPR]);
+  
   const userData = useUserData();
 
   return (
-    <Card title="You're borrowing" showHideButton="no-pb" className="w-50% lt-2xl:w-full" id='dashboard-your-borrows-card'>
+    <Card title="You're borrowing" showHideButton="no-pb" className="w-50% lt-2xl:w-full" id="dashboard-your-borrows-card">
       {!curUserBorrowTokens?.length && <p className="mt-40px mb-24px text-center">None Borrowed</p>}
       {curUserBorrowTokens?.length ? (
         <>
@@ -110,13 +135,13 @@ const YourBorrows: React.FC = () => {
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               Balance
               <span className="ml-6px text-#303549 font-semibold">
-                <BalanceText balance={curUserBorrowPrice} abbrDecimals={2} symbolPrefix="$" id='dashboard-your-borrows-borrow-price' />
+                <BalanceText balance={curUserBorrowPrice} abbrDecimals={2} symbolPrefix="$" id="dashboard-your-borrows-borrow-price" />
               </span>
             </div>
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               Interest Rate
               <span className="ml-6px text-#303549 font-semibold">
-                <PercentageText value={curUserBorrowAPY} id='dashboard-your-borrows-borrow-apy' />
+                <PercentageText value={curUserBorrowAPR} id="dashboard-your-borrows-borrow-apy" />
               </span>
               <ToolTip text="The weighted average of Interest Rate for all borrowed assets, including incentives.">
                 <span className="i-bi:info-circle ml-4px cursor-pointer" />
@@ -125,15 +150,15 @@ const YourBorrows: React.FC = () => {
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               Borrowing power used
               <span className="ml-6px text-#303549 font-semibold">
-                <PercentageText value={userData?.borrowPowerUsed} id='dashboard-your-borrows-borrow-power-used' />
+                <PercentageText value={userData?.borrowPowerUsed} id="dashboard-your-borrows-borrow-power-used" />
               </span>
               <ToolTip text="The % of your total borrowing power used. This is based on the amount of your collateral supplied and the total amount that you can borrow.">
                 <span className="i-bi:info-circle ml-4px cursor-pointer" />
               </ToolTip>
             </div>
           </div>
-          <Table className="mt-20px" columns={columns} data={curUserBorrowTokens} />
-          <TokenAssets className="mt-20px" configs={configs} data={curUserBorrowTokens} />
+          <Table className="mt-20px" columns={columns} data={curUserBorrowTokens} otherData={{ goledoTokensAPR }} />
+          <TokenAssets className="mt-20px" configs={configs} data={curUserBorrowTokens} otherData={{ goledoTokensAPR }} />
         </>
       ) : null}
     </Card>
