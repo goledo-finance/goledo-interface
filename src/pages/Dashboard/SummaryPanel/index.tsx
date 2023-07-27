@@ -66,7 +66,7 @@ const SummaryPanel: React.FC = () => {
       .reduce((acc, { borrowTokenAddress }) => {
         const goledoTokenAPR = goledoTokensAPR?.[borrowTokenAddress];
         if (!goledoTokenAPR) return acc;
-        return acc.add(goledoTokenAPR);
+        return acc.sub(goledoTokenAPR);
       }, new Unit(0))
       .add(curUserBorrowAPY);
   }, [curUserBorrowTokens, curUserBorrowAPY, goledoTokensAPR]);
