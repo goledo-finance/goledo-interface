@@ -113,17 +113,15 @@ const YourBorrows: React.FC = () => {
   const curUserBorrowTokens = useMemo(() => tokens?.filter((token) => token.borrowBalance?.greaterThan(Zero)), [tokens]);
   const curUserBorrowPrice = useCurUserBorrowPrice();
   const curUserBorrowAPY = useCurUserBorrowAPY();
-  const curUserBorrowAPR = useMemo(() => {
+  const curUserBorrowGoledoAPR = useMemo(() => {
     if (!curUserBorrowTokens?.length || !curUserBorrowAPY || !goledoTokensAPR) return undefined;
     return curUserBorrowTokens.reduce((acc, { borrowTokenAddress }) => {
       const goledoTokenAPR = goledoTokensAPR?.[borrowTokenAddress];
       if (!goledoTokenAPR) return acc;
       return acc.add(goledoTokenAPR);
-    }
-    , new Unit(0)).add(curUserBorrowAPY);
-  }
-  , [curUserBorrowTokens, curUserBorrowAPY, goledoTokensAPR]);
-  
+    }, new Unit(0));
+  }, [curUserBorrowTokens, curUserBorrowAPY, goledoTokensAPR]);
+
   const userData = useUserData();
 
   return (
@@ -141,14 +139,20 @@ const YourBorrows: React.FC = () => {
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               Interest Rate
               <span className="ml-6px text-#303549 font-semibold">
-                <PercentageText value={curUserBorrowAPR} id="dashboard-your-borrows-borrow-apy" />
+                <PercentageText value={curUserBorrowAPY} id="dashboard-your-borrows-borrow-apy" />
               </span>
-              <ToolTip text="The weighted average of Interest Rate for all borrowed assets, including incentives.">
+              <ToolTip text="The weighted average of Interest Rate for all borrowed assets.">
                 <span className="i-bi:info-circle ml-4px cursor-pointer" />
               </ToolTip>
             </div>
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
-              Borrowing power used
+              GOL APR
+              <span className="ml-6px text-#303549 font-semibold">
+                <PercentageText value={curUserBorrowGoledoAPR} id="dashboard-your-borrows-borrow-power-used" />
+              </span>
+            </div>
+            <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
+              Power used
               <span className="ml-6px text-#303549 font-semibold">
                 <PercentageText value={userData?.borrowPowerUsed} id="dashboard-your-borrows-borrow-power-used" />
               </span>
