@@ -27,6 +27,7 @@ declare module '*.module.styl' {
 
 interface ImportMetaEnv {
   readonly VITE_ESpaceRpcUrl: string;
+  readonly VITE_ESpaceScanUrl: string;
   readonly VITE_UiPoolDataProviderAddress: string;
   readonly VITE_LendingPoolAddress: string;
   readonly VITE_LendingPoolAddressesProviderAddress: string;

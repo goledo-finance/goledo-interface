@@ -1,7 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
-import { useAccount, useBalance, Unit, provider } from '@cfxjs/use-wallet-react/ethereum';
+import { Unit } from '@cfxjs/use-wallet-react/ethereum';
+import { useAccount, useBalance } from '@store/wallet';
+import { fetchChain } from '@utils/fetchChain';
 
-const useEstimateCfxGasFee = ({ createData, to, isCFX, amount }: { isCFX?: boolean; to: string; amount?: Unit; createData: ({ amount, account }: { amount: string; account: string; }) => string; }) => {
+const useEstimateCfxGasFee = ({
+  createData,
+  to,
+  isCFX,
+  amount,
+}: {
+  isCFX?: boolean;
+  to: string;
+  amount?: Unit;
+  createData: ({ amount, account }: { amount: string; account: string }) => string;
+}) => {
   const count = useRef(0);
   const [cfxGasFee, setCfxGasFee] = useState<Unit | undefined>(undefined);
   const account = useAccount();
@@ -10,7 +22,7 @@ const useEstimateCfxGasFee = ({ createData, to, isCFX, amount }: { isCFX?: boole
   useEffect(() => {
     if (isCFX !== true) return;
     const fetcher = async () => {
-      if (!provider || !account) return;
+      if (!account) return;
       const usedAmount = amount || balance;
       if (!usedAmount) return;
       const minUnitAmount = Unit.lessThan(usedAmount, Unit.fromStandardUnit('16e-12'))
@@ -20,7 +32,8 @@ const useEstimateCfxGasFee = ({ createData, to, isCFX, amount }: { isCFX?: boole
       const fetchCount = count.current;
 
       Promise.all([
-        provider.request({
+        fetchChain({
+          rpcUrl: import.meta.env.VITE_ESpaceRpcUrl,
           method: 'eth_estimateGas',
           params: [
             {
@@ -31,7 +44,8 @@ const useEstimateCfxGasFee = ({ createData, to, isCFX, amount }: { isCFX?: boole
             },
           ],
         }),
-        provider.request({
+        fetchChain({
+          rpcUrl: import.meta.env.VITE_ESpaceRpcUrl,
           method: 'eth_gasPrice',
           params: [],
         }),
@@ -40,7 +54,8 @@ const useEstimateCfxGasFee = ({ createData, to, isCFX, amount }: { isCFX?: boole
           if (fetchCount !== count.current) return;
           const gasFee = Unit.mul(Unit.mul(Unit.fromMinUnit(estimateGas), Unit.fromMinUnit(gasPrice)), Unit.fromMinUnit('1.5'));
           setCfxGasFee(gasFee);
-        }).catch(() => {})
+        })
+        .catch(() => {});
     };
 
     fetcher();

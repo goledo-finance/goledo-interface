@@ -1,4 +1,4 @@
-import { sendTransaction, store as walletStore } from '@cfxjs/use-wallet-react/ethereum';
+import { sendTransaction } from '@store/wallet';
 import { LendingPoolContract } from '@utils/contracts';
 export { default } from './showModal';
 

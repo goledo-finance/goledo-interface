@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { useTokens, useCurUserSupplyAPY, useCurUserSupplyPrice, type TokenInfo } from '@store/index';
+import { useTokens, useCurUserSupplyAPY, useCurUserSupplyPrice, useGoledoTokensAPR, type TokenInfo } from '@store/index';
 import tokensIcon from '@assets/tokens';
 import Card from '@components/Card';
 import Table, { type Columns } from '@components/Table';
@@ -12,10 +12,11 @@ import BalanceText from '@modules/BalanceText';
 import PercentageText from '@modules/PercentageText';
 import showWithdrawModal from '@service/handleWithdraw';
 import showCollateralChangeModal from '@service/handleCollateralChange';
+import tokenIcons from '@assets/tokens';
 
 const Zero = Unit.fromMinUnit(0);
 
-const columns: Columns<TokenInfo> = [
+const columns: Columns<TokenInfo, { goledoTokensAPR: Record<string, Unit> | undefined }> = [
   {
     name: 'Assets',
     width: '13%',
@@ -42,11 +43,16 @@ const columns: Columns<TokenInfo> = [
     ),
   },
   {
-    name: 'APY',
+    name: 'Rewards',
     width: '18%',
-    render: ({ supplyAPY, symbol }) => (
+    render: ({ supplyAPY, symbol, supplyTokenAddress }, { goledoTokensAPR } = { goledoTokensAPR: undefined }) => (
       <div className="font-semibold">
         <PercentageText value={supplyAPY} id={`dashboard-your-supplies-supply-apy-${symbol}`} />
+        <div className="ml-8px mt-4px flex justify-center items-center px-4px py-2px rounded-4px border-1px border-#EAEBEF text-12px">
+          <img className="w-14px h-14px" src={tokenIcons.GOL} alt="/" />
+          <span className="text-#62677B mx-4px">APR</span>
+          <PercentageText className="font-semibold" value={goledoTokensAPR?.[supplyTokenAddress]} />
+        </div>
       </div>
     ),
   },
@@ -63,7 +69,12 @@ const columns: Columns<TokenInfo> = [
     ),
     render: ({ collateral, canBeCollateral, address, symbol }) => (
       <div className="flex items-center">
-        <Toggle id={`dashboard-your-supplies-toggle-${symbol}`} checked={collateral && canBeCollateral} disabled={!canBeCollateral} onClick={() => showCollateralChangeModal({ address, symbol })} />
+        <Toggle
+          id={`dashboard-your-supplies-toggle-${symbol}`}
+          checked={collateral && canBeCollateral}
+          disabled={!canBeCollateral}
+          onClick={() => showCollateralChangeModal({ address, symbol })}
+        />
       </div>
     ),
   },
@@ -88,13 +99,13 @@ const columns: Columns<TokenInfo> = [
   },
 ];
 
-const configs: Configs<TokenInfo> = [
+const configs: Configs<TokenInfo, { goledoTokensAPR: Record<string, Unit> | undefined }> = [
   {
     name: 'Supply Balance',
     renderContent: columns[1].render,
   },
   {
-    name: 'Supply APY',
+    name: 'Supply Rewards',
     renderContent: columns[2].render,
   },
   {
@@ -108,12 +119,23 @@ const configs: Configs<TokenInfo> = [
 
 const YourSupplies: React.FC = () => {
   const tokens = useTokens();
+  const goledoTokensAPR = useGoledoTokensAPR();
   const curUserSupplyTokens = useMemo(
     () => tokens?.filter((token) => token.supplyBalance?.greaterThan(Unit.fromStandardUnit('0.0001', token.decimals))),
     [tokens]
   );
   const curUserSupplyPrice = useCurUserSupplyPrice();
   const curUserSupplyAPY = useCurUserSupplyAPY();
+  const curUserSupplyAPR = useMemo(() => {
+    if (!curUserSupplyTokens?.length || !curUserSupplyAPY || !goledoTokensAPR) return undefined;
+    return curUserSupplyTokens.reduce((acc, { supplyTokenAddress }) => {
+      const goledoTokenAPR = goledoTokensAPR?.[supplyTokenAddress];
+      if (!goledoTokenAPR) return acc;
+      return acc.add(goledoTokenAPR);
+    }
+    , new Unit(0)).add(curUserSupplyAPY);
+  }
+  , [curUserSupplyTokens, curUserSupplyAPY, goledoTokensAPR]);
   const totalCollateralPrice = useMemo(
     () =>
       !curUserSupplyTokens?.length
@@ -123,7 +145,7 @@ const YourSupplies: React.FC = () => {
   );
 
   return (
-    <Card title="You're supplying" showHideButton="no-pb" className="w-50% lt-2xl:w-full" id='dashboard-your-supplies-card'>
+    <Card title="You're supplying" showHideButton="no-pb" className="w-50% lt-2xl:w-full" id="dashboard-your-supplies-card">
       {!curUserSupplyTokens?.length && <p className="mt-40px mb-24px text-center">None Supplied</p>}
       {curUserSupplyTokens?.length ? (
         <>
@@ -131,13 +153,13 @@ const YourSupplies: React.FC = () => {
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               Balance
               <span className="ml-6px text-#303549 font-semibold">
-                <BalanceText balance={curUserSupplyPrice} abbrDecimals={2} symbolPrefix="$" id='dashboard-your-supplies-balance' />
+                <BalanceText balance={curUserSupplyPrice} abbrDecimals={2} symbolPrefix="$" id="dashboard-your-supplies-balance" />
               </span>
             </div>
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
-              APY
+              Rewards
               <span className="ml-6px text-#303549 font-semibold">
-                <PercentageText value={curUserSupplyAPY} id='dashboard-your-supplies-apy' />
+                <PercentageText value={curUserSupplyAPR} id="dashboard-your-supplies-apy" />
               </span>
               <ToolTip text="The weighted average of APY for all supplied assets, including incentives.">
                 <span className="i-bi:info-circle ml-4px cursor-pointer" />
@@ -146,15 +168,15 @@ const YourSupplies: React.FC = () => {
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               Collateral
               <span className="ml-6px text-#303549 font-semibold">
-                <BalanceText balance={totalCollateralPrice} abbrDecimals={2} symbolPrefix="$" id='dashboard-your-supplies-collateral-price' />
+                <BalanceText balance={totalCollateralPrice} abbrDecimals={2} symbolPrefix="$" id="dashboard-your-supplies-collateral-price" />
               </span>
               <ToolTip text="The total amount of your assets denominated in USD that can be used as collateral for borrowing assets.">
                 <span className="i-bi:info-circle ml-4px cursor-pointer" />
               </ToolTip>
             </div>
           </div>
-          <Table className="mt-20px" columns={columns} data={curUserSupplyTokens} />
-          <TokenAssets className="mt-20px" configs={configs} data={curUserSupplyTokens} />
+          <Table className="mt-20px" columns={columns} data={curUserSupplyTokens} otherData={{ goledoTokensAPR }} />
+          <TokenAssets className="mt-20px" configs={configs} data={curUserSupplyTokens} otherData={{ goledoTokensAPR }} />
         </>
       ) : null}
     </Card>
