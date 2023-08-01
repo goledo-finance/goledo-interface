@@ -127,7 +127,7 @@ const configs: Configs<TokenInfo, { goledoTokensAPR: Record<string, Unit> | unde
     renderContent: columns[1].render,
   },
   {
-    name: 'Supply APY',
+    name: 'Supply Rewards',
     renderContent: columns[2].render,
   },
   {
@@ -139,7 +139,11 @@ const configs: Configs<TokenInfo, { goledoTokensAPR: Record<string, Unit> | unde
     renderContent: columns[4].render,
   },
   {
-    render: columns[5].render,
+    name: 'Goledo APR',
+    renderContent: columns[5].render,
+  },
+  {
+    render: columns[6].render,
   },
 ];
 
