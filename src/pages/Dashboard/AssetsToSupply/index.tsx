@@ -36,7 +36,7 @@ const columns: Columns<TokenInfo, { isInVestingLockTime: boolean; goledoTokensAP
     ),
   },
   {
-    name: 'APR',
+    name: 'Rewards',
     width: '18%',
     render: (
       { supplyAPY, symbol, supplyTokenAddress },
@@ -102,7 +102,7 @@ const configs: Configs<TokenInfo, { isInVestingLockTime: boolean; goledoTokensAP
     renderContent: columns[1].render,
   },
   {
-    name: 'Supply APR',
+    name: 'Supply Rewards',
     renderContent: columns[2].render,
   },
   {

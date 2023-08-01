@@ -228,11 +228,17 @@ export const watchAsset = (params: Parameters<typeof watchAssetFluent>[0]) => {
   return walletFunction[method].watchAsset(params);
 };
 
-export const useAccountMethod = () => accountMethodFilter(selectors.accountMethodFilter);
+export const useAccountMethod = () => {
+  const account = accountMethodFilter(selectors.accountState);
+  const accountMethod = accountMethodFilter(selectors.accountMethodFilter);
+  return !!account ? accountMethod : null;
+}
+
 export const setAccountMethod = (method: Methods | null) => {
   LocalStorage.setItem({ key: 'accountFilter', data: method });
   accountMethodFilter.setState({ accountFilter: method });
 };
+
 export const useAccount = () => accountMethodFilter(selectors.accountState);
 export const setAccountState = (account: string | undefined | null) => {
   LocalStorage.setItem({ key: 'accountStatus', data: account });

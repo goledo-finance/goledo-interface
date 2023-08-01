@@ -43,7 +43,7 @@ const columns: Columns<TokenInfo, { goledoTokensAPR: Record<string, Unit> | unde
     ),
   },
   {
-    name: 'APR',
+    name: 'Rewards',
     width: '18%',
     render: ({ supplyAPY, symbol, supplyTokenAddress }, { goledoTokensAPR } = { goledoTokensAPR: undefined }) => (
       <div className="font-semibold">
@@ -105,7 +105,7 @@ const configs: Configs<TokenInfo, { goledoTokensAPR: Record<string, Unit> | unde
     renderContent: columns[1].render,
   },
   {
-    name: 'Supply APR',
+    name: 'Supply Rewards',
     renderContent: columns[2].render,
   },
   {
@@ -157,7 +157,7 @@ const YourSupplies: React.FC = () => {
               </span>
             </div>
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
-              APY
+              Rewards
               <span className="ml-6px text-#303549 font-semibold">
                 <PercentageText value={curUserSupplyAPR} id="dashboard-your-supplies-apy" />
               </span>

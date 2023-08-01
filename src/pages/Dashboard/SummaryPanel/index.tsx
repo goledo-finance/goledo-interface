@@ -105,8 +105,8 @@ const SummaryPanel: React.FC = () => {
 
         <SummaryPanelItem
           iconName="i-tabler:chart-bar"
-          title="Net APY"
-          titleTip="Net APY is the combined effect of all supply and borrow positions on net worth, including incentives. It is possible to have a negative net APY if debt APY is higher than supply APY."
+          title="Net APR"
+          titleTip="Net APR is the combined effect of all supply and borrow positions on net worth, including incentives, It is possible to have a negative net APR if debt APR is higher than supply APR."
         >
           <PercentageText value={NetAPY} />
         </SummaryPanelItem>
