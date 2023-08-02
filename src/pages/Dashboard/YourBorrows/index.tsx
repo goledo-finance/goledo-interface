@@ -114,13 +114,15 @@ const YourBorrows: React.FC = () => {
   const curUserBorrowPrice = useCurUserBorrowPrice();
   const curUserBorrowAPY = useCurUserBorrowAPY();
   const curUserBorrowGoledoAPR = useMemo(() => {
-    if (!curUserBorrowTokens?.length || !curUserBorrowAPY || !goledoTokensAPR) return undefined;
-    return curUserBorrowTokens.reduce((acc, { borrowTokenAddress }) => {
-      const goledoTokenAPR = goledoTokensAPR?.[borrowTokenAddress];
-      if (!goledoTokenAPR) return acc;
-      return acc.add(goledoTokenAPR);
-    }, new Unit(0));
-  }, [curUserBorrowTokens, curUserBorrowAPY, goledoTokensAPR]);
+    if (!curUserBorrowTokens?.length || !curUserBorrowPrice || !goledoTokensAPR) return undefined;
+    return curUserBorrowTokens
+      .reduce((acc, { borrowTokenAddress, borrowPrice }) => {
+        const goledoTokenAPR = goledoTokensAPR?.[borrowTokenAddress];
+        if (!goledoTokenAPR || !curUserBorrowPrice || !borrowPrice) return acc.add(Zero);
+        const apr = borrowPrice?.mul(goledoTokenAPR).div(curUserBorrowPrice);
+        return acc.add(apr);
+      }, new Unit(0));
+  }, [curUserBorrowTokens, goledoTokensAPR, curUserBorrowPrice]);
 
   const userData = useUserData();
 

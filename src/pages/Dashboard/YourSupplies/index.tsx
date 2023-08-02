@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
-import { useTokens, useCurUserSupplyAPY, useCurUserSupplyPrice, useGoledoTokensAPR, type TokenInfo } from '@store/index';
+import { useTokens, useCurUserSupplyPrice, useGoledoTokensAPR, type TokenInfo } from '@store/index';
 import tokensIcon from '@assets/tokens';
 import Card from '@components/Card';
 import Table, { type Columns } from '@components/Table';
@@ -125,17 +125,16 @@ const YourSupplies: React.FC = () => {
     [tokens]
   );
   const curUserSupplyPrice = useCurUserSupplyPrice();
-  const curUserSupplyAPY = useCurUserSupplyAPY();
   const curUserSupplyAPR = useMemo(() => {
-    if (!curUserSupplyTokens?.length || !curUserSupplyAPY || !goledoTokensAPR) return undefined;
-    return curUserSupplyTokens.reduce((acc, { supplyTokenAddress }) => {
+    if (!curUserSupplyTokens?.length || !curUserSupplyPrice || !goledoTokensAPR) return undefined;
+    return curUserSupplyTokens.reduce((acc, { supplyTokenAddress, supplyPrice, supplyAPY }) => {
       const goledoTokenAPR = goledoTokensAPR?.[supplyTokenAddress];
-      if (!goledoTokenAPR) return acc;
-      return acc.add(goledoTokenAPR);
-    }
-    , new Unit(0)).add(curUserSupplyAPY);
-  }
-  , [curUserSupplyTokens, curUserSupplyAPY, goledoTokensAPR]);
+      if (!goledoTokenAPR || !curUserSupplyPrice || !supplyAPY || !supplyPrice) return acc.add(Zero);
+      const apr = supplyPrice?.mul(goledoTokenAPR.add(supplyAPY)).div(curUserSupplyPrice);
+      return acc.add(apr);
+    }, new Unit(0));
+  }, [curUserSupplyTokens, goledoTokensAPR, curUserSupplyPrice]);
+
   const totalCollateralPrice = useMemo(
     () =>
       !curUserSupplyTokens?.length
