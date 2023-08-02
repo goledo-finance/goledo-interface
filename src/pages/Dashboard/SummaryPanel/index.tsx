@@ -9,9 +9,7 @@ import PercentageText from '@modules/PercentageText';
 import HealthFactor from '@modules/HealthFactor';
 import {
   useCurUserSupplyPrice,
-  useCurUserSupplyAPY,
   useCurUserBorrowPrice,
-  useCurUserBorrowAPY,
   useUserData,
   useTokens,
   useGoledoTokensAPR,
@@ -48,38 +46,36 @@ const SummaryPanelItem: React.FC<{ iconName: string; title: string; titleTip?: s
 
 const SummaryPanel: React.FC = () => {
   const curUserSupplyPrice = useCurUserSupplyPrice();
-  const curUserSupplyAPY = useCurUserSupplyAPY();
   const curUserBorrowPrice = useCurUserBorrowPrice();
-  const curUserBorrowAPY = useCurUserBorrowAPY();
   const userData = useUserData();
 
   const goledoTokensAPR = useGoledoTokensAPR();
   const tokens = useTokens();
+
   const curUserBorrowTokens = useMemo(() => tokens?.filter((token) => token.borrowBalance?.greaterThan(Zero)), [tokens]);
   const curUserSupplyTokens = useMemo(
     () => tokens?.filter((token) => token.supplyBalance?.greaterThan(Unit.fromStandardUnit('0.0001', token.decimals))),
     [tokens]
   );
   const curUserBorrowAPR = useMemo(() => {
-    if (!curUserBorrowTokens?.length || !curUserBorrowAPY || !goledoTokensAPR) return undefined;
+    if (!curUserBorrowTokens?.length || !curUserBorrowPrice || !goledoTokensAPR) return undefined;
     return curUserBorrowTokens
-      .reduce((acc, { borrowTokenAddress }) => {
+      .reduce((acc, { borrowTokenAddress, borrowPrice, borrowAPY }) => {
         const goledoTokenAPR = goledoTokensAPR?.[borrowTokenAddress];
-        if (!goledoTokenAPR) return acc;
-        return acc.sub(goledoTokenAPR);
-      }, new Unit(0))
-      .add(curUserBorrowAPY);
-  }, [curUserBorrowTokens, curUserBorrowAPY, goledoTokensAPR]);
+        if (!goledoTokenAPR || !curUserBorrowPrice || !borrowAPY || !borrowPrice) return acc.add(Zero);
+        const apr = borrowPrice?.mul(borrowAPY.sub(goledoTokenAPR)).div(curUserBorrowPrice);
+        return acc.add(apr);
+      }, new Unit(0));
+  }, [curUserBorrowTokens, goledoTokensAPR, curUserBorrowPrice]);
   const curUserSupplyAPR = useMemo(() => {
-    if (!curUserSupplyTokens?.length || !curUserSupplyAPY || !goledoTokensAPR) return undefined;
-    return curUserSupplyTokens
-      .reduce((acc, { supplyTokenAddress }) => {
-        const goledoTokenAPR = goledoTokensAPR?.[supplyTokenAddress];
-        if (!goledoTokenAPR) return acc;
-        return acc.add(goledoTokenAPR);
-      }, new Unit(0))
-      .add(curUserSupplyAPY);
-  }, [curUserSupplyTokens, curUserSupplyAPY, goledoTokensAPR]);
+    if (!curUserSupplyTokens?.length || !curUserSupplyPrice || !goledoTokensAPR) return undefined;
+    return curUserSupplyTokens.reduce((acc, { supplyTokenAddress, supplyPrice, supplyAPY }) => {
+      const goledoTokenAPR = goledoTokensAPR?.[supplyTokenAddress];
+      if (!goledoTokenAPR || !curUserSupplyPrice || !supplyAPY || !supplyPrice) return acc.add(Zero);
+      const apr = supplyPrice?.mul(goledoTokenAPR.add(supplyAPY)).div(curUserSupplyPrice);
+      return acc.add(apr);
+    }, new Unit(0));
+  }, [curUserSupplyTokens, goledoTokensAPR, curUserSupplyPrice]);
 
   const NetWorth = useMemo(
     () => (curUserSupplyPrice && curUserBorrowPrice ? curUserSupplyPrice.sub(curUserBorrowPrice) : undefined),
@@ -90,8 +86,8 @@ const SummaryPanel: React.FC = () => {
     () =>
       curUserSupplyPrice?.equalsWith(Zero)
         ? Zero
-        : curUserSupplyPrice && curUserSupplyAPR && curUserBorrowPrice && curUserBorrowAPR
-        ? curUserSupplyPrice.mul(curUserSupplyAPR).sub(curUserBorrowPrice.mul(curUserBorrowAPR)).div(curUserSupplyPrice.sub(curUserBorrowPrice))
+        : curUserSupplyPrice && curUserSupplyAPR
+        ? curUserSupplyPrice.mul(curUserSupplyAPR).sub((curUserBorrowPrice || Zero).mul(curUserBorrowAPR || Zero)).div(curUserSupplyPrice.sub(curUserBorrowPrice || Zero))
         : undefined,
     [curUserSupplyPrice, curUserSupplyAPR, curUserBorrowPrice, curUserBorrowAPR]
   );

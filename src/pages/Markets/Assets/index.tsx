@@ -90,6 +90,14 @@ const columns: Columns<TokenInfo, { goledoTokensAPR: Record<string, Unit> | unde
   {
     name: 'Goledo APR',
     width: '12%',
+    renderHeader: () => (
+      <div className="flex justify-center items-center">
+        Goledo APR
+        <ToolTip text="Borrowing incentives">
+          <span className="i-bi:info-circle ml-4px cursor-pointer" />
+        </ToolTip>
+      </div>
+    ),
     render: ({ symbol, borrowTokenAddress }, { goledoTokensAPR } = { goledoTokensAPR: undefined }) => (
       <div className="font-semibold">
         <PercentageText className="font-semibold" id={`dashboard-assets-borrow-APR-${symbol}`} value={goledoTokensAPR?.[borrowTokenAddress]} />
