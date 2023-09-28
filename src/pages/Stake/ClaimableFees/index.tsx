@@ -57,6 +57,7 @@ const ClaimableFees: React.FC<{ version: 'V1' | 'V2' }> = ({ version }) => {
       : claimableFees?.map((item) => ({ ...item, price: item.symbol === 'GOL' ? goledoUsdPrice?.mul(item.balance)! : item.price }));
   const totalClaimablePrice = data?.reduce((acc, item) => acc.add(item.price ?? Zero), Zero);
 
+  if (version === 'V1' && (!totalClaimablePrice || totalClaimablePrice.equalsWith(Zero))) return null;
   return (
     <Card title={version === 'V1' ? 'Claimable Fees in v1 Contract' : 'Claimable Fees'} id={`stake-claimable-fees-card-${version}`}>
       <Table className="mt-16px" columns={columns} data={data} />
