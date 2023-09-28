@@ -35,7 +35,8 @@ const Stake: React.FC = () => {
               <GoledoClaim />
               <GoledoVest />
               <GoledoLock />
-              <ClaimableFees />
+              <ClaimableFees version='V2' />
+              <ClaimableFees version='V1' />
             </div>
           </>
         )}

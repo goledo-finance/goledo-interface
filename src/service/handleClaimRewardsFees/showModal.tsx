@@ -4,18 +4,18 @@ import Button from '@components/Button';
 import useTransaction from '@hooks/useTransaction';
 import Success from '@assets/icons/success.svg';
 import Error from '@assets/icons/error.svg';
-import { handleClaimRewardsFees } from './index';
+import { handleClaimRewardsFeesV1, handleClaimRewardsFeesV2 } from './index';
 
-const ModalContent: React.FC = () => {
-  const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleClaimRewardsFees);
+const ModalContent: React.FC<{ version: 'V1' | 'V2' }> = ({ version }) => {
+  const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(version === 'V1' ? handleClaimRewardsFeesV1 : handleClaimRewardsFeesV2);
 
   return (
-    <div className='relative'>
+    <div className="relative">
       {transactionStatus !== 'success' && transactionStatus !== 'failed' && (
         <>
           <p className="mt-30px mb-4px text-14px text-#62677B">Sure to claim all rewards fees?</p>
           <Button
-            id='handle-claim-rewards-fees-btn'
+            id="handle-claim-rewards-fees-btn"
             fullWidth
             size="large"
             className="mt-48px"
@@ -36,26 +36,22 @@ const ModalContent: React.FC = () => {
             {transactionStatus === 'failed' && 'Transaction failed!'}
           </p>
           <p className="text-14px text-#303549 text-center">
-            {transactionStatus === 'success' && (
-              <>
-                You claimed all rewards fees.
-              </>
-            )}
+            {transactionStatus === 'success' && <>You claimed all rewards fees.</>}
             {transactionStatus === 'failed' && error}
           </p>
-          {scanUrl &&
+          {scanUrl && (
             <a
-              id='handle-claim-rewards-fees-reviewTx-link'
-              className='absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline'
+              id="handle-claim-rewards-fees-reviewTx-link"
+              className="absolute bottom-50px right-0px text-12px text-#383515 no-underline hover:underline"
               href={scanUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
               Review tx details
-              <span className='i-charm:link-external ml-3px text-10px translate-y-[-.5px]' />
+              <span className="i-charm:link-external ml-3px text-10px translate-y-[-.5px]" />
             </a>
-          }
-          <Button id='handle-claim-rewards-fees-ok-btn' fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
+          )}
+          <Button id="handle-claim-rewards-fees-ok-btn" fullWidth size="large" className="mt-48px" onClick={hideAllModal}>
             OK
           </Button>
         </>
@@ -64,7 +60,7 @@ const ModalContent: React.FC = () => {
   );
 };
 
-const showVestingGoledoModal = () =>
-  showModal({ Content: <ModalContent />, title: 'Claim Rewards Fees' });
+const showVestingGoledoModal = (version: 'V1' | 'V2') =>
+  showModal({ Content: <ModalContent version={version} />, title: version === 'V1' ? 'Claim Rewards Fees in v1 Contract' : 'Claim Rewards Fees' });
 
 export default showVestingGoledoModal;

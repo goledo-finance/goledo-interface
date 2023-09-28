@@ -126,6 +126,7 @@ export interface TokensStore {
     loanToValue: string;
   };
   claimableFees?: Array<{ name: string; symbol: string; address: string; supplyTokenAddress: string; decimals: number; balance: Unit; price: Unit }>;
+  claimableFeesV1?: Array<{ name: string; symbol: string; address: string; supplyTokenAddress: string; decimals: number; balance: Unit; price: Unit }>;
 }
 
 export const tokensStore = create(subscribeWithSelector(() => ({ tokensInPool: LocalStorage.getItem(`tokensInPool-${import.meta.env.MODE}`) } as TokensStore)));
@@ -157,8 +158,9 @@ accountMethodFilter.subscribe(
         UiPoolDataContract.interface.encodeFunctionData('getReservesData', [import.meta.env.VITE_LendingPoolAddressesProviderAddress, account]),
       ],
       [import.meta.env.VITE_MultiFeeDistributionAddress, MultiFeeDistributionContract.interface.encodeFunctionData('claimableRewards', [account])],
+      [import.meta.env.VITE_MultiFeeDistributionAddressV1, MultiFeeDistributionContract.interface.encodeFunctionData('claimableRewards', [account])],
     ];
-
+    
     unsub = intervalFetchChain(() => MulticallContract.callStatic.aggregate(promises), {
       intervalTime: 5000,
       callback: ({ returnData }: { returnData?: Array<any> } = { returnData: undefined }) => {
@@ -226,7 +228,32 @@ accountMethodFilter.subscribe(
           };
         });
 
-        tokensStore.setState({ tokensData, userTokensData, userData, claimableFees });
+        const claimableFeesDataV1 = MultiFeeDistributionContract.interface.decodeFunctionResult('claimableRewards', returnData?.[3]);
+        const claimableFeesV1: TokensStore['claimableFeesV1'] = claimableFeesDataV1?.[0]?.map((data: any) => {
+          const targetToken = tokensInPool.find((token) => token.supplyTokenAddress === data.token);
+          const balance = Unit.fromMinUnit(data.amount._hex ?? 0);
+          if (!targetToken) {
+            return {
+              address: import.meta.env.VITE_GoledoTokenAddress,
+              supplyTokenAddress: import.meta.env.VITE_GoledoTokenAddress,
+              balance,
+              name: 'Goledo',
+              symbol: 'GOL',
+              decimals: 18,
+            };
+          }
+          return {
+            address: targetToken?.address,
+            supplyTokenAddress: targetToken?.supplyTokenAddress,
+            balance,
+            price: tokensData[targetToken?.address]?.usdPrice?.mul(balance),
+            name: targetToken?.name,
+            symbol: targetToken?.symbol,
+            decimals: targetToken?.decimals,
+          };
+        });
+
+        tokensStore.setState({ tokensData, userTokensData, userData, claimableFees, claimableFeesV1 });
       },
     });
   },
@@ -466,6 +493,7 @@ const selectors = {
   curUserBorrowAPY: (state: TokensStore) => state.curUserBorrowAPY,
   userData: (state: TokensStore) => state.userData,
   claimableFees: (state: TokensStore) => state.claimableFees,
+  claimableFeesV1: (state: TokensStore) => state.claimableFeesV1,
 };
 
 export const useTokens = () => tokensStore(selectors.tokens);
@@ -475,6 +503,7 @@ export const useCurUserBorrowPrice = () => tokensStore(selectors.curUserBorrowPr
 export const useCurUserBorrowAPY = () => tokensStore(selectors.curUserBorrowAPY);
 export const useUserData = () => tokensStore(selectors.userData);
 export const useClaimableFees = () => tokensStore(selectors.claimableFees);
+export const useClaimableFeesV1 = () => tokensStore(selectors.claimableFeesV1);
 
 const Decimal = Unit.fromMinUnit(10 ** 18);
 const Ray = Unit.fromMinUnit(10 ** 27);

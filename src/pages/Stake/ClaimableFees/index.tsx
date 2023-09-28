@@ -1,7 +1,7 @@
 import React from 'react';
 import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import tokensIcon from '@assets/tokens';
-import { useClaimableFees, useGoledoUsdPrice, type TokensStore } from '@store/index';
+import { useClaimableFees, useClaimableFeesV1, useGoledoUsdPrice, type TokensStore } from '@store/index';
 import Card from '@components/Card';
 import Table, { type Columns } from '@components/Table';
 import TokenAssets, { type Configs } from '@modules/TokenAssets';
@@ -26,7 +26,9 @@ const columns: Columns<NonNullable<TokensStore['claimableFees']>[number]> = [
   {
     name: 'Balance',
     width: '39%',
-    render: ({ balance, decimals, symbol }) => <BalanceText className="font-semibold" balance={balance} decimals={decimals} id={`stake-claimablefees-balance-${symbol}`} />,
+    render: ({ balance, decimals, symbol }) => (
+      <BalanceText className="font-semibold" balance={balance} decimals={decimals} id={`stake-claimablefees-balance-${symbol}`} />
+    ),
   },
   {
     name: 'Value',
@@ -46,14 +48,17 @@ const configs: Configs<NonNullable<TokensStore['claimableFees']>[number]> = [
   },
 ];
 
-const ClaimableFees: React.FC = () => {
-  const claimableFees = useClaimableFees();
+const ClaimableFees: React.FC<{ version: 'V1' | 'V2' }> = ({ version }) => {
+  const claimableFees = (version === 'V1' ? useClaimableFeesV1 : useClaimableFees)();
   const goledoUsdPrice = useGoledoUsdPrice();
-  const data = claimableFees?.map((item) => ({ ...item, price: item.symbol === 'GOL' ? goledoUsdPrice?.mul(item.balance)! : item.price }));
+  const data =
+    version === 'V1'
+      ? claimableFees?.slice(1).map((item) => ({ ...item, price: item.symbol === 'GOL' ? goledoUsdPrice?.mul(item.balance)! : item.price }))
+      : claimableFees?.map((item) => ({ ...item, price: item.symbol === 'GOL' ? goledoUsdPrice?.mul(item.balance)! : item.price }));
   const totalClaimablePrice = data?.reduce((acc, item) => acc.add(item.price ?? Zero), Zero);
 
   return (
-    <Card title="Claimable Fees" id='stake-claimable-fees-card'>
+    <Card title={version === 'V1' ? 'Claimable Fees in v1 Contract' : 'Claimable Fees'} id={`stake-claimable-fees-card-${version}`}>
       <Table className="mt-16px" columns={columns} data={data} />
       <TokenAssets className="mt-16px" configs={configs} data={data} />
       <p className="mt-10px mb-12px">
@@ -61,12 +66,12 @@ const ClaimableFees: React.FC = () => {
         <BalanceText className="ml-4px" balance={totalClaimablePrice} symbolPrefix="$" decimals={18} />
       </p>
       <Button
-        id='stake-claim-all-btn'
+        id="stake-claim-all-btn"
         fullWidth
         size="large"
         loading={!claimableFees || !goledoUsdPrice}
         disabled={!totalClaimablePrice || totalClaimablePrice.equalsWith(Zero)}
-        onClick={handleClaimRewardsFees}
+        onClick={() => handleClaimRewardsFees(version)}
       >
         Claim All
       </Button>
