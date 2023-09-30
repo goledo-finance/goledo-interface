@@ -65,7 +65,7 @@ const ClaimableFees: React.FC = () => {
         fullWidth
         size="large"
         loading={!claimableFees || !goledoUsdPrice}
-        disabled={!totalClaimablePrice || totalClaimablePrice.equalsWith(Zero)}
+        disabled={true || !totalClaimablePrice || totalClaimablePrice?.equalsWith(Zero)}
         onClick={handleClaimRewardsFees}
       >
         Claim All

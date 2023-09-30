@@ -70,7 +70,7 @@ const GoledoClaim: React.FC = () => {
           size="large"
           className="lt-md:w-full"
           loading={!stakedBalance}
-          disabled={stakedBalance?.equalsWith(Zero)}
+          disabled={true || stakedBalance?.equalsWith(Zero)}
           onClick={handleClaimGoledo}
         >
           Claim Goledo
@@ -108,7 +108,7 @@ const GoledoClaim: React.FC = () => {
           size="large"
           className="lt-md:w-full"
           loading={!stakedBalance || !withdrawableBalance}
-          disabled={isInVestingLockTime || !withdrawableBalance || withdrawableBalance.penaltyAmount.equalsWith(Zero)}
+          disabled={true || isInVestingLockTime || !withdrawableBalance || withdrawableBalance?.penaltyAmount.equalsWith(Zero)}
           onClick={handleClaimAllGoledo}
         >
           Claim All
@@ -130,7 +130,7 @@ const GoledoClaim: React.FC = () => {
           size="large"
           className="lt-md:w-full"
           loading={!unlockedableBalance}
-          disabled={!unlockedableBalance?.greaterThan(Zero)}
+          disabled={true || !unlockedableBalance?.greaterThan(Zero)}
           onClick={handleWithdrawGoledo}
         >
           Withdraw

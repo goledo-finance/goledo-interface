@@ -85,7 +85,7 @@ const LP: React.FC = () => {
           size="large"
           className="w-33% !flex-auto"
           loading={!balance}
-          disabled={balance?.equalsWith(Zero)}
+          disabled={true || balance?.equalsWith(Zero)}
           onClick={() => showStakeAndUnstakeLPModal({ type: 'Stake' })}
         >
           Stake
@@ -95,7 +95,7 @@ const LP: React.FC = () => {
           size="large"
           className="w-33% !flex-auto"
           loading={!balance}
-          disabled={stakedBalance?.equalsWith(Zero)}
+          disabled={true || stakedBalance?.equalsWith(Zero)}
           onClick={() => showStakeAndUnstakeLPModal({ type: 'Unstake' })}
         >
           Unstake
@@ -105,7 +105,7 @@ const LP: React.FC = () => {
           size="large"
           className="w-33% !flex-auto"
           loading={!earnedGoledoBalance}
-          disabled={earnedGoledoBalance?.equalsWith(Zero)}
+          disabled={true || earnedGoledoBalance?.equalsWith(Zero)}
           onClick={() => handleVestingGoledo({ tokenAddress: 'lp' })}
         >
           Vest
