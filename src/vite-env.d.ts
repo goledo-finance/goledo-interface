@@ -33,6 +33,7 @@ interface ImportMetaEnv {
   readonly VITE_LendingPoolAddressesProviderAddress: string;
   readonly VITE_MulticallContract: string;
   readonly VITE_MultiFeeDistributionAddress: string;
+  readonly VITE_MultiFeeDistributionAddressV1: string;
   readonly VITE_GoledoTokenAddress: string;
   readonly VITE_ChefIncentivesControllerContractAddress: string;
   readonly VITE_MasterChefAddress: string;

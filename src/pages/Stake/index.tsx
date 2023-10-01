@@ -20,10 +20,6 @@ const Stake: React.FC = () => {
     <>
       <PageHeader className="pt-36px">
         <p className="text-68px text-#F1F1F3 font-bold lt-lg:text-center">Stake</p>
-        <p className="mt-10px leading-24px text-16px text-#F1F1F3 lt-lg:text-center">
-          Please Note: Goledo will soon be launching GOLv2. Users are advised not to lock or stake GOL at this time. Users do not need to unlock, unstake, or
-          early claim vesting GOL for the GOL v2 airdrop. We will notify once the token transition is done
-        </p>
       </PageHeader>
       <PageWrapper className="stake flex gap-24px lt-lg:flex-col lt-lg:gap-18px">
         {!isAuthed && <AuthConnectPage>{(action) => <p className="text-14px text-#62677B">{action} to stake.</p>}</AuthConnectPage>}
@@ -39,7 +35,8 @@ const Stake: React.FC = () => {
               <GoledoClaim />
               <GoledoVest />
               <GoledoLock />
-              <ClaimableFees />
+              <ClaimableFees version='V2' />
+              <ClaimableFees version='V1' />
             </div>
           </>
         )}
