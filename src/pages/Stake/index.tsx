@@ -26,15 +26,15 @@ const Stake: React.FC = () => {
         {isAuthed && (
           <>
             <div className="w-470px flex flex-col flex-auto gap-10px lt-lg:w-full lt-lg:gap-18px">
-              <StakeGoledo />
-              <LockGoledo />
+              {/* <StakeGoledo />
+              <LockGoledo /> */}
               {!isInVestingLockTime && <LP />}
             </div>
 
             <div className="w-750px flex flex-col flex-auto	gap-10px lt-lg:w-full lt-lg:gap-18px">
-              <GoledoClaim />
+              {/* <GoledoClaim />
               <GoledoVest />
-              <GoledoLock />
+              <GoledoLock /> */}
               <ClaimableFees />
             </div>
           </>

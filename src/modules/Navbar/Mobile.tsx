@@ -21,12 +21,12 @@ const Mobile: React.FC<{ open: boolean; curPath: string }> = ({ open, curPath })
     >
       <p className="mt-32px pl-40px text-12px text-#A5A8B6 font-semibold">Menu</p>
       <ul className="pl-40px flex flex-col gap-12px mt-8px text-22px font-semibold">
-        <NavLink to="/dashboard" curPath={curPath} id="nav-bar-mobile-dashboard-link">
+        {/* <NavLink to="/dashboard" curPath={curPath} id="nav-bar-mobile-dashboard-link">
           Dashboard
         </NavLink>
         <NavLink to="/markets" curPath={curPath} id="nav-bar-mobile-markets-link">
           Markets
-        </NavLink>
+        </NavLink> */}
         <NavLink to="/stake" curPath={curPath} id="nav-bar-mobile-stake-link">
           Stake
         </NavLink>

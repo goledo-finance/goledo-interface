@@ -30,12 +30,12 @@ const Navbar: React.FC = () => {
       <nav className={cx('max-w-1920px mx-auto absolute flex items-center w-full h-60px px-32px bg-#111 z-100')}>
         <img src={GoledoWhite} alt="goledo icon" className="w-34px h-34px mr-auto sm:mr-40px" />
         <ul className="navbar-linkArea display-none sm:flex h-full items-center text-14px font-semibold">
-          <NavLink to="/dashboard" curPath={curPath === '/' ? '/dashboard' : curPath} id="nav-bar-dashboard-link">
+          {/* <NavLink to="/dashboard" curPath={curPath === '/' ? '/dashboard' : curPath} id="nav-bar-dashboard-link">
             Dashboard
           </NavLink>
           <NavLink to="/markets" curPath={curPath} id="nav-bar-markets-link">
             Markets
-          </NavLink>
+          </NavLink> */}
           <NavLink to="/stake" curPath={curPath} id="nav-bar-stake-link">
             Stake
           </NavLink>
