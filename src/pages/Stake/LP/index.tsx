@@ -28,25 +28,7 @@ const LP: React.FC = () => {
   } = useLp();
 
   return (
-    <Card title="GOL/CFX LP" titleIcon="i-ri:copper-coin-line" className="flex flex-col gap-0px">
-      <div className="flex justify-between items-center h-56px border-b-1px border-#eaebef">
-        <span>Staking APR</span>
-        <PercentageText className="text-#303549" value={stakeAPR} />
-      </div>
-
-      <div className="flex justify-between items-center h-56px border-b-1px border-#eaebef">
-        <span>LP Token Price</span>
-        <span className="text-#303549"><BalanceText balance={usdPrice?.mul(Unit.fromMinUnit(10e17))} abbrDecimals={2} symbolPrefix="$" /></span>
-      </div>
-
-      <div className="flex justify-between items-center h-56px border-b-1px border-#eaebef">
-        <span>Total LP Tokens Staked</span>
-        <div className="text-right">
-          <p className="text-#303549"><BalanceText balance={totalMarketStakedBalance} symbol="GOLCFX" /></p>
-          <p><BalanceText balance={totalMarketStakedPrice} abbrDecimals={2} symbolPrefix="$" /></p>
-        </div>
-      </div>
-
+    <Card title="Remove v1 GOL/CFX LP" titleIcon="i-ri:copper-coin-line" className="flex flex-col gap-0px">
       <div className="flex justify-between items-center h-56px border-b-1px border-#eaebef">
         <span>Your Staked</span>
         <div className="text-right">
@@ -63,33 +45,7 @@ const LP: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex justify-between items-center h-56px border-b-1px border-#eaebef">
-        <span>Total Rewards per day</span>
-        <div className="text-right">
-          <p className="text-#303549"><BalanceText balance={totalRewardsPerDayBalance} symbol="Goledo" /></p>
-          <p><BalanceText balance={totalRewardsPerDayPrice} abbrDecimals={2} symbolPrefix="$" /></p>
-        </div>
-      </div>
-
-      <div className="flex justify-between items-center h-56px">
-        <span>Total Rewards per week</span>
-        <div className="text-right">
-          <p className="text-#303549"><BalanceText balance={totalRewardsPerWeekBalance} symbol="Goledo" /></p>
-          <p><BalanceText balance={totalRewardsPerWeekPrice} abbrDecimals={2} symbolPrefix="$" /></p>
-        </div>
-      </div>
-
       <div className="mt-12px flex gap-12px">
-        <Button
-          id='stake-lp-stake-btn'
-          size="large"
-          className="w-33% !flex-auto"
-          loading={!balance}
-          disabled={balance?.equalsWith(Zero)}
-          onClick={() => showStakeAndUnstakeLPModal({ type: 'Stake' })}
-        >
-          Stake
-        </Button>
         <Button
           id='stake-lp-unstake-btn'
           size="large"

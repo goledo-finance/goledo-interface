@@ -8,11 +8,11 @@ export const handleClaimRewardsFees = async () => {
     const claimableFees = tokensStore.getState().claimableFees;
     const TxnHash = await sendTransaction({
       to: import.meta.env.VITE_MultiFeeDistributionAddress,
-      data: MultiFeeDistributionContract.interface.encodeFunctionData('getReward', [claimableFees?.map((token) => token.supplyTokenAddress)]),
+      data: MultiFeeDistributionContract.interface.encodeFunctionData('getReward', [claimableFees?.slice(1)?.map((token) => token.supplyTokenAddress)]),
     });
     return TxnHash;
   } catch (err) {
-    console.log(`handle claim GOL Error`, err);
+    console.log(`handle claim GOL V1 Error`, err);
     throw err;
   }
 };

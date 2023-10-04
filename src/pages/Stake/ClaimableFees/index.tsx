@@ -26,7 +26,9 @@ const columns: Columns<NonNullable<TokensStore['claimableFees']>[number]> = [
   {
     name: 'Balance',
     width: '39%',
-    render: ({ balance, decimals, symbol }) => <BalanceText className="font-semibold" balance={balance} decimals={decimals} id={`stake-claimablefees-balance-${symbol}`} />,
+    render: ({ balance, decimals, symbol }) => (
+      <BalanceText className="font-semibold" balance={balance} decimals={decimals} id={`stake-claimablefees-balance-${symbol}`} />
+    ),
   },
   {
     name: 'Value',
@@ -49,11 +51,12 @@ const configs: Configs<NonNullable<TokensStore['claimableFees']>[number]> = [
 const ClaimableFees: React.FC = () => {
   const claimableFees = useClaimableFees();
   const goledoUsdPrice = useGoledoUsdPrice();
-  const data = claimableFees?.map((item) => ({ ...item, price: item.symbol === 'GOL' ? goledoUsdPrice?.mul(item.balance)! : item.price }));
+  const data = claimableFees?.slice(1)?.map((item) => ({ ...item, price: item.symbol === 'GOL' ? goledoUsdPrice?.mul(item.balance)! : item.price }));
   const totalClaimablePrice = data?.reduce((acc, item) => acc.add(item.price ?? Zero), Zero);
 
+  if (!totalClaimablePrice || totalClaimablePrice.equalsWith(Zero)) return null;
   return (
-    <Card title="Claimable Fees" id='stake-claimable-fees-card'>
+    <Card title="Claimable Fees in v1 Contract" id="stake-claimable-fees-card">
       <Table className="mt-16px" columns={columns} data={data} />
       <TokenAssets className="mt-16px" configs={configs} data={data} />
       <p className="mt-10px mb-12px">
@@ -61,7 +64,7 @@ const ClaimableFees: React.FC = () => {
         <BalanceText className="ml-4px" balance={totalClaimablePrice} symbolPrefix="$" decimals={18} />
       </p>
       <Button
-        id='stake-claim-all-btn'
+        id="stake-claim-all-btn"
         fullWidth
         size="large"
         loading={!claimableFees || !goledoUsdPrice}
