@@ -56,16 +56,6 @@ const LP: React.FC = () => {
         >
           Unstake
         </Button>
-        <Button
-          id='stake-lp-vest-btn'
-          size="large"
-          className="w-33% !flex-auto"
-          loading={!earnedGoledoBalance}
-          disabled={earnedGoledoBalance?.equalsWith(Zero)}
-          onClick={() => handleVestingGoledo({ tokenAddress: 'lp' })}
-        >
-          Vest
-        </Button>
       </div>
     </Card>
   );
