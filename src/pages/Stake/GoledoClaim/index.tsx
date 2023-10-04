@@ -108,7 +108,7 @@ const GoledoClaim: React.FC = () => {
           size="large"
           className="lt-md:w-full"
           loading={!stakedBalance || !withdrawableBalance}
-          disabled={isInVestingLockTime || !withdrawableBalance || withdrawableBalance.penaltyAmount.equalsWith(Zero)}
+          disabled={isInVestingLockTime || !withdrawableBalance || withdrawableBalance?.penaltyAmount.equalsWith(Zero)}
           onClick={handleClaimAllGoledo}
         >
           Claim All
