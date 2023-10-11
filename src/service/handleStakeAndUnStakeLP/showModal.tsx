@@ -28,6 +28,7 @@ const ModalContent: React.FC<{ type: 'Stake' | 'Unstake' }> = ({ type }) => {
     tokenAddress: lpToken.address,
     contractAddress: import.meta.env.VITE_MasterChefAddress,
     amount: confirmAmountUnit,
+    needApprove: type === 'Stake'
   });
 
   const { status: transactionStatus, scanUrl, error, sendTransaction } = useTransaction(handleStake);
