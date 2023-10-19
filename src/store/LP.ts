@@ -74,7 +74,7 @@ const getData = debounce(() => {
   const promises = [
     [import.meta.env.VITE_SwappiPairAddress, SwappiPaiContract.interface.encodeFunctionData('balanceOf', [import.meta.env.VITE_MasterChefAddress])],
     [import.meta.env.VITE_MasterChefAddress, MasterChefContract.interface.encodeFunctionData('userInfo', [import.meta.env.VITE_SwappiPairAddress, account])],
-    [import.meta.env.VITE_MasterChefAddress, MasterChefContract.interface.encodeFunctionData('userBaseClaimable', [account])],
+    [import.meta.env.VITE_MasterChefAddressV2, MasterChefContract.interface.encodeFunctionData('userBaseClaimableAmountV1', [account])],
     [
       import.meta.env.VITE_MasterChefAddress,
       MasterChefContract.interface.encodeFunctionData('claimableReward', [account, [import.meta.env.VITE_SwappiPairAddress]]),
@@ -93,7 +93,7 @@ const getData = debounce(() => {
       const stakedBalanceData = MasterChefContract.interface.decodeFunctionResult('userInfo', returnData[1]);
       const stakedBalance = Unit.fromMinUnit(stakedBalanceData?.amount?._hex ?? 0);
 
-      const userBaseClaimable = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('userBaseClaimable', returnData[2])?.[0]?._hex ?? 0);
+      const userBaseClaimable = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('userBaseClaimableAmountV1', returnData[2])?.[0]?._hex ?? 0);
       const claimableReward = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('claimableReward', returnData[3])?.[0]?.[0]?._hex ?? 0);
       const earnedGoledoBalance = userBaseClaimable.add(claimableReward);
 

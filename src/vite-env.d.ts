@@ -36,6 +36,7 @@ interface ImportMetaEnv {
   readonly VITE_GoledoTokenAddress: string;
   readonly VITE_ChefIncentivesControllerContractAddress: string;
   readonly VITE_MasterChefAddress: string;
+  readonly VITE_MasterChefAddressV2: string;
   readonly VITE_SwappiPairAddress: string;
   readonly VITE_WETHGatewayAddress: string;
 }
