@@ -1,36 +1,5 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "uint128[]",
-        "name": "_startTimeOffset",
-        "type": "uint128[]"
-      },
-      {
-        "internalType": "uint128[]",
-        "name": "_rewardsPerSecond",
-        "type": "uint128[]"
-      },
-      {
-        "internalType": "address",
-        "name": "_poolConfigurator",
-        "type": "address"
-      },
-      {
-        "internalType": "contract IMultiFeeDistribution",
-        "name": "_rewardMinter",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_maxMintable",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
     "anonymous": false,
     "inputs": [
       {
@@ -277,6 +246,57 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint128[]",
+        "name": "_startTimeOffset",
+        "type": "uint128[]"
+      },
+      {
+        "internalType": "uint128[]",
+        "name": "_rewardsPerSecond",
+        "type": "uint128[]"
+      },
+      {
+        "internalType": "address",
+        "name": "_poolConfigurator",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IMultiFeeDistribution",
+        "name": "_rewardMinter",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_maxMintable",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "initialized",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "maxMintableTokens",
     "outputs": [
@@ -464,6 +484,37 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_mintedTokens",
+        "type": "uint256"
+      }
+    ],
+    "name": "setmintedTokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "_users",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_amount",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "setuserBaseClaimableAmountV1",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "start",
     "outputs": [],
@@ -512,12 +563,49 @@
   {
     "inputs": [
       {
+        "internalType": "uint128[]",
+        "name": "_startTimeOffset",
+        "type": "uint128[]"
+      },
+      {
+        "internalType": "uint128[]",
+        "name": "_rewardsPerSecond",
+        "type": "uint128[]"
+      }
+    ],
+    "name": "updateNextEmissions",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "",
         "type": "address"
       }
     ],
     "name": "userBaseClaimable",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "userBaseClaimableAmountV1",
     "outputs": [
       {
         "internalType": "uint256",

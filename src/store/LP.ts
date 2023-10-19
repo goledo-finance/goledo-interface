@@ -83,6 +83,7 @@ const getData = debounce(() => {
     [import.meta.env.VITE_SwappiPairAddress, SwappiPaiContract.interface.encodeFunctionData('getReserves')],
     [import.meta.env.VITE_SwappiPairAddress, SwappiPaiContract.interface.encodeFunctionData('totalSupply')],
     [import.meta.env.VITE_SwappiPairAddress, LpTokenContract.interface.encodeFunctionData('balanceOf', [account])],
+    [import.meta.env.VITE_MasterChefAddress, MasterChefContract.interface.encodeFunctionData('userBaseClaimableAmountV1', [account])],
   ];
 
   unsub = intervalFetchChain(() => MulticallContract.callStatic.aggregate(promises), {
@@ -95,7 +96,8 @@ const getData = debounce(() => {
 
       const userBaseClaimable = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('userBaseClaimable', returnData[2])?.[0]?._hex ?? 0);
       const claimableReward = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('claimableReward', returnData[3])?.[0]?.[0]?._hex ?? 0);
-      const earnedGoledoBalance = userBaseClaimable.add(claimableReward);
+      const userBaseClaimableV1 = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('userBaseClaimableAmountV1', returnData[8])?.[0]?._hex ?? 0);
+      const earnedGoledoBalance = userBaseClaimable.add(claimableReward).add(userBaseClaimableV1);
 
       const rewardsPerSecond = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('rewardsPerSecond', returnData[4])?.[0]?._hex ?? 0);
       const totalRewardsPerDayBalance = rewardsPerSecond.mul(OneDaySeconds);
