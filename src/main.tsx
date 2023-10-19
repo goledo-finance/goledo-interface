@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Router from './router';
-import { completeDetect as completeDetectEthereum } from '@cfxjs/use-wallet-react/ethereum';
 import isMobile from '@utils/isMobie';
 import 'uno.css';
 import 'reseter.css/css/reseter.css';
@@ -13,10 +12,8 @@ if (isMobile()) {
   document.styleSheets[0].insertRule('.scrollbar__thumbPlaceholder--vertical { display:none; }', 0);
 }
 
-completeDetectEthereum().then(() => {
-  ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-    <React.StrictMode>
-      <Router />
-    </React.StrictMode>
-  );
-});
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <Router />
+  </React.StrictMode>
+);
