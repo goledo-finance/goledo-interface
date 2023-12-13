@@ -93,7 +93,10 @@ const getData = debounce(() => {
       const stakedBalanceData = MasterChefContract.interface.decodeFunctionResult('userInfo', returnData[1]);
       const stakedBalance = Unit.fromMinUnit(stakedBalanceData?.amount?._hex ?? 0);
 
-      const userBaseClaimable = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('userBaseClaimableAmountV1', returnData[2])?.[0]?._hex ?? 0);
+      const userBaseClaimable =
+        returnData[2] === '0x'
+          ? new Unit(0)
+          : Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('userBaseClaimableAmountV1', returnData[2])?.[0]?._hex ?? 0);
       const claimableReward = Unit.fromMinUnit(MasterChefContract.interface.decodeFunctionResult('claimableReward', returnData[3])?.[0]?.[0]?._hex ?? 0);
       const earnedGoledoBalance = userBaseClaimable.add(claimableReward);
 
@@ -157,10 +160,11 @@ const calcRewardsUsdPrice = debounce(() => {
     goledoUsdPrice = Zero;
   }
   const { earnedGoledoBalance, totalRewardsPerDayBalance, totalRewardsPerWeekBalance } = lpStore.getState();
+
   lpStore.setState({
-    earnedGoledoPrice: goledoUsdPrice.mul(earnedGoledoBalance!),
-    totalRewardsPerDayPrice: goledoUsdPrice.mul(totalRewardsPerDayBalance!),
-    totalRewardsPerWeekPrice: goledoUsdPrice.mul(totalRewardsPerWeekBalance!),
+    earnedGoledoPrice: earnedGoledoBalance ? goledoUsdPrice.mul(earnedGoledoBalance!) : undefined,
+    totalRewardsPerDayPrice: totalRewardsPerDayBalance ? goledoUsdPrice.mul(totalRewardsPerDayBalance!) : undefined,
+    totalRewardsPerWeekPrice: totalRewardsPerWeekBalance ? goledoUsdPrice.mul(totalRewardsPerWeekBalance!) : undefined,
   });
 }, 50);
 lpStore.subscribe((state) => state.earnedGoledoBalance, calcRewardsUsdPrice, { fireImmediately: true });
