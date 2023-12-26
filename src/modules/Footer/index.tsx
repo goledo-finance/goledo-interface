@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
         target="_blank"
         rel="noopener noreferrer"
       >
-        Audit by
+        Audited by
         <img className="ml-6px w-113px h-25px select-none" src={PeckShieldLogo} draggable={false} alt="Peck shield" />
       </a>
 
