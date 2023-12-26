@@ -68,14 +68,16 @@ const Mobile: React.FC<{ open: boolean; curPath: string }> = ({ open, curPath })
           Github
         </a>
         <a
-          id="nav-bar-github-mobile-link"
-          className="relative flex items-center h-44px px-18px text-#F1F1F3 no-underline"
-          href="https://github.com/peckshield/publications/blob/master/audit_reports/PeckShield-Audit-Report-Goledo-v1.0.pdf"
+          id="nav-bar-medium-mobile-link"
+          className="relative flex items-center h-44px px-50px text-#F1F1F3 no-underline"
+          href="https://medium.com/@goledo.cash"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Audit by
-          <img className="ml-6px w-100px h-22.25px select-none" src={PeckShieldLogo} draggable={false} alt="Peck shield" />
+          <span className="absolute inline-flex justify-center items-center left-16px w-20px h-20px bg-black rounded-4px">
+            <span className="i-mingcute:medium-fill text-16px text-white" />
+          </span>
+          Medium
         </a>
       </div>
     </div>
