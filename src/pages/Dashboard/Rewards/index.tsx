@@ -18,7 +18,7 @@ const columns: Columns<Goledo, { isInVestingLockTime: boolean }> = [
     renderHeader: () => <div className="w-full h-full flex justify-start pl-4px">Assets</div>,
     render: () => (
       <div className="w-full h-full flex justify-start items-center pl-4px font-semibold">
-        <img className="w-24px h-24px mr-8px" src={GoledoIcon} alt="Goledo" />
+        <img className="w-24px h-24px mr-8px rounded-full" src={GoledoIcon} alt="Goledo" />
         GOL
       </div>
     ),
