@@ -216,10 +216,12 @@ export const switchChain = async () => {
 
 export const sendTransaction = async (params: Parameters<typeof sendTransactionWithFluent>[0]) => {
   const accountMethod = accountMethodFilter.getState().accountFilter;
-  if (!accountMethod) {
+  const account = accountMethodFilter.getState().accountState;
+
+  if (!accountMethod || !account) {
     throw new Error('No account connected');
   }
-  return walletFunction[accountMethod].sendTransaction(params);
+  return walletFunction[accountMethod].sendTransaction({ ...params, from: account } as any);
 };
 
 export const watchAsset = (params: Parameters<typeof watchAssetFluent>[0]) => {
@@ -232,7 +234,7 @@ export const useAccountMethod = () => {
   const account = accountMethodFilter(selectors.accountState);
   const accountMethod = accountMethodFilter(selectors.accountMethodFilter);
   return !!account ? accountMethod : null;
-}
+};
 
 export const setAccountMethod = (method: Methods | null) => {
   LocalStorage.setItem({ key: 'accountFilter', data: method });
