@@ -42,20 +42,20 @@ const columns: Columns<TokenInfo, { goledoTokensAPR: Record<string, Unit> | unde
       </div>
     ),
   },
-  {
-    name: 'Rewards',
-    width: '18%',
-    render: ({ supplyAPY, symbol, supplyTokenAddress }, { goledoTokensAPR } = { goledoTokensAPR: undefined }) => (
-      <div className="font-semibold">
-        <PercentageText value={supplyAPY} id={`dashboard-your-supplies-supply-apy-${symbol}`} />
-        <div className="ml-8px mt-4px flex justify-center items-center px-4px py-2px rounded-4px border-1px border-#EAEBEF text-12px">
-          <img className="w-14px h-14px" src={tokenIcons.GOL} alt="/" />
-          <span className="text-#62677B mx-4px">APR</span>
-          <PercentageText className="font-semibold" value={goledoTokensAPR?.[supplyTokenAddress]} />
-        </div>
-      </div>
-    ),
-  },
+  // {
+  //   name: 'Rewards',
+  //   width: '18%',
+  //   render: ({ supplyAPY, symbol, supplyTokenAddress }, { goledoTokensAPR } = { goledoTokensAPR: undefined }) => (
+  //     <div className="font-semibold">
+  //       <PercentageText value={supplyAPY} id={`dashboard-your-supplies-supply-apy-${symbol}`} />
+  //       <div className="ml-8px mt-4px flex justify-center items-center px-4px py-2px rounded-4px border-1px border-#EAEBEF text-12px">
+  //         <img className="w-14px h-14px" src={tokenIcons.GOL} alt="/" />
+  //         <span className="text-#62677B mx-4px">APR</span>
+  //         <PercentageText className="font-semibold" value={goledoTokensAPR?.[supplyTokenAddress]} />
+  //       </div>
+  //     </div>
+  //   ),
+  // },
   {
     name: 'Collateral',
     width: '17%',
@@ -104,16 +104,16 @@ const configs: Configs<TokenInfo, { goledoTokensAPR: Record<string, Unit> | unde
     name: 'Supply Balance',
     renderContent: columns[1].render,
   },
+  // {
+  //   name: 'Supply Rewards',
+  //   renderContent: columns[2].render,
+  // },
   {
-    name: 'Supply Rewards',
+    name: 'Used as collateral',
     renderContent: columns[2].render,
   },
   {
-    name: 'Used as collateral',
-    renderContent: columns[3].render,
-  },
-  {
-    render: columns[4].render,
+    render: columns[3].render,
   },
 ];
 
@@ -155,7 +155,7 @@ const YourSupplies: React.FC = () => {
                 <BalanceText balance={curUserSupplyPrice} abbrDecimals={2} symbolPrefix="$" id="dashboard-your-supplies-balance" />
               </span>
             </div>
-            <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
+            {/* <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               Rewards
               <span className="ml-6px text-#303549 font-semibold">
                 <PercentageText value={curUserSupplyAPR} id="dashboard-your-supplies-apy" />
@@ -163,7 +163,7 @@ const YourSupplies: React.FC = () => {
               <ToolTip text="The weighted average of APY for all supplied assets, including incentives.">
                 <span className="i-bi:info-circle ml-4px cursor-pointer" />
               </ToolTip>
-            </div>
+            </div> */}
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               Collateral
               <span className="ml-6px text-#303549 font-semibold">

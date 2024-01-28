@@ -37,12 +37,12 @@ const columns: Columns<Goledo, { isInVestingLockTime: boolean }> = [
       </div>
     ),
   },
-  {
-    name: 'My APR',
-    width: '8%',
-    render: ({ APR }, { isInVestingLockTime } = { isInVestingLockTime: false }) =>
-      isInVestingLockTime ? <span className="font-semibold">Infinity%</span> : <PercentageText className="font-semibold" value={APR} />,
-  },
+  // {
+  //   name: 'My APR',
+  //   width: '8%',
+  //   render: ({ APR }, { isInVestingLockTime } = { isInVestingLockTime: false }) =>
+  //     isInVestingLockTime ? <span className="font-semibold">Infinity%</span> : <PercentageText className="font-semibold" value={APR} />,
+  // },
   {
     name: 'Your staked balance',
     width: '24%',
@@ -108,20 +108,20 @@ const configs: Configs<Goledo, { isInVestingLockTime: boolean }> = [
     name: 'Earned',
     renderContent: columns[1].render,
   },
+  // {
+  //   name: 'My APR',
+  //   renderContent: columns[2].render,
+  // },
   {
-    name: 'My APR',
+    name: 'Your staked balance',
     renderContent: columns[2].render,
   },
   {
-    name: 'Your staked balance',
+    name: 'Your locked balance',
     renderContent: columns[3].render,
   },
   {
-    name: 'Your locked balance',
-    renderContent: columns[4].render,
-  },
-  {
-    render: columns[5].render,
+    render: columns[4].render,
   },
 ];
 

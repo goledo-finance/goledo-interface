@@ -40,24 +40,24 @@ const columns: Columns<TokenInfo, { goledoTokensAPR: Record<string, Unit> | unde
       </div>
     ),
   },
-  {
-    name: 'Interest Rate',
-    width: '18%',
-    render: ({ borrowAPY, symbol }) => (
-      <div className="font-semibold">
-        <PercentageText value={borrowAPY} id={`dashboard-your-borrows-borrow-apy-${symbol}`} />
-      </div>
-    ),
-  },
-  {
-    name: 'GOL APR',
-    width: '17%',
-    render: ({ symbol, borrowTokenAddress }, { goledoTokensAPR } = { goledoTokensAPR: undefined }) => (
-      <div className="font-semibold">
-        <PercentageText className="font-semibold" id={`dashboard-assets-borrow-APR-${symbol}`} value={goledoTokensAPR?.[borrowTokenAddress]} />
-      </div>
-    ),
-  },
+  // {
+  //   name: 'Interest Rate',
+  //   width: '18%',
+  //   render: ({ borrowAPY, symbol }) => (
+  //     <div className="font-semibold">
+  //       <PercentageText value={borrowAPY} id={`dashboard-your-borrows-borrow-apy-${symbol}`} />
+  //     </div>
+  //   ),
+  // },
+  // {
+  //   name: 'GOL APR',
+  //   width: '17%',
+  //   render: ({ symbol, borrowTokenAddress }, { goledoTokensAPR } = { goledoTokensAPR: undefined }) => (
+  //     <div className="font-semibold">
+  //       <PercentageText className="font-semibold" id={`dashboard-assets-borrow-APR-${symbol}`} value={goledoTokensAPR?.[borrowTokenAddress]} />
+  //     </div>
+  //   ),
+  // },
   {
     name: '',
     width: '28%',
@@ -94,16 +94,16 @@ const configs: Configs<TokenInfo, { goledoTokensAPR: Record<string, Unit> | unde
     name: 'Debt',
     renderContent: columns[1].render,
   },
+  // {
+  //   name: 'Borrow APY',
+  //   renderContent: columns[2].render,
+  // },
+  // {
+  //   name: 'Goledo APR',
+  //   renderContent: columns[3].render,
+  // },
   {
-    name: 'Borrow APY',
-    renderContent: columns[2].render,
-  },
-  {
-    name: 'Goledo APR',
-    renderContent: columns[3].render,
-  },
-  {
-    render: columns[4].render,
+    render: columns[2].render,
   },
 ];
 
@@ -138,7 +138,7 @@ const YourBorrows: React.FC = () => {
                 <BalanceText balance={curUserBorrowPrice} abbrDecimals={2} symbolPrefix="$" id="dashboard-your-borrows-borrow-price" />
               </span>
             </div>
-            <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
+            {/* <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               Interest Rate
               <span className="ml-6px text-#303549 font-semibold">
                 <PercentageText value={curUserBorrowAPY} id="dashboard-your-borrows-borrow-apy" />
@@ -146,13 +146,13 @@ const YourBorrows: React.FC = () => {
               <ToolTip text="The weighted average of Interest Rate for all borrowed assets.">
                 <span className="i-bi:info-circle ml-4px cursor-pointer" />
               </ToolTip>
-            </div>
-            <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
+            </div> */}
+            {/* <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               GOL APR
               <span className="ml-6px text-#303549 font-semibold">
                 <PercentageText value={curUserBorrowGoledoAPR} id="dashboard-your-borrows-borrow-power-used" />
               </span>
-            </div>
+            </div> */}
             <div className="inline-flex items-center px-6px py-2px rounded-4px border-1px border-#EAEBEF">
               Power used
               <span className="ml-6px text-#303549 font-semibold">
