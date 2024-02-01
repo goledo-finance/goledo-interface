@@ -15,6 +15,24 @@ const NavLink: React.FC<ComponentProps<typeof Link> & { curPath: string }> = ({ 
   </li>
 );
 
+const Info: React.FC = () => {
+  return (
+    <div className="w-full bg-[#004243] px-[128px] py-[24px] gap-[8px] flex flex-col text-[16px] leading-[24px] font-400 lt-md:p-[32px] lt-md:text-[14px] lt-md:leading-[21px]">
+      <span className="text-[#00FF87] lt-md:text-center">
+        Dear users, On January 27th, 2024 Goledo suffered a flash loan attack. We have succesfully frozen the assets taken by the hacker. We are working to
+        compensate users as soon as possible. We ask users to fill out the form in the link below to expedite the process. This also helps our effort to
+        prosecute the hacker.
+      </span>
+      <span className="text-[#fff] text-center">
+        🔗:
+        <a className="text-[#fff] ml-[8px]" href="https://forms.gle/MuA6YyiXwdXAAjBR9" target="_blank" rel="noopener noreferrer">
+          https://forms.gle/MuA6YyiXwdXAAjBR9
+        </a>
+      </span>
+    </div>
+  );
+};
+
 const Navbar: React.FC = () => {
   const { pathname: curPath } = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -24,37 +42,40 @@ const Navbar: React.FC = () => {
   }, [curPath]);
 
   return (
-    <header className="flex justify-center h-61px bg-#111 border-b-1px border-#FEFEFE border-opacity-15 ">
-      <Mobile open={isMobileMenuOpen} curPath={curPath === '/' ? '/dashboard' : curPath} />
-      <nav className={cx('max-w-1920px mx-auto absolute flex items-center w-full h-60px px-32px bg-#111 z-100')}>
-        <img src={GoledoWhite} alt="goledo icon" className="w-34px h-34px mr-auto sm:mr-40px" />
-        <ul className="navbar-linkArea display-none sm:flex h-full items-center text-14px font-semibold">
-          <NavLink to="/dashboard" curPath={curPath === '/' ? '/dashboard' : curPath} id="nav-bar-dashboard-link">
-            Dashboard
-          </NavLink>
-          <NavLink to="/markets" curPath={curPath} id="nav-bar-markets-link">
-            Markets
-          </NavLink>
-          <NavLink to="/stake" curPath={curPath} id="nav-bar-stake-link">
-            Stake
-          </NavLink>
-        </ul>
-        <More />
+    <>
+      <Info />
+      <header className="flex justify-center h-61px bg-#111 border-b-1px border-#FEFEFE border-opacity-15 ">
+        <Mobile open={isMobileMenuOpen} curPath={curPath === '/' ? '/dashboard' : curPath} />
+        <nav className={cx('max-w-1920px mx-auto absolute flex items-center w-full h-60px px-32px bg-#111 z-100')}>
+          <img src={GoledoWhite} alt="goledo icon" className="w-34px h-34px mr-auto sm:mr-40px" />
+          <ul className="navbar-linkArea display-none sm:flex h-full items-center text-14px font-semibold">
+            <NavLink to="/dashboard" curPath={curPath === '/' ? '/dashboard' : curPath} id="nav-bar-dashboard-link">
+              Dashboard
+            </NavLink>
+            <NavLink to="/markets" curPath={curPath} id="nav-bar-markets-link">
+              Markets
+            </NavLink>
+            <NavLink to="/stake" curPath={curPath} id="nav-bar-stake-link">
+              Stake
+            </NavLink>
+          </ul>
+          <More />
 
-        <AuthConnectButton id="nav-bar-connect-btn" className="min-w-156px !rounded-100px" />
+          <AuthConnectButton id="nav-bar-connect-btn" className="min-w-156px !rounded-100px" />
 
-        <label className="burger-container ml-20px sm:display-none" htmlFor="burger-check">
-          <input
-            className="burger-check"
-            id="burger-check"
-            type="checkbox"
-            checked={isMobileMenuOpen}
-            onChange={(e) => setIsMobileMenuOpen(e.target.checked)}
-          />
-          <span className="burger" />
-        </label>
-      </nav>
-    </header>
+          <label className="burger-container ml-20px sm:display-none" htmlFor="burger-check">
+            <input
+              className="burger-check"
+              id="burger-check"
+              type="checkbox"
+              checked={isMobileMenuOpen}
+              onChange={(e) => setIsMobileMenuOpen(e.target.checked)}
+            />
+            <span className="burger" />
+          </label>
+        </nav>
+      </header>
+    </>
   );
 };
 
