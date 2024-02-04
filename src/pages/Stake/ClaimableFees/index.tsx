@@ -18,7 +18,7 @@ const columns: Columns<NonNullable<TokensStore['claimableFees']>[number]> = [
     renderHeader: () => <div className="w-full h-full flex justify-start pl-4px">Assets</div>,
     render: ({ symbol }) => (
       <div className="w-full h-full flex justify-start items-center pl-4px font-semibold">
-        <img className="w-24px h-24px mr-8px" src={tokensIcon[symbol]} alt={symbol} />
+        <img className="w-24px h-24px mr-8px rounded-full" src={tokensIcon[symbol]} alt={symbol} />
         {symbol}
       </div>
     ),

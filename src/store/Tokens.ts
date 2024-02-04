@@ -10,6 +10,7 @@ import {
   MulticallContract,
   ChefIncentivesControllerContract,
   createERC20Contract,
+  PatchContract,
 } from '@utils/contracts';
 import { isEqual, debounce } from 'lodash-es';
 import { accountMethodFilter, balanceStore } from './wallet';
@@ -160,7 +161,7 @@ accountMethodFilter.subscribe(
       [import.meta.env.VITE_MultiFeeDistributionAddress, MultiFeeDistributionContract.interface.encodeFunctionData('claimableRewards', [account])],
       [import.meta.env.VITE_MultiFeeDistributionAddressV1, MultiFeeDistributionContract.interface.encodeFunctionData('claimableRewards', [account])],
     ];
-    
+
     unsub = intervalFetchChain(() => MulticallContract.callStatic.aggregate(promises), {
       intervalTime: 5000,
       callback: ({ returnData }: { returnData?: Array<any> } = { returnData: undefined }) => {
@@ -280,9 +281,8 @@ const calcUserBalance = debounce(() => {
     const tokenContract = createERC20Contract(supplyTokenAddress);
     return [supplyTokenAddress, tokenContract.interface.encodeFunctionData('balanceOf', [account])];
   });
-  const getBrrowBalancePromises = tokens.map(({ borrowTokenAddress }) => {
-    const tokenContract = createERC20Contract(borrowTokenAddress);
-    return [borrowTokenAddress, tokenContract.interface.encodeFunctionData('balanceOf', [account])];
+  const getBrrowBalancePromises = tokens.map(({ address, borrowTokenAddress }) => {
+    return [PatchContract.address, PatchContract.interface.encodeFunctionData('balanceOf', [address, borrowTokenAddress, account])];
   });
   const getTotalSupplyBalancePromises = tokens.map(({ supplyTokenAddress }) => {
     const tokenContract = createERC20Contract(supplyTokenAddress);

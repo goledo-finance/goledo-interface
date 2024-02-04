@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import CustomScrollbar from 'custom-react-scrollbar';
 import ErrorBoundary from '@modules/ErrorBoundary';
 import Navbar from '@modules/Navbar';
+import Footer from '@modules/Footer';
 import DashBoardPage from '@pages/Dashboard';
 import MarketsPage from '@pages/Markets';
 import DetailPage from '@pages/Detail';
@@ -13,7 +14,7 @@ const AppRouter: React.FC = () => {
     <Router>
       <ErrorBoundary>
         <Navbar />
-        <CustomScrollbar className="main-scroller" contentClassName="pb-100px">
+        <CustomScrollbar className="main-scroller" contentClassName="pb-60px">
           <Routes>
             <Route index element={<DashBoardPage />} />
             <Route key="dashboard" path="dashboard" element={<DashBoardPage />} />
@@ -22,6 +23,7 @@ const AppRouter: React.FC = () => {
             <Route key="stake" path="stake" element={<StakePage />} />
             <Route path="*" element={<Navigate to="dashboard" />} />
           </Routes>
+          <Footer />
         </CustomScrollbar>
       </ErrorBoundary>
     </Router>

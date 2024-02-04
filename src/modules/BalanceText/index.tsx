@@ -13,18 +13,26 @@ interface Props {
   symbolPrefix?: string;
   symbol?: string;
   decimals?: number;
-  abbrDecimals?: 2 | 4;
+  abbrDecimals?: number;
   id?: string;
   showEllipsis?: boolean;
   placement?: PopperProps['placement'];
 }
 
-const abbrStr = {
-  2: '0.01',
-  4: '0.0001',
-}
+const abbrStr = Object.fromEntries([...Array(18).keys()].map((i) => [i + 1, `0.${'0'.repeat(i)}1`]));
 
-const BalanceText: React.FC<Props> = ({ className, balance, status, id, symbolPrefix, symbol, decimals = 18, abbrDecimals = 4, showEllipsis = false,  placement }) => {
+const BalanceText: React.FC<Props> = ({
+  className,
+  balance,
+  status,
+  id,
+  symbolPrefix,
+  symbol,
+  decimals = 18,
+  abbrDecimals = 4,
+  showEllipsis = false,
+  placement,
+}) => {
   const usedPlacement = placement || (abbrDecimals === 4 ? 'top' : 'bottom');
   if (!balance) {
     return (
@@ -38,9 +46,15 @@ const BalanceText: React.FC<Props> = ({ className, balance, status, id, symbolPr
   if (decimalStandardUnit !== '0' && Unit.lessThan(balance, Unit.fromStandardUnit(abbrStr[abbrDecimals], Number(decimals)))) {
     const isGreaterThanZero = balance.greaterThan(Zero);
     return (
-      <Tooltip text={`${isGreaterThanZero ? numFormat(decimalStandardUnit) : Zero}${symbol ? ` ${symbol}` : ''}`} placement={usedPlacement} interactive delay={[888, 333]}>
+      <Tooltip
+        text={`${isGreaterThanZero ? numFormat(decimalStandardUnit) : Zero}${symbol ? ` ${symbol}` : ''}`}
+        placement={usedPlacement}
+        interactive
+        delay={[888, 333]}
+      >
         <span className={className} id={id}>
-          {symbolPrefix ?? ''}＜{abbrStr[abbrDecimals]}{symbol ? ` ${symbol}` : ''}
+          {symbolPrefix ?? ''}＜{abbrStr[abbrDecimals]}
+          {symbol ? ` ${symbol}` : ''}
         </span>
       </Tooltip>
     );
@@ -49,9 +63,15 @@ const BalanceText: React.FC<Props> = ({ className, balance, status, id, symbolPr
   const nought = decimalStandardUnit.split('.')[1];
   const noughtLen = nought ? nought.length : 0;
   return (
-    <Tooltip text={`${numFormat(decimalStandardUnit)}${symbol ? ` ${symbol}` : ''}`} placement={usedPlacement} disabled={noughtLen < abbrDecimals} interactive delay={[888, 333]}>
+    <Tooltip
+      text={`${numFormat(decimalStandardUnit)}${symbol ? ` ${symbol}` : ''}`}
+      placement={usedPlacement}
+      disabled={noughtLen < abbrDecimals}
+      interactive
+      delay={[888, 333]}
+    >
       <span className={className} id={id}>
-        { noughtLen >= abbrDecimals
+        {noughtLen >= abbrDecimals
           ? `${symbolPrefix ?? ''}${numFormat(balance.toDecimalStandardUnit(abbrDecimals, decimals))}${showEllipsis ? '...' : ''}${symbol ? ` ${symbol}` : ''}`
           : `${symbolPrefix ?? ''}${numFormat(balance.toDecimalStandardUnit(undefined, decimals))}${symbol ? ` ${symbol}` : ''}`}
       </span>

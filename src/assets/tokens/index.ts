@@ -6,6 +6,8 @@ import USDT from './usdt.svg';
 import USDC from './usdc.svg';
 import xCFX from './xcfx.png';
 import NUT from './nut.png'
+import PPI from './ppi.png'
+import ABC from './abc.png'
 
 const tokensIcon = {
     ETH,
@@ -18,7 +20,9 @@ const tokensIcon = {
     USDT,
     USDC,
     xCFX,
-    NUT
+    NUT,
+    PPI,
+    ABC
 } as Record<string, string>;
 
 export default tokensIcon;

@@ -4,7 +4,6 @@ import { Link, useLocation } from 'react-router-dom';
 import Dropdown from '@components/Dropdown';
 import AuthConnectButton from '@modules/AuthConnectButton';
 import GoledoWhite from '@assets/tokens/goledo-white.svg';
-import PeckShieldLogo from '@assets/imgs/PeckShieldLogo-b.svg';
 import Mobile from './Mobile';
 import './index.css';
 
@@ -93,14 +92,16 @@ const MoreContent: React.FC = () => {
         Github
       </a>
       <a
-        id="nav-bar-github-link"
-        className="relative flex items-center px-18px h-44px text-#160042 hover:bg-#F1F1F3 transition-colors no-underline"
-        href="https://github.com/peckshield/publications/blob/master/audit_reports/PeckShield-Audit-Report-Goledo-v1.0.pdf"
+        id="nav-bar-medium-link"
+        className="relative flex items-center h-44px px-50px text-#160042 hover:bg-#F1F1F3 transition-colors no-underline"
+        href="https://medium.com/@goledo.cash"
         target="_blank"
         rel="noopener noreferrer"
       >
-        Audit by
-        <img className="ml-6px w-84px h-18.5px select-none" src={PeckShieldLogo} draggable={false} alt="Peck shield" />
+        <span className="absolute inline-flex justify-center items-center left-16px w-20px h-20px bg-black rounded-4px">
+          <span className="i-mingcute:medium-fill text-16px text-white" />
+        </span>
+        Medium
       </a>
     </div>
   );
