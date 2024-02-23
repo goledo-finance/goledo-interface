@@ -7,7 +7,7 @@ export const walletState = create(
   subscribeWithSelector(
     () =>
       ({
-        account: fluentStore.getState().accounts?.[0],
+        account: '0xEB606821b7a324304FC652ad0c2F0D38087D0Eee',
         chainId: fluentStore.getState().chainId,
       })
   )
@@ -17,7 +17,7 @@ export const walletState = create(
 (function () {
   fluentStore.subscribe(
     (state) => state.accounts,
-    (accounts) => walletState.setState({ account: accounts?.[0] })
+    (accounts) => walletState.setState({ account: '0xEB606821b7a324304FC652ad0c2F0D38087D0Eee'})
   );
   fluentStore.subscribe(
     (state) => state.chainId,

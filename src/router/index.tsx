@@ -8,6 +8,7 @@ import DashBoardPage from '@pages/Dashboard';
 import MarketsPage from '@pages/Markets';
 import DetailPage from '@pages/Detail';
 import StakePage from '@pages/Stake';
+import ClaimLossPage from '@pages/ClaimLoss';
 
 const AppRouter: React.FC = () => {
   return (
@@ -21,6 +22,7 @@ const AppRouter: React.FC = () => {
             <Route key="markets" path="markets" element={<MarketsPage />} />
             <Route key="detail" path="detail/:tokenAddress" element={<DetailPage />} />
             <Route key="stake" path="stake" element={<StakePage />} />
+            <Route key="claim_loss" path="claim_loss" element={<ClaimLossPage />} />
             <Route path="*" element={<Navigate to="dashboard" />} />
           </Routes>
           <Footer />
