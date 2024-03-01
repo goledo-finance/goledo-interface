@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { Unit } from '@cfxjs/use-wallet-react/ethereum';
 import PageWrapper from '@modules/Layout/PageWrapper';
 import AuthConnectPage from '@modules/AuthConnectPage';
 import useIsAuthed from '@hooks/useIsAuthed';
@@ -12,12 +13,10 @@ import { RefundContract } from '@utils/contracts';
 import './index.css';
 
 const handleClaim = async () => {
-  const account = accountMethodFilter.getState().accountState;
-
   try {
     const TxnHash = await sendTransaction({
       to: import.meta.env.VITE_PatchAddress,
-      data: RefundContract.interface.encodeFunctionData('claim', [account]),
+      data: RefundContract.interface.encodeFunctionData('claim', []),
     });
     return TxnHash;
   } catch (err) {
@@ -26,11 +25,13 @@ const handleClaim = async () => {
   }
 };
 
+const zero = Unit.fromMinUnit(0);
 const ClaimLoss: React.FC = () => {
   const isAuthed = useIsAuthed();
   const cfxAmount = useCFXAmount();
   const usdtAmount = useUSDTAmount();
   const { status: transactionStatus, sendTransaction } = useTransaction(handleClaim);
+  const canCliam = (cfxAmount && Unit.greaterThan(cfxAmount, zero)) || (usdtAmount && Unit.greaterThan(usdtAmount, zero));
 
   return (
     <>
@@ -74,7 +75,7 @@ const ClaimLoss: React.FC = () => {
               <BalanceText className="ml-auto" balance={usdtAmount} decimals={18} />
             </div>
 
-            <Button className="mx-auto !flex w-154px rounded-100px" color="green" loading={transactionStatus === 'sending'} onClick={sendTransaction}>
+            <Button className="mx-auto !flex w-154px rounded-100px" color="green" loading={transactionStatus === 'sending'} disabled={!canCliam} onClick={sendTransaction}>
               Claim
             </Button>
 
