@@ -8,14 +8,14 @@ import BalanceText from '@modules/BalanceText';
 import Button from '@components/Button';
 import tokensIcon from '@assets/tokens';
 import useTransaction from '@hooks/useTransaction';
-import { accountMethodFilter, sendTransaction } from '@store/wallet';
+import { sendTransaction } from '@store/wallet';
 import { RefundContract } from '@utils/contracts';
 import './index.css';
 
 const handleClaim = async () => {
   try {
     const TxnHash = await sendTransaction({
-      to: import.meta.env.VITE_PatchAddress,
+      to: import.meta.env.VITE_RefundAddress,
       data: RefundContract.interface.encodeFunctionData('claim', []),
     });
     return TxnHash;
