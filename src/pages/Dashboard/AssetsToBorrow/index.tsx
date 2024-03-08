@@ -43,32 +43,32 @@ const columns: Columns<TokenInfo, { goledoTokensAPR: Record<string, Unit> | unde
       </div>
     ),
   },
-  {
-    name: 'Interest Rate',
-    width: '18%',
-    renderHeader: () => (
-      <div className="flex justify-center items-center">
-        Interest Rate
-        <ToolTip text="Interest rate will fluctuate based on the market conditions. Recommended for short-term loans.">
-          <span className="i-bi:info-circle ml-4px cursor-pointer" />
-        </ToolTip>
-      </div>
-    ),
-    render: ({ borrowAPY, symbol }) => (
-      <div className="font-semibold">
-        <PercentageText value={borrowAPY} id={`dashboard-assets-borrow-interest-rate-${symbol}`} />
-      </div>
-    ),
-  },
-  {
-    name: 'GOL APR',
-    width: '17%',
-    render: ({ symbol, borrowTokenAddress }, { goledoTokensAPR } = { goledoTokensAPR: undefined }) => (
-      <div className="font-semibold">
-        <PercentageText className="font-semibold" id={`dashboard-assets-borrow-APR-${symbol}`} value={goledoTokensAPR?.[borrowTokenAddress]} />
-      </div>
-    ),
-  },
+  // {
+  //   name: 'Interest Rate',
+  //   width: '18%',
+  //   renderHeader: () => (
+  //     <div className="flex justify-center items-center">
+  //       Interest Rate
+  //       <ToolTip text="Interest rate will fluctuate based on the market conditions. Recommended for short-term loans.">
+  //         <span className="i-bi:info-circle ml-4px cursor-pointer" />
+  //       </ToolTip>
+  //     </div>
+  //   ),
+  //   render: ({ borrowAPY, symbol }) => (
+  //     <div className="font-semibold">
+  //       <PercentageText value={borrowAPY} id={`dashboard-assets-borrow-interest-rate-${symbol}`} />
+  //     </div>
+  //   ),
+  // },
+  // {
+  //   name: 'GOL APR',
+  //   width: '17%',
+  //   render: ({ symbol, borrowTokenAddress }, { goledoTokensAPR } = { goledoTokensAPR: undefined }) => (
+  //     <div className="font-semibold">
+  //       <PercentageText className="font-semibold" id={`dashboard-assets-borrow-APR-${symbol}`} value={goledoTokensAPR?.[borrowTokenAddress]} />
+  //     </div>
+  //   ),
+  // },
   {
     name: '',
     width: '28%',
@@ -100,16 +100,16 @@ const configs: Configs<TokenInfo, { goledoTokensAPR: Record<string, Unit> | unde
     name: 'Available to Borrow',
     renderContent: columns[1].render,
   },
+  // {
+  //   name: 'Borrow Interest Rate',
+  //   renderContent: columns[2].render,
+  // },
+  // {
+  //   name: 'Goledo APR',
+  //   renderContent: columns[3].render,
+  // },
   {
-    name: 'Borrow Interest Rate',
-    renderContent: columns[2].render,
-  },
-  {
-    name: 'Goledo APR',
-    renderContent: columns[3].render,
-  },
-  {
-    render: columns[4].render,
+    render: columns[2].render,
   },
 ];
 

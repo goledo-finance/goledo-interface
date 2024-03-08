@@ -35,27 +35,27 @@ const columns: Columns<TokenInfo, { isInVestingLockTime: boolean; goledoTokensAP
       </div>
     ),
   },
-  {
-    name: 'Rewards',
-    width: '18%',
-    render: (
-      { supplyAPY, symbol, supplyTokenAddress },
-      { isInVestingLockTime, goledoTokensAPR } = { isInVestingLockTime: false, goledoTokensAPR: undefined }
-    ) => (
-      <div className="font-semibold">
-        <PercentageText value={supplyAPY} id={`dashboard-assets-supply-apy-${symbol}`} />
-        <div className="ml-8px mt-4px flex justify-center items-center px-4px py-2px rounded-4px border-1px border-#EAEBEF text-12px">
-          <img className="w-14px h-14px" src={tokenIcons.GOL} alt="/" />
-          <span className="text-#62677B mx-4px">APR</span>
-          {isInVestingLockTime ? (
-            <span className="font-semibold">Infinity%</span>
-          ) : (
-            <PercentageText className="font-semibold" value={goledoTokensAPR?.[supplyTokenAddress]} />
-          )}
-        </div>
-      </div>
-    ),
-  },
+  // {
+  //   name: 'Rewards',
+  //   width: '18%',
+  //   render: (
+  //     { supplyAPY, symbol, supplyTokenAddress },
+  //     { isInVestingLockTime, goledoTokensAPR } = { isInVestingLockTime: false, goledoTokensAPR: undefined }
+  //   ) => (
+  //     <div className="font-semibold">
+  //       <PercentageText value={supplyAPY} id={`dashboard-assets-supply-apy-${symbol}`} />
+  //       <div className="ml-8px mt-4px flex justify-center items-center px-4px py-2px rounded-4px border-1px border-#EAEBEF text-12px">
+  //         <img className="w-14px h-14px" src={tokenIcons.GOL} alt="/" />
+  //         <span className="text-#62677B mx-4px">APR</span>
+  //         {isInVestingLockTime ? (
+  //           <span className="font-semibold">Infinity%</span>
+  //         ) : (
+  //           <PercentageText className="font-semibold" value={goledoTokensAPR?.[supplyTokenAddress]} />
+  //         )}
+  //       </div>
+  //     </div>
+  //   ),
+  // },
   {
     name: 'Can be collateral',
     width: '17%',
@@ -101,16 +101,16 @@ const configs: Configs<TokenInfo, { isInVestingLockTime: boolean; goledoTokensAP
     name: 'Supply Balance',
     renderContent: columns[1].render,
   },
+  // {
+  //   name: 'Supply Rewards',
+  //   renderContent: columns[2].render,
+  // },
   {
-    name: 'Supply Rewards',
+    name: 'Can be collateral',
     renderContent: columns[2].render,
   },
   {
-    name: 'Can be collateral',
-    renderContent: columns[3].render,
-  },
-  {
-    render: columns[4].render,
+    render: columns[3].render,
   },
 ];
 

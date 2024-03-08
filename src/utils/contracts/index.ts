@@ -12,6 +12,7 @@ import GoledoToken from './abis/GoledoToken.json';
 import WETHGateway from './abis/WETHGateway.json';
 import DebtToken from './abis/DebtTokenBase.json';
 import PatchABI from './abis/Patch.json';
+import RefundABI from './abis/refund.json';
 
 export const HttpProvider = new providers.JsonRpcProvider(import.meta.env.VITE_ESpaceRpcUrl);
 
@@ -34,3 +35,4 @@ export const createDebtTokenContract = (tokenAddress: string) => new Contract(to
 export const GoledoTokenContract = new Contract(import.meta.env.VITE_GoledoTokenAddress, GoledoToken, HttpProvider);
 export const LpTokenContract = new Contract(import.meta.env.VITE_SwappiPairAddress, ERC20ABI, HttpProvider);
 export const PatchContract = new Contract(import.meta.env.VITE_PatchAddress, PatchABI, HttpProvider);
+export const RefundContract = new Contract(import.meta.env.VITE_RefundAddress, RefundABI, HttpProvider);

@@ -15,6 +15,14 @@ const NavLink: React.FC<ComponentProps<typeof Link> & { curPath: string }> = ({ 
   </li>
 );
 
+const Info: React.FC = () => {
+  return (
+    <div className="bg-[#004223] px-[128px] py-[24px] text-[16px] lt-md:p-[32px] lt-md:text-[14px]">
+      <Link to="/claim_loss" className="text-[#00FF87] lt-md:text-center decoration-none select-none">Reimbursement is open, claim your losses. {`->`}</Link>
+    </div>
+  );
+};
+
 const Navbar: React.FC = () => {
   const { pathname: curPath } = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -24,37 +32,40 @@ const Navbar: React.FC = () => {
   }, [curPath]);
 
   return (
-    <header className="flex justify-center h-61px bg-#111 border-b-1px border-#FEFEFE border-opacity-15 ">
-      <Mobile open={isMobileMenuOpen} curPath={curPath === '/' ? '/dashboard' : curPath} />
-      <nav className={cx('max-w-1920px mx-auto absolute flex items-center w-full h-60px px-32px bg-#111 z-100')}>
-        <img src={GoledoWhite} alt="goledo icon" className="w-34px h-34px mr-auto sm:mr-40px" />
-        <ul className="navbar-linkArea display-none sm:flex h-full items-center text-14px font-semibold">
-          <NavLink to="/dashboard" curPath={curPath === '/' ? '/dashboard' : curPath} id="nav-bar-dashboard-link">
-            Dashboard
-          </NavLink>
-          <NavLink to="/markets" curPath={curPath} id="nav-bar-markets-link">
-            Markets
-          </NavLink>
-          <NavLink to="/stake" curPath={curPath} id="nav-bar-stake-link">
-            Stake
-          </NavLink>
-        </ul>
-        <More />
+    <>
+      {!curPath?.includes('claim_loss') && <Info />}
+      <header className="flex justify-center h-61px bg-#111 border-b-1px border-#FEFEFE border-opacity-15 ">
+        <Mobile open={isMobileMenuOpen} curPath={curPath === '/' ? '/dashboard' : curPath} />
+        <nav className={cx('max-w-1920px mx-auto absolute flex items-center w-full h-60px px-32px bg-#111 z-100')}>
+          <img src={GoledoWhite} alt="goledo icon" className="w-34px h-34px mr-auto sm:mr-40px" />
+          <ul className="navbar-linkArea display-none sm:flex h-full items-center text-14px font-semibold">
+            <NavLink to="/dashboard" curPath={curPath === '/' ? '/dashboard' : curPath} id="nav-bar-dashboard-link">
+              Dashboard
+            </NavLink>
+            <NavLink to="/markets" curPath={curPath} id="nav-bar-markets-link">
+              Markets
+            </NavLink>
+            <NavLink to="/stake" curPath={curPath} id="nav-bar-stake-link">
+              Stake
+            </NavLink>
+          </ul>
+          <More />
 
-        <AuthConnectButton id="nav-bar-connect-btn" className="min-w-156px !rounded-100px" />
+          <AuthConnectButton id="nav-bar-connect-btn" className="min-w-156px !rounded-100px" />
 
-        <label className="burger-container ml-20px sm:display-none" htmlFor="burger-check">
-          <input
-            className="burger-check"
-            id="burger-check"
-            type="checkbox"
-            checked={isMobileMenuOpen}
-            onChange={(e) => setIsMobileMenuOpen(e.target.checked)}
-          />
-          <span className="burger" />
-        </label>
-      </nav>
-    </header>
+          <label className="burger-container ml-20px sm:display-none" htmlFor="burger-check">
+            <input
+              className="burger-check"
+              id="burger-check"
+              type="checkbox"
+              checked={isMobileMenuOpen}
+              onChange={(e) => setIsMobileMenuOpen(e.target.checked)}
+            />
+            <span className="burger" />
+          </label>
+        </nav>
+      </header>
+    </>
   );
 };
 

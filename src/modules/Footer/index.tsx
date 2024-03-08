@@ -1,8 +1,13 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import PeckShieldLogo from '@assets/imgs/PeckShieldLogo-b.svg';
 import PythLogo from '@assets/imgs/pyth.png';
 
 const Footer: React.FC = () => {
+  const { pathname: curPath } = useLocation();
+
+  if (curPath?.includes('claim_loss')) return null;
+
   return (
     <footer className="mt-80px lt-sm:mt-64px flex justify-center items-center h-60px bg-transparent border-t-1px border-#E5E5E5">
       <a
@@ -16,7 +21,7 @@ const Footer: React.FC = () => {
         <img className="ml-6px w-113px h-25px select-none" src={PeckShieldLogo} draggable={false} alt="Peck shield" />
       </a>
 
-      <div className='inline-block w-1px h-24px mx-24px bg-#E5E5E5 pointer-events-none select-none'/>
+      <div className="inline-block w-1px h-24px mx-24px bg-#E5E5E5 pointer-events-none select-none" />
 
       <span id="footer-powered" className="relative flex items-center text-14px text-#BABABA no-underline">
         Powered by
