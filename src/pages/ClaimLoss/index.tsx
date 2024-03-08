@@ -46,7 +46,7 @@ const ClaimLoss: React.FC = () => {
               <div className="absolute top-32px left-24px right-24px text-left text-[16px] text-[#111] leading-[24px]">
                 This is a reimbursement for users who lost assets in this attack, as follows 🔗
                 <a target="_blank" rel="noopener noreferrer" href="https://medium.com/@goledo.cash/goledo-reimbursement-phase-1-methodology-d5a3992c0438" className="ml-[4px] text-[16px] text-[#111] font-600">
-                  &nbsp;:&nbsp;Link
+                  &nbsp;:&nbsp;&nbsp;Link
                 </a>
               </div>
             }
