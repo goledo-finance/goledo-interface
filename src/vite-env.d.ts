@@ -40,6 +40,7 @@ interface ImportMetaEnv {
   readonly VITE_SwappiPairAddress: string;
   readonly VITE_WETHGatewayAddress: string;
   readonly VITE_PatchAddress: string;
+  readonly VITE_RefundAddress: string;
 }
 
 interface ImportMeta {

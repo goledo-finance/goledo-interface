@@ -4,15 +4,11 @@ import { store as fluentStore } from '@cfxjs/use-wallet-react/ethereum/Fluent';
 export { connect, sendTransaction, watchAsset, addChain, switchChain } from '@cfxjs/use-wallet-react/ethereum/Fluent';
 
 export const walletState = create(
-  subscribeWithSelector(
-    () =>
-      ({
-        account: fluentStore.getState().accounts?.[0],
-        chainId: fluentStore.getState().chainId,
-      })
-  )
+  subscribeWithSelector(() => ({
+    account: fluentStore.getState().accounts?.[0],
+    chainId: fluentStore.getState().chainId,
+  }))
 );
-
 
 (function () {
   fluentStore.subscribe(

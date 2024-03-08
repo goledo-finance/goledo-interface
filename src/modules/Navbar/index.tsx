@@ -17,18 +17,8 @@ const NavLink: React.FC<ComponentProps<typeof Link> & { curPath: string }> = ({ 
 
 const Info: React.FC = () => {
   return (
-    <div className="w-full bg-[#004243] px-[128px] py-[24px] gap-[8px] flex flex-col text-[16px] leading-[24px] font-400 lt-md:p-[32px] lt-md:text-[14px] lt-md:leading-[21px]">
-      <span className="text-[#00FF87] lt-md:text-center">
-        Dear users, On January 27th, 2024 Goledo suffered a flash loan attack. We have succesfully frozen the assets taken by the hacker. We are working to
-        compensate users as soon as possible. We ask users to fill out the form in the link below to expedite the process. This also helps our effort to
-        prosecute the hacker.
-      </span>
-      <span className="text-[#fff] text-center">
-        🔗:
-        <a className="text-[#fff] ml-[8px]" href="https://forms.gle/MuA6YyiXwdXAAjBR9" target="_blank" rel="noopener noreferrer">
-          https://forms.gle/MuA6YyiXwdXAAjBR9
-        </a>
-      </span>
+    <div className="bg-[#004223] px-[128px] py-[24px] text-[16px] lt-md:p-[32px] lt-md:text-[14px]">
+      <Link to="/claim_loss" className="text-[#00FF87] lt-md:text-center decoration-none select-none">Reimbursement is open, claim your losses. {`->`}</Link>
     </div>
   );
 };
@@ -43,7 +33,7 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <Info />
+      {!curPath?.includes('claim_loss') && <Info />}
       <header className="flex justify-center h-61px bg-#111 border-b-1px border-#FEFEFE border-opacity-15 ">
         <Mobile open={isMobileMenuOpen} curPath={curPath === '/' ? '/dashboard' : curPath} />
         <nav className={cx('max-w-1920px mx-auto absolute flex items-center w-full h-60px px-32px bg-#111 z-100')}>
